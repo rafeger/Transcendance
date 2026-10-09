@@ -1,0 +1,24 @@
+name: Tâche
+description: Une tâche de développement
+labels: []
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Objectif
+      description: Que doit-on obtenir ?
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Critères de validation
+      value: |
+        - [ ] 
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes techniques / dépendances
+      description: "Ex : bloqué par #4"
