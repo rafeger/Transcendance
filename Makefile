@@ -28,7 +28,7 @@ test_env:
 		exit 1; \
 	fi
 
-clean:
+down:
 	@$(COMPOSE) down
 	@printf "$(YELLOW)🛑 Containers stopped (data kept)$(RESET)\n"    
 
@@ -41,7 +41,7 @@ re: fclean all
 help:
 	@printf "$(BOLD)$(CYAN)🧠 Transcendance — available commands$(RESET)\n\n"
 	@printf "  $(GREEN)make$(RESET)         🚀 build and start the project\n"
-	@printf "  $(GREEN)make clean$(RESET)   🛑 stop containers (keep data)\n"
+	@printf "  $(GREEN)make down$(RESET)    🛑 stop containers (keep data)\n"
 	@printf "  $(GREEN)make fclean$(RESET)  🧹 remove containers, images and volumes\n"
 	@printf "  $(GREEN)make re$(RESET)      🔄 fclean + make\n"
 	@printf "  $(GREEN)make debug$(RESET)   🔍 status + last logs of each service\n"
@@ -68,4 +68,4 @@ logs-db:
 logs-check:
 	@$(COMPOSE) logs -f check
 
-.PHONY: test_env all clean re fclean  help debug logs logs-web logs-db logs-check
+.PHONY: test_env all down re fclean  help debug logs logs-web logs-db logs-check
