@@ -1,0 +1,25 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "8443:443"
+    
+  db:
+    image: docker.io/library/postgres:16-alpine
+    env_file:
+      - ../.env
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "test"]
+      interval: 3s
+      retries: 20
+  check:
+    image: docker.io/library/postgres:16-alpine
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c 'for i in $$(seq 1 30); do pg_isready -h db -U test && exit 0; sleep 1; done; exit 1'
+volumes:
+  dbdata:
+
