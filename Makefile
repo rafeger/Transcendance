@@ -11,7 +11,7 @@ CYAN   = \033[36m
 #detect available container tools
 TOOL ?= $(shell command -v podman >/dev/null 2>&1 && echo "podman compose" || echo "docker compose")
 	
-COMPOSE_FILE=./srcs/compose.yml
+COMPOSE_FILE=compose.yml
 
 COMPOSE=$(TOOL) -f $(COMPOSE_FILE) -p transcendance
 
@@ -55,8 +55,8 @@ debug:
 	@$(COMPOSE) logs --tail=20 web
 	@printf "\n$(BOLD)$(BLUE)🐘 LOGS DB$(RESET)\n"
 	@$(COMPOSE) logs --tail=20 db
-	@printf "\n$(BOLD)$(BLUE)🔎 LOGS CHECK$(RESET)\n"
-	@$(COMPOSE) logs --tail=20 check
+	@printf "\n$(BOLD)$(BLUE)🔎 LOGS BACKEND$(RESET)\n"
+	@$(COMPOSE) logs --tail=20 backend
 	
 logs:
 	@$(COMPOSE) logs -f
@@ -65,7 +65,7 @@ logs-web:
 	@$(COMPOSE) logs -f web
 logs-db:
 	@$(COMPOSE) logs -f db
-logs-check:
-	@$(COMPOSE) logs -f check
+logs-backend:
+	@$(COMPOSE) logs -f backend
 
 .PHONY: test_env all down re fclean  help debug logs logs-web logs-db logs-check
