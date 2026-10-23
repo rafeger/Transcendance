@@ -8,7 +8,7 @@ function Auth() {
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
 
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
         if (isRegister && username.trim() === "") {
