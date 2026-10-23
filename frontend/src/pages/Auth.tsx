@@ -61,8 +61,9 @@ function Auth() {
 
                 <div>
                     <label htmlFor="password" className="mb-2 block text-sm font-medium">Password</label>
-                    <input id="password" type="text" value={password} onChange={(event) => setPassword(event.target.value)}
+                    <input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)}
                         placeholder="Your password" className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"></input>
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Masquer" : "Afficher"}</button>
                 </div>
 
                 <button type="submit" className="mt-10 inline-flex items-center gap-3 rounded-xl bg-blue-500 px-7 py-4 
