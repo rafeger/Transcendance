@@ -8,3 +8,5 @@ src/generated/
 /generated/prisma
 
 /src/generated/prisma
+
+.agents/, .claude/, .windsurf/, skills-lock.json
