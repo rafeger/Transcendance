@@ -3,3 +3,8 @@ dist/
 coverage/
 .env
 *.log
+src/generated/
+
+/generated/prisma
+
+/src/generated/prisma
