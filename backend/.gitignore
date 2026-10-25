@@ -13,3 +13,4 @@ src/generated/
 .claude/
 .windsurf/
 skills-lock.json
+tsconfig.build.tsbuildinfo
