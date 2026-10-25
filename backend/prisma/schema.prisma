@@ -11,7 +11,30 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+
+}
+
+model Friendship {
+
+}
+
+model Category {
+
+}
+
 model Question { 
   id Int @id @default(autoincrement())      
   question String  @default("The Answer to the Ultimate Question of Life, the Universe, and Everything")
-} 
+}
+
+model Match {
+
+}
+
+model MatchPlayer {
+
+}
+
+

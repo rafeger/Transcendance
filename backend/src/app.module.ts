@@ -5,6 +5,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/env.validation.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
   imports: [
@@ -12,6 +13,8 @@ import { validate } from './config/env.validation.js';
       isGlobal: true,
       validate,
     }),
+    // PrismaModule needs ConfigModule so order matters
+    PrismaModule,
   ], // loads .env file and we cna use config mod in other places
   controllers: [AppController],
   providers: [AppService],
