@@ -10,11 +10,6 @@ import {
   ValidationError,
 } from 'class-validator';
 
-// const config = {
-//     NODE_ENV: "development",
-//     PORT: "3000",
-//     DATABASE_URL: "postgres://localhost/mydb",
-// };
 
 enum Env {
   DEV = 'development',
