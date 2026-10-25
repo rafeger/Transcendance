@@ -12,7 +12,6 @@ import { AppService } from './app.service.js';
 //   password: string;
 // }
 
-
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -23,12 +22,12 @@ export class AppController {
   }
 
   @Get('ping')
-  getPing(): string{
+  getPing(): string {
     return this.appService.getPing();
   }
 
   // @Post()
   // create(@Body() createUserDto: CreateUserDto){
   //   return 'This action adds a new user';
-// }
+  // }
 }

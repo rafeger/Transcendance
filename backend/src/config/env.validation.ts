@@ -1,30 +1,43 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsInt, IsNotEmpty, IsString, Max, Min, validateSync, ValidationError } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsString,
+  Max,
+  Min,
+  validateSync,
+  ValidationError,
+} from 'class-validator';
 
-enum Env
-{
-    DEV = 'development',
-    PROD = 'production',
-    TEST = 'test',
+// const config = {
+//     NODE_ENV: "development",
+//     PORT: "3000",
+//     DATABASE_URL: "postgres://localhost/mydb",
+// };
+
+enum Env {
+  DEV = 'development',
+  PROD = 'production',
+  TEST = 'test',
 }
 
-class EnvVar{
-    @IsEnum(Env)
-    NODE_ENV! : Env;
+class EnvVar {
+  @IsEnum(Env)
+  NODE_ENV!: Env;
 
-    @IsInt()
-    @Min(1)
-    @Max(65535)
-    PORT!: number;
+  @IsInt()
+  @Min(1)
+  @Max(65535)
+  PORT!: number;
 
-    @IsString()
-    @IsNotEmpty()
-    DATABASE_URL!: string;
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_URL!: string;
 }
 
 function formatErrors(errors: ValidationError[]): string {
-  const lines = errors.map((error) => 
-    {
+  const lines = errors.map((error) => {
     const reasons = Object.values(error.constraints ?? {}).join(', ');
     return `  - ${error.property}: ${reasons}`;
   });
@@ -32,12 +45,13 @@ function formatErrors(errors: ValidationError[]): string {
 }
 
 export function validate(config: Record<string, unknown>): EnvVar {
-    const validated = plainToInstance(EnvVar, config, {enableImplicitConversion: true,});
-    const errors = validateSync(validated, { skipMissingProperties : false });
+  const validated = plainToInstance(EnvVar, config, {
+    enableImplicitConversion: true,
+  });
+  const errors = validateSync(validated, { skipMissingProperties: false });
 
-    if (errors.length > 0)
-    {
-        throw new Error(`Invalid env vars:\n${formatErrors(errors)}`);
-    }
-    return validated;
+  if (errors.length > 0) {
+    throw new Error(`Invalid env vars:\n${formatErrors(errors)}`);
+  }
+  return validated;
 }

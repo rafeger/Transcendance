@@ -9,20 +9,16 @@ async function bootstrap() {
   // add in the /api prefix
   app.setGlobalPrefix('api');
 
-
   const config = app.get(ConfigService);
-  console.log('Port from config:', config.get('PORT'));
-  console.log('PORT from process.env: ', process.env.PORT);
-   // 'PORT' need to define through configservice
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-    transformOptions: { enableImplicitConversion: true }
-  }));
+  // console.log('Port from config:', config.get('PORT'));
+  // console.log('PORT from process.env: ', process.env.PORT);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
   await app.listen(config.getOrThrow('PORT'));
-  // Read port directly from env bypassing config system
-  // await app.listen(process.env.PORT ?? 8443);
 }
 await bootstrap();
-
