@@ -1,14 +1,22 @@
 services:
-  web:
-    build: ./web
+  frontend:
+    build: ./frontend
+    init: true
+    depends_on:
+      backend:
+        condition: service_healthy
     ports:
       - "8443:443"
+    networks:
+      - transnet
   db:
     image: docker.io/library/postgres:16-alpine
     env_file:
       - .env
     volumes:
       - dbdata:/var/lib/postgresql/data
+    networks:
+      - transnet
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d postgres"]
       interval: 5s
@@ -23,6 +31,8 @@ services:
       db:
         condition: service_healthy
     init: true
+    networks:
+      - transnet
     healthcheck: 
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api || exit 1"]
       interval: 5s
@@ -31,3 +41,6 @@ services:
       start_period: 30s
 volumes:
   dbdata:
+networks:
+  transnet:
+    driver: bridge
