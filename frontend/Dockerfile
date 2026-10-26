@@ -1,12 +1,15 @@
-# Étape 1 : builder
-FROM docker.io/library/node:24-alpine AS build
+# Step 1 : developper (Node + npm) 
+FROM docker.io/library/node:24-alpine AS dev
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
-COPY . .
-RUN npm run build        
+COPY . .     
 
-# Étape 2 : servir (plus de Node !)
+#step 2 : build (Node + npm)
+FROM dev AS build
+RUN npm run build
+
+# Step 3 : final (Nginx + SSL)
 FROM docker.io/library/nginx:alpine
 COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
