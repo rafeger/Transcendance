@@ -1,0 +1,21 @@
+# Dépendances et builds
+node_modules/
+dist/
+build/
+coverage/
+
+# Secrets : jamais dans Git
+.env
+*.env
+!.env.example
+secrets/
+*.pem
+*.key
+*.crt
+
+# Logs, temporaires, système
+*.log
+*.tmp
+*.swp
+.DS_Store
+.idea/
