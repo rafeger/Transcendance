@@ -27,11 +27,11 @@ dev: test_env
 
 dev-prisma:
 	@if [ "$(name)" = "" ]; then \
-		@printf "$(YELLOW)⚠️  No migration name provided, exiting$(RESET)\n"; \
+		printf "$(YELLOW)⚠️  No migration name provided, exiting$(RESET)\n"; \
 		exit 1; \
 	fi
 	$(COMPOSE_DEV) exec backend npx prisma migrate dev --name $(name)
-	@printf "$(GREEN)✅ prisma schema updated$(RESET)\n"@printf "$(GREEN)🚀 Transcendance backend is running in dev mode → $(BOLD)http://localhost:5173$(RESET)\n"
+	@printf "$(GREEN)✅ prisma schema updated$(RESET)\n"
 
 test_env:
 	@printf "$(GREEN)\n=== CHECK ENV ===\n$(RESET)"
