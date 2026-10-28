@@ -3,6 +3,8 @@ dist/
 coverage/
 .env
 *.log
+
+docker-compose.override.yml
 src/generated/
 
 /generated/prisma
@@ -13,4 +15,3 @@ src/generated/
 .claude/
 .windsurf/
 skills-lock.json
-tsconfig.build.tsbuildinfo
