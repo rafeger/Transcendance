@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
 function Auth() {
     const [isRegister, setRegister] = useState(false);
@@ -26,15 +26,11 @@ function Auth() {
 
     return (
         <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
-            <div className="mx-auto max-w-md">
-                <Link to="/" className="text-sm text-slate-400 hover:text-white">{"<- Back to Home"}</Link>
-            </div>
-
-            <div className="mx-auto max-w-md">
+            <div className="mx-auto max-w-md text-center">
                 <h1 className="mb-6 text-3xl font-bold">{isRegister ? "Create an account" : "Welcome!"}</h1>
             </div>
 
-            <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-indigo-950 p-1">
+            <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-indigo-950 p-1 w-150 mx-auto">
                 <button type="button" onClick={() => setRegister(false)} className={`rounded-md px-4 py-2 font-medium transition ${
                     !isRegister ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"
                 }`}>Sign in</button>
@@ -44,7 +40,7 @@ function Auth() {
                 }`}>Register</button>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+            <form onSubmit={handleSubmit} className="mt-6 space-y-5 text-center">
                 {isRegister && (
                     <div>
                         <label htmlFor="username" className="mb-2 block text-sm font-medium">Username</label>
@@ -63,7 +59,8 @@ function Auth() {
                     <label htmlFor="password" className="mb-2 block text-sm font-medium">Password</label>
                     <input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)}
                         placeholder="Your password" className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"></input>
-                    <button type="button" onClick={() => setShowPassword(!showPassword)}>{showPassword ? "Masquer" : "Afficher"}</button>
+                    <button type="button" onClick={() => setShowPassword((visible) => !visible)}
+                        className="">{showPassword ? <FaRegEyeSlash /> : <FaRegEye />}</button>
                 </div>
 
                 <button type="submit" className="mt-10 inline-flex items-center gap-3 rounded-xl bg-blue-500 px-7 py-4 
