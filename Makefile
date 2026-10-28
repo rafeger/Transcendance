@@ -27,7 +27,7 @@ dev: test_env
 
 dev-prisma:
 	@if [ "$(name)" = "" ]; then \
-		printf "$(YELLOW)⚠️  No migration name provided, exiting$(RESET)\n"; \
+		@printf "$(YELLOW)⚠️  No migration name provided, exiting$(RESET)\n"; \
 		exit 1; \
 	fi
 	$(COMPOSE_DEV) exec backend npx prisma migrate dev --name $(name)
