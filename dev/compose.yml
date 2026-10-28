@@ -10,11 +10,14 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d postgres"]
       interval: 5s
-      timeout: 2m
+      timeout: 30s
       retries: 5
       start_period: 30s
   backend:
-    build: ../backend
+    build: { context: ../backend, target: dev }
+    volumes:
+      - ../backend/src:/app/src:Z
+      - ../backend/prisma:/app/prisma:Z
     env_file:
       - ../.env
     depends_on:
@@ -26,7 +29,7 @@ services:
     healthcheck: 
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api || exit 1"]
       interval: 5s
-      timeout: 2m
+      timeout: 30s
       retries: 5
       start_period: 30s
   frontend:
@@ -42,7 +45,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:5173 || exit 1"]
       interval: 5s
-      timeout: 2m
+      timeout: 30s
       retries: 5
       start_period: 30s
 volumes:
