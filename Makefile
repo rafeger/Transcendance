@@ -25,6 +25,14 @@ dev: test_env
 	@$(COMPOSE_DEV) up -d --build
 	@printf "$(GREEN)🚀 Transcendance is running in dev mode → $(BOLD)http://localhost:5173$(RESET)\n"
 
+dev-prisma:
+	@if [ "$(name)" = "" ]; then \
+		printf "$(YELLOW)⚠️  No migration name provided, exiting$(RESET)\n"; \
+		exit 1; \
+	fi
+	$(COMPOSE_DEV) exec backend npx prisma migrate dev --name $(name)
+	@printf "$(GREEN)✅ prisma schema updated$(RESET)\n"@printf "$(GREEN)🚀 Transcendance backend is running in dev mode → $(BOLD)http://localhost:5173$(RESET)\n"
+
 test_env:
 	@printf "$(GREEN)\n=== CHECK ENV ===\n$(RESET)"
 	@if [ -f .env ] ; then \
@@ -55,6 +63,7 @@ help:
 	@printf "$(BOLD)$(CYAN)🧠 Transcendance — available commands$(RESET)\n\n"
 	@printf "  $(GREEN)make$(RESET)         🚀 build and start the project\n"
 	@printf "  $(GREEN)make dev$(RESET)     🚀 build and start the project in dev mode\n"
+	@printf "  $(GREEN)make dev-prisma$(RESET)  🔄 🚀 create + apply a Prisma migration (name=…) — needs make dev running\n"
 	@printf "  $(GREEN)make down$(RESET)    🛑 stop containers (keep data)\n"
 	@printf "  $(GREEN)make down-dev$(RESET)  🛑 stop containers dev (keep data)\n"
 	@printf "  $(GREEN)make fclean$(RESET)  🧹 remove containers, images and volumes\n"
@@ -106,4 +115,4 @@ logs-backend-dev:
 	@$(COMPOSE_DEV) logs -f backend
 
 .PHONY: test_env all dev down down-dev fclean fclean-dev re re-dev  help debug logs logs-web logs-db logs-backend\
-logs-web-dev logs-db-dev logs-backend-dev debug-dev logs-dev
+logs-web-dev logs-db-dev logs-backend-dev debug-dev logs-dev dev-prisma
