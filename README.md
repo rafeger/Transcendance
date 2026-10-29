@@ -11,3 +11,4 @@
 - make debug-dev    🔍 status + last logs of each service
 - make logs         📜 follow all logs
 - make logs-dev     📜 follow all  dev logs
+# DATABASE SCHEMA - diagramme du schéma 
