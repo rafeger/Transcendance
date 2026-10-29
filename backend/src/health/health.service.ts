@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class HealthService {
+    private readonly logger = new Logger(HealthService.name, { timestamp : true });
+
     constructor(private readonly prisma: PrismaService) {}
     // Promise - true or false
     async isDatabaseUp(): Promise<boolean> {
