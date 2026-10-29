@@ -1,0 +1,6 @@
+feature: [ 'feature/*', 'feat/*' ,'*/feature/*' ]
+enhancement: [ 'enhancement/*','*/enhancement/*' ]
+refactor: [ 'refactoring/*','*/refactor/*', '*/refactoring/*' ]
+bug: [ 'fix/*', '*/bug/*','bugfix/*', 'bugfixes/*', '*/bugfixes', '*/bugfix/*' ]
+code cleanup: [ 'cleanup/*', '*/codecleanup/*', '*/cleanup/*' ]
+github actions: [ 'githubaction/','*/githubaction/*' ]
