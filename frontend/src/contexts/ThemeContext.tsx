@@ -1,7 +1,5 @@
 import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 
-type Theme = 'light' | 'dark';
-
 type ThemeContextType = { isDark: boolean; toggleTheme: () => void; };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
