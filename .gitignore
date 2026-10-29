@@ -1,44 +1,21 @@
-#secrets
-/secrets
+# Dépendances et builds
+frontend/node_modules/
+frontend/dist/
+build/
+coverage/
+
+# Secrets : jamais dans Git
 .env
 *.env
+!.env.example
+secrets/
+*.pem
+*.key
+*.crt
 
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-*.so.*
-
-# Executables
-*.exe
-*.out
-*.app
-
-# Temporary files
-*.tmp
+# Logs, temporaires, système
 *.log
-*.bak
+*.tmp
 *.swp
 .DS_Store
-
-frontend/node_modules
-/frontend/dist
+.idea/
