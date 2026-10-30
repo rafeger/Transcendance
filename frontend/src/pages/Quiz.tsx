@@ -94,7 +94,7 @@ function Quiz() {
                     <p>{Math.round((score / filteredQuestions.length) * 100)}%</p>
 
                     <button onClick={restartQuiz}
-                    className="rounded bg-blue-600 px-6 py-3 font-bold">Rejouer</button>
+                    className="rounded bg-blue-600 px-6 py-3 font-bold">Play again</button>
                 </div>
             </main>
         );
@@ -120,7 +120,7 @@ function Quiz() {
                         {currentQuestion.answers.map((answer, index) => {
                         const isCorrect = index === currentQuestion.correctAnswer;
                         const isSelected = index === selectAnswer;
-                        let answerStyle = "rounded-lg border border-slate-700 bg-slate-800 p-4 text-left"
+                        let answerStyle = "rounded-lg border border-slate-700 bg-slate-800 p-4 text-left";
                         if (selectAnswer !== null && isCorrect) {
                             answerStyle = "rounded-lg border border-green-500 bg-green-900 p-4 text-left";
                         } else if (isSelected && !isCorrect) {
