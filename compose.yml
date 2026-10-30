@@ -7,6 +7,7 @@ services:
         condition: service_healthy
     ports:
       - "8443:443"
+      - "8080:80"
     networks:
       - transnet
   db:
