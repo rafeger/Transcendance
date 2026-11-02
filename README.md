@@ -46,3 +46,40 @@
  
 **<Project Name>** is a web-based quiz platform built for the ft_transcendence project at 42 Paris.
 Players can <...>. Questions are sourced from the [Open Trivia Database (OpenTDB)](https://opentdb.com/).
+
+
+### Goal
+ 
+<!-- The objective of the project, both from the subject's point of view and the team's. -->
+ 
+### Key Features
+ 
+- <!-- e.g. User accounts & authentication -->
+- <!-- e.g. Solo and multiplayer quiz games -->
+- <!-- e.g. Real-time matches -->
+- <!-- e.g. Leaderboards & stats -->
+- <!-- e.g. Friends / chat -->
+
+
+mettre des screens pour chaque truc mentionne au dessus .
+
+
+### Configuration (`.env`)
+ 
+Copy the example file and fill in the values:
+ 
+```bash
+cp .env.example .env
+```
+ 
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DB_HOST` | Database host | `db` |
+| `DB_NAME` | Database name | `transcendence` |
+| `DB_USER` | Database user | `<user>` |
+| `DB_PASSWORD` | Database password | `<secret>` |
+| `JWT_SECRET` | Secret used to sign tokens | `<secret>` |
+| `<OTHER_VAR>` | <...> | <...> |
+ 
+> ⚠️ Never commit the `.env` file. Only `.env.example` is versioned.
+ 
