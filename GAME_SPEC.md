@@ -12,11 +12,11 @@
 
 | Paramètre | Valeur par défaut | Choix possibles |
 |---|---|---|
-| Joueurs | 2 | 2 à 6 |
+| Joueurs | 1 | 1 à 6 |
 | Nombre de questions | 5 | 5 / 10 / 15 | ou slider ?
 | Catégorie | Mix | n'importe quelle catégorie OpenTDB |
 | Difficulté | Mix | `easy` / `medium` / `hard` / mix |
-| Type de question | Fixe | tjr 4 choix (peut etre modif par boosts in game) |
+| Type de question | Fixe | modulable selon ce qui est pull par l api OpenTDB (peut etre modif par boosts in game) |
 | Temps par question | 15 s | fixe |
 | Temps de révélation | 4 s | fixe |
 | Compte à rebours de départ | 3 s | fixe |
@@ -89,7 +89,10 @@ Côté serveur, chaque question est normalisée :
 - Une seule réponse acceptée par joueur et par question ; les suivantes sont rejetées (`ALREADY_ANSWERED`).
 - Réponse reçue après la `deadline` → rejetée (`TOO_LATE`).
 - Pendant la question, les autres joueurs voient **qui** a répondu, mais pas linformation de ce quils ont repondu. Donc un petit voyant en mode X a valide sa reponse.
-- PAS DE REPONSE A LECRIT ? si lon restreint le type de reponse a un click entre 4 options pas de risque de prompt injection, dabus de valeurs inconnues etc etc.
+
+### 1.7 Mode Solo.
+
+- Pas de mode solo a proprement parler. Implementer un bot de jeu contre lequel on joue.
 
 ---
 
@@ -274,18 +277,3 @@ A → answer:submit {0, "a"}           S → A   answer:ack
 Ces tables alimentent l'historique et les statistiques des profils. Les salons en cours restent **en mémoire** (pas en base).
 
 ---
-
-## 4. Points à trancher en équipe
-
-- [ ] 2 joueurs seulement (duel) ou jusqu'à 6 (plus sympa pour la correction on pourra tous se co avec le correcteur) ? → impacte l'UI du classement.
-- [ ] Matchmaking automatique ou salons par code uniquement ? (imo salon par code uniquement, sinon match contre des bots ?)
-- [ ] Mode solo / contre une IA (avec des pincettes IA) (module IA du sujet) ?
-- [ ] Bonus de série (ex. +10 % par bonne réponse consécutive) ? est ce que on recompense les chains wins ?
-- [ ] Cache local de questions : qui l'alimente (script d'import au build ?) ? (solution que je propose plus haut -> Seed versionne, on recup X questions une seule fois et on les commit dans le JSON du repo, ca marche meme sans reseau dcp utile pour la corretion.) -> on save ca cote serveur
-- [ ] A TESTER !!!! la generation du seed pour les appels a openTDB est a tester pour voir si on arrive a grep les questions de cette maniere ! (lire lapi de openDTB)
-
-## 5. Définition de « terminé » pour l'issue #7
-
-- [ ] Ce document relu et validé par les 5 membres.
-- [ ] Types partagés front/back créés à partir du §2 (fichier commun, ex. `shared/protocol.ts`).
-- [ ] Issues d'implémentation créées : serveur WS + machine à états, intégration OpenTDB, écran de jeu front, persistance des matchs.
