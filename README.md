@@ -108,4 +108,168 @@ lister la suite des infos
 | <login5> | <role> | <...> |
  
 ---
+
+### Work organization
  
+<!-- How tasks were split (by feature / by layer), sprint length, deadlines, meeting rhythm, code review policy... -->
+ 
+- **Task distribution:** <...>
+- **Meetings:** <frequency, format>
+- **Git workflow:** <branching strategy, PR reviews, naming conventions>
+### Tools
+ 
+- **GitHub Issues / Projects** — task tracking, one issue per feature, assigned to a member
+ 
+
+ ### Frontend
+ 
+- <framework / language> — <why>
+### Backend
+ 
+- <framework / language> — <why>
+### Database
+ 
+- **<DBMS>** — <why this choice>
+### Other technologies & libraries
+ 
+- **OpenTDB API** — question source
+- <WebSockets lib, auth lib, reverse proxy, etc.>
+- **Docker / Podman** — containerization
+### Justification of major technical choices
+ 
+<!-- Explain trade-offs: why this framework over another, constraints of the subject, team experience, etc. -->
+ 
+---
+
+
+## Database Schema
+ 
+<!-- Replace with your real schema. Mermaid renders natively on GitHub. -->
+
+```mermaid
+erDiagram
+    USER ||--o{ GAME_PLAYER : plays
+    GAME ||--o{ GAME_PLAYER : has
+    GAME ||--o{ GAME_QUESTION : contains
+    QUESTION ||--o{ GAME_QUESTION : used_in
+    USER ||--o{ FRIENDSHIP : has
+ 
+    USER {
+        int id PK
+        string username
+        string email
+        string password_hash
+        string avatar_url
+        datetime created_at
+    }
+    GAME {
+        int id PK
+        string mode
+        string status
+        datetime started_at
+        datetime ended_at
+    }
+    GAME_PLAYER {
+        int id PK
+        int game_id FK
+        int user_id FK
+        int score
+    }
+    QUESTION {
+        int id PK
+        string category
+        string difficulty
+        string text
+        string correct_answer
+    }
+    GAME_QUESTION {
+        int id PK
+        int game_id FK
+        int question_id FK
+        int position
+    }
+    FRIENDSHIP {
+        int id PK
+        int user_id FK
+        int friend_id FK
+        string status
+    }
+```
+
+
+### Tables / relationships
+ 
+| Table | Description | Key fields |
+|-------|-------------|------------|
+| `user` | <...> | <...> |
+| `game` | <...> | <...> |
+| <...> | <...> | <...> |
+ 
+---
+ 
+## Features List
+ 
+| Feature | Description | Member(s) |
+|---------|-------------|-----------|
+| <Authentication> | <...> | <login> |
+| <Quiz game (solo)> | <...> | <login> |
+| <Multiplayer> | <...> | <login> |
+| <Leaderboard> | <...> | <login> |
+| <...> | <...> | <...> |
+ 
+---
+ 
+## Modules
+ 
+| Module | Type | Points | Member(s) |
+|--------|------|--------|-----------|
+| <Module name> | Major | 2 | <login> |
+| <Module name> | Minor | 1 | <login> |
+| <Module of choice> | Major/Minor | <2/1> | <login> |
+| **Total** | | **<N>** | |
+ 
+### Module details
+ 
+#### <Module name> (Major / Minor)
+ 
+- **Why:** <justification — mandatory for "Modules of choice">
+- **Implementation:** <how it was implemented>
+- **Member(s):** <login>
+<!-- Repeat for each module -->
+ 
+---
+ 
+## Individual Contributions
+ 
+### rafeger
+ 
+- **Contributed to:** <features / modules / components>
+- **Challenges & solutions:** <...>
+### thhuynh
+ 
+- **Contributed to:** <...>
+- **Challenges & solutions:** <...>
+### jodde
+ 
+- **Contributed to:** <...>
+- **Challenges & solutions:** <...>
+### lzannis
+ 
+- **Contributed to:** <...>
+- **Challenges & solutions:** <...>
+### ankim
+ 
+- **Contributed to:** <...>
+- **Challenges & solutions:** <...>
+---
+
+
+## Resources
+ 
+### References
+ 
+- [Open Trivia Database — API documentation](https://opentdb.com/api_config.php)
+- [Docker documentation](https://docs.docker.com/)
+- [Podman documentation](https://docs.podman.io/)
+- <framework docs>
+- <articles / tutorials>
