@@ -12,3 +12,37 @@
 - make logs         📜 follow all logs
 - make logs-dev     📜 follow all  dev logs
 # DATABASE SCHEMA - diagramme du schéma 
+
+
+
+
+*This project has been created as part of the 42 curriculum by rafeger, thhuynh, jodde, lzannis, ankim .*
+ 
+# <Project Name> — ft_transcendence
+ 
+> One-line pitch: e.g. *A real-time multiplayer quiz web application powered by the Open Trivia Database.*
+ 
+---
+ 
+## Table of Contents
+ 
+1. [Description](#description)
+2. [Instructions](#instructions)
+3. [Team Information](#team-information)
+4. [Project Management](#project-management)
+5. [Technical Stack](#technical-stack)
+6. [Database Schema](#database-schema)
+7. [Features List](#features-list)
+8. [Modules](#modules)
+9. [Individual Contributions](#individual-contributions)
+10. [Resources](#resources)
+11. [License & Credits](#license--credits)
+---
+ 
+## Description
+ 
+### Overview
+ 
+ 
+**<Project Name>** is a web-based quiz platform built for the ft_transcendence project at 42 Paris.
+Players can <...>. Questions are sourced from the [Open Trivia Database (OpenTDB)](https://opentdb.com/).
