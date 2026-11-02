@@ -1,21 +1,3 @@
-🧠 Transcendance — available commands
-- make              🚀 build and start the project
-- make dev          🚀 build and start the project in dev mode
-- make down$        🛑 stop containers (keep data)
-- make down-dev     🛑 stop containers dev (keep data)
-- make fclean       🧹 remove containers, images and volumes
-- make fclean-dev   🧹 remove dev containers, images and volumes
-- make re           🔄 fclean + make
-- make re-dev       🔄 fclean-dev + make dev
-- make debug        🔍 status + last logs of each service
-- make debug-dev    🔍 status + last logs of each service
-- make logs         📜 follow all logs
-- make logs-dev     📜 follow all  dev logs
-# DATABASE SCHEMA - diagramme du schéma 
-
-
-
-
 *This project has been created as part of the 42 curriculum by rafeger, thhuynh, jodde, lzannis, ankim .*
  
 # <Project Name> — ft_transcendence
@@ -82,4 +64,48 @@ cp .env.example .env
 | `<OTHER_VAR>` | <...> | <...> |
  
 > ⚠️ Never commit the `.env` file. Only `.env.example` is versioned.
+ 
+### Installation & Run
+ 
+```bash
+# 1. Clone the repository
+git clone git@github.com:rafeger/Transcendance.git
+cd Transcendance
+
+lister la suite des infos
+ 
+
+
+ # 4. Open the app
+# https://localhost:<port>
+```
+
+
+### Useful commands
+
+- make              🚀 build and start the project
+- make dev          🚀 build and start the project in dev mode
+- make down$        🛑 stop containers (keep data)
+- make down-dev     🛑 stop containers dev (keep data)
+- make fclean       🧹 remove containers, images and volumes
+- make fclean-dev   🧹 remove dev containers, images and volumes
+- make re           🔄 fclean + make
+- make re-dev       🔄 fclean-dev + make dev
+- make debug        🔍 status + last logs of each service
+- make debug-dev    🔍 status + last logs of each service
+- make logs         📜 follow all logs
+- make logs-dev     📜 follow all  dev logs
+
+
+## Team Information
+ 
+| Login | Role(s) | Responsibilities |
+|-------|---------|------------------|
+| rafeger | <PO / PM / Tech Lead / Dev> | <...> |
+| <login2> | <role> | <...> |
+| <login3> | <role> | <...> |
+| <login4> | <role> | <...> |
+| <login5> | <role> | <...> |
+ 
+---
  
