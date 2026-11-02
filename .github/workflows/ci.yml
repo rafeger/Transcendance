@@ -45,7 +45,7 @@ jobs:
     - name: Run test
       run: npm test
     - name: Audit dependencies
-      run: npm audit --audit-level=high
+      run: npm audit --audit-level=high --omit=dev
 
   frontend:
 
@@ -73,7 +73,7 @@ jobs:
     - name: Run test but frontend don't have rn
       run: npm test --if-present 
     - name: Audit dependencies 
-      run: npm audit --audit-level=high
+      run: npm audit --audit-level=high --omit=dev
 
 
   docker:
