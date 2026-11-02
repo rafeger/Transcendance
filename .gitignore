@@ -1,5 +1,21 @@
+# Dépendances et builds
 frontend/node_modules/
-frontend/dist
-backend/node_modules/
+frontend/dist/
+build/
+coverage/
+
+# Secrets : jamais dans Git
 .env
-/src/generated/prisma
+*.env
+!.env.example
+secrets/
+*.pem
+*.key
+*.crt
+
+# Logs, temporaires, système
+*.log
+*.tmp
+*.swp
+.DS_Store
+.idea/
