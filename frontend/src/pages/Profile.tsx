@@ -40,6 +40,7 @@ function Profile() {
 
                     <section className="mt-8">
                         <h1 className="text-2xl font-semibold border-b border-white/20">Informations</h1>
+                            <p className="text-xl mt-8">First Name</p>
                     </section>
 
                 </section>
