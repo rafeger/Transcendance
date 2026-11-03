@@ -26,11 +26,14 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
 
-  --color-primary: #3b82f6;        /* blue-500 */
-  --color-primary-hover: #60a5fa;  /* blue-400 */
+  /* blanc sur primary : 5.17:1, sur primary-hover : 6.7:1 (WCAG AA >= 4.5) */
+  --color-primary: #2563eb;        /* blue-600 */
+  --color-primary-hover: #1d4ed8;  /* blue-700 */
   --color-success: #34d399;
   --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+  /* blanc sur danger : 4.83:1, sur danger-hover : 6.47:1 */
+  --color-danger: #dc2626;         /* red-600 */
+  --color-danger-hover: #b91c1c;   /* red-700 */
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
