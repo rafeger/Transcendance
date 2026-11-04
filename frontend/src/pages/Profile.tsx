@@ -142,8 +142,9 @@ function Profile() {
 
                         <div>
                             <label className="block mb-2">Date of Birth</label>
-                            <input name="dateBirth" value={tempProfile.dateBirth}
+                            <input type="date" name="dateBirth" value={tempProfile.dateBirth}
                             onChange={handleChange} placeholder="Your date of birth"
+                            max={new Date().toISOString().split("T")[0]}
                             className="rounded-lg border border-white/20 bg-slate-800 p-1" />
                         </div>
 
