@@ -14,7 +14,7 @@ if (cluster.isPrimary) {
     // create 1 worker per available core
     for (let i = 0; i < numCPUs; i++) {
         cluster.fork({
-            PORT: 3000 + 10
+            PORT: 3000 + i
         });
     }
     
@@ -36,7 +36,7 @@ else {
             client_offset TEXT UNIQUE,
             content TEXT
             );
-            `);
+        `);
             
     const app = express();
     const server = createServer(app);
@@ -102,6 +102,6 @@ else {
     const port = process.env.PORT;
 
     server.listen(port, () => {
-        console.log('server running at http://localhost:${port}');
+        console.log(`server running at http://localhost:${port}`);
     });
 }
