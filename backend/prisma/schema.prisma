@@ -2,6 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
+// name  Type  @attributes
 
 generator client {
   provider = "prisma-client"
@@ -10,11 +11,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-}
-
-enum QuestionType {
-  QCM
-  TRUE_FALSE
 }
 
 enum Difficulty {
@@ -30,7 +26,7 @@ enum FriendshipStatus {
 }
 
 enum MatchStatus {
-  WAITING 
+  WAITING
   IN_PROGRESS
   FINISHED
   CANCELLED
@@ -42,120 +38,64 @@ enum MatchMode {
   MULTIPLAYER
 }
 
-// USER 
-
-// model User {
-//  id        Int      @id @default(autoincrement())
-//  firstName String
-//  lastName  String
-//  username  String   @unique
-//  email     String   @unique
-//  createdAt DateTime @default(now())
-//  updatedAt DateTime @updatedAt
-// }
-
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  username     String   @unique
-  passwordHash String  
-  avatarUrl    String?      // ? MEANS optional (NULL OK)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relation fields for let Prisma navigate: user.matchPlayers, user.sentFriendRequests, etc
-  matchPlayers           MatchPlayer[]
-  sentFriendRequests     Friendship[] @relation("FriendshipRequester")
-  receivedFriendRequests Friendship[] @relation("FriendshipAddressee")
+  id        Int       @id @default(autoincrement())
+  userName  String    @unique
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  attempts  Attempt[]
 }
 
-//  FRIENDSHIP — a link between two users ^
-//  Two FKs pointing to the SAME table (User), 
-// so each relation needs a name - who is addressee et who is requesting?
+model Quiz {
+  id         Int        @id @default(autoincrement())
+  categoryId Int // real category : which cateory 
+  category   Category   @relation(fields: [categoryId], references: [id]) // quiz.category.type
+  title      String
+  difficulty Difficulty @default(EASY)
+  questions  Question[]
+  attemps    Attempt[]
 
-model Friendship {
-  id          Int              @id @default(autoincrement())
-  requesterId Int
-  addresseeId Int
-  status      FriendshipStatus @default(PENDING)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-
-  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
-  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
-
-  @@unique([requesterId, addresseeId]) // constraint: one row per pair of friends
-  @@index([addresseeId, status]) // "show my pending requests" query
+  @@index([categoryId])
 }
-
-//  CATEGORY
 
 model Category {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique // "Science", "History"...
-  slug      String     @unique // "science", "history" — for URLs / API -- need to check 
-  questions Question[]
-  matches   Match[]
+  id      Int    @id @default(autoincrement())
+  type    String @default("N/A")
+  quizzes Quiz[]
 }
-
-//  QUESTION
 
 model Question {
-  id            Int          @id @default(autoincrement())
-  text          String
-  type          QuestionType
-  difficulty    Difficulty
-  correctAnswer String
-  wrongAnswers  String[]     // Postgres array. EXAMPLE WOULD BE LIKE : for QCM: 3 items. TRUE_FALSE: 1 item.
-  hash          String       @unique // sha256 of normalized content -> dedup on import
-  categoryId    Int
-  createdAt     DateTime     @default(now())
-
-  // Restrict: you can't delete a category that still has questions // do we want this though?
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-
-  @@index([categoryId, difficulty])
-  @@index([type])
-}
-
-//  MATCH — one game session
-
-model Match {
-  id         Int         @id @default(autoincrement())
-  mode       MatchMode
-  status     MatchStatus @default(WAITING)
-  categoryId Int?        // optional: NULL = mixed categories
-  createdAt  DateTime    @default(now())
-  startedAt  DateTime?
-  endedAt    DateTime?
-
-  category Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  players  MatchPlayer[]
-
-  // S4: tournamentId Int? + relation to Tournament
-
-  @@index([status])
-}
-
-//  MATCH PLAYER — join table between User and Match (soo many users per match, many matches per user)
-// carries extra data like score, rank
-
-model MatchPlayer {
   id       Int      @id @default(autoincrement())
-  matchId  Int
-  userId   Int
-  score    Int      @default(0)
-  rank     Int?     // filled when the match finishes
-  joinedAt DateTime @default(now())
+  text     String   @default("The Answer to the Ultimate Question of Life, the Universe, and Everything")
+  position Int // so questions have an order - do we need?
+  quizId   Int
+  quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers  Answer[]
 
-  match Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([matchId, userId]) // a user can't join the same match multiple fois
-  @@index([userId]) // to match history of user X but need to check 
+  @@unique([quizId, position]) // position do we need? 
+  @@index([quizId])
 }
 
-model Question {
-  id       Int    @id @default(autoincrement())
-  question String @default("The Answer to the Ultimate Question of Life, the Universe, and Everything")
+model Answer {
+  id         Int      @id @default(autoincrement())
+  text       String
+  isCorrect  Boolean  @default(false)
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model Attempt {
+  id         Int       @id @default(autoincrement())
+  score      Int       @default(0)
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId     Int
+  quiz       Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([quizId])
 }

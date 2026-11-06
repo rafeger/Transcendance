@@ -9,7 +9,38 @@
 * 🟢 You can import this file directly.
 */
 
+export const Difficulty = {
+  EASY: 'EASY',
+  MEDIUM: 'MEDIUM',
+  HARD: 'HARD'
+} as const
+
+export type Difficulty = (typeof Difficulty)[keyof typeof Difficulty]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const FriendshipStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  BLOCKED: 'BLOCKED'
+} as const
+
+export type FriendshipStatus = (typeof FriendshipStatus)[keyof typeof FriendshipStatus]
+
+
+export const MatchStatus = {
+  WAITING: 'WAITING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  FINISHED: 'FINISHED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type MatchStatus = (typeof MatchStatus)[keyof typeof MatchStatus]
+
+
+export const MatchMode = {
+  SOLO: 'SOLO',
+  DUEL: 'DUEL',
+  MULTIPLAYER: 'MULTIPLAYER'
+} as const
+
+export type MatchMode = (typeof MatchMode)[keyof typeof MatchMode]
