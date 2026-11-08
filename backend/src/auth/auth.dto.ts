@@ -15,7 +15,7 @@ export class RegisterDto {
   password!: string;
 }
 
-export class SignInDto {
+export class LoginDto {
   @IsEmail()
   @MaxLength(254)
   email!: string;

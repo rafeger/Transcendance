@@ -1,12 +1,15 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { RegisterDto } from './auth.dto.js';
+import { LoginDto } from './auth.dto.js';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService) {}
+  private readonly dummyHash = argon2.hash('fauxpassHash+pour+simuler_lememetempsdereponse', { type: argon2.argon2id });
 
   async register(dto: RegisterDto) {
     const passHash = await argon2.hash(dto.password, { type: argon2.argon2id });
@@ -21,6 +24,18 @@ export class AuthService {
       }
       throw e;
     }
+  }
+  async login(dto: LoginDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email.trim().toLowerCase() },
+    });
+    const hash = user?.passHash ?? (await this.dummyHash);
+    const isPasswordValid = await argon2.verify(hash, dto.password);
+    if (!user || !isPasswordValid) {
+        throw new UnauthorizedException('Invalid credentials');
+    }
+   // return { id: user.id, email: user.email, userName: user.userName, role: user.role };
+   return this.jwt.signAsync({ sub: user.id, role: user.role });
   }
 }
 
