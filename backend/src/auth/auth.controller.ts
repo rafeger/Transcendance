@@ -1,10 +1,12 @@
 
-import { Body, Controller, HttpCode, Post, Res } from '@nestjs/common'; 
-import type { Response } from 'express'; //type veut dire qu'on importe seulement le type, pour TypeScript. Le paquet @types/express est déjà dans tes devDependencies.
-import { RegisterDto } from './auth.dto.js';
-import { LoginDto } from './auth.dto.js';                 
+import { Body, Controller, Get, HttpCode, Post, Req, Res } from '@nestjs/common'; 
+import type { Request, Response } from 'express'; //type veut dire qu'on importe seulement le type, pour TypeScript. Le paquet @types/express est déjà dans tes devDependencies.
+import { RegisterDto, LoginDto } from './auth.dto.js';                 
 import { AuthService } from './auth.service.js'; 
 import { Public } from './public.decorator.js';
+import type { JwtPayload } from './jwt-auth.guard.js';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { UseGuards } from '@nestjs/common';   
 
 @Controller('auth')                 
 export class AuthController {  
@@ -12,12 +14,14 @@ export class AuthController {
 
   @Post('register')                 
   @Public()
+  @UseGuards(ThrottlerGuard)
   register(@Body() body: RegisterDto) {     
     return this.authService.register(body); 
   }
   @Post('login')
   @HttpCode(200)
   @Public()
+  @UseGuards(ThrottlerGuard)
   async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) { //on récupère l'objet réponse d'Express pour y poser le cookie. passthrough: true est important : sans lui, NestJS considère que tu gères toute la réponse, et ton return serait ignoré. La requête resterait alors sans réponse.
     const token = await this.authService.login(body);
     res.cookie('access_token', token, { //ajoute à la réponse un en-tête Set-Cookie. Le navigateur le stocke, puis le renvoie tout seul à chaque requête suivante.
@@ -29,4 +33,15 @@ export class AuthController {
     });
     return { message: 'Logged in' }; //le jeton ne figure plus dans le corps. Il n'existe que dans le cookie, inaccessible au JavaScript.
     }
+    @Get('me')
+        me(@Req() req: Request & { user: JwtPayload }) {
+    return this.authService.me(req.user.sub);
+    }
+    @Post('logout')
+    @Public()
+    @HttpCode(204)
+    logout(@Res({ passthrough: true }) res: Response) {
+        res.clearCookie('access_token', { httpOnly: true, secure: true, sameSite: 'lax', path: '/' });
+    }
+
 }

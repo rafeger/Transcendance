@@ -37,5 +37,16 @@ export class AuthService {
    // return { id: user.id, email: user.email, userName: user.userName, role: user.role };
    return this.jwt.signAsync({ sub: user.id, role: user.role });
   }
+    async me(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, userName: true, role: true, createdAt: true },
+    });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+
 }
 

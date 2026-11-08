@@ -5,6 +5,7 @@ import { AuthService } from './auth.service.js';
 import { AuthController } from './auth.controller.js';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './jwt-auth.guard.js';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   providers: [AuthService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
@@ -18,6 +19,7 @@ import { JwtAuthGuard } from './jwt-auth.guard.js';
       verifyOptions: { algorithms: ['HS256'] },
     }),
   }),
+  ThrottlerModule.forRoot([{ ttl: 60_000, limit: 5 }]),
 ],
 })
 export class AuthModule {}
