@@ -3,9 +3,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service.js';
 import { AuthController } from './auth.controller.js';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './jwt-auth.guard.js';
 
 @Module({
-  providers: [AuthService,],
+  providers: [AuthService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
   controllers: [AuthController],
   imports: [
   JwtModule.registerAsync({

@@ -4,17 +4,20 @@ import type { Response } from 'express'; //type veut dire qu'on importe seulemen
 import { RegisterDto } from './auth.dto.js';
 import { LoginDto } from './auth.dto.js';                 
 import { AuthService } from './auth.service.js'; 
+import { Public } from './public.decorator.js';
 
 @Controller('auth')                 
 export class AuthController {  
   constructor(private readonly authService: AuthService) {}  
 
   @Post('register')                 
+  @Public()
   register(@Body() body: RegisterDto) {     
     return this.authService.register(body); 
   }
   @Post('login')
   @HttpCode(200)
+  @Public()
   async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) { //on récupère l'objet réponse d'Express pour y poser le cookie. passthrough: true est important : sans lui, NestJS considère que tu gères toute la réponse, et ton return serait ignoré. La requête resterait alors sans réponse.
     const token = await this.authService.login(body);
     res.cookie('access_token', token, { //ajoute à la réponse un en-tête Set-Cookie. Le navigateur le stocke, puis le renvoie tout seul à chaque requête suivante.
