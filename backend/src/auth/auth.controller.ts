@@ -22,16 +22,16 @@ export class AuthController {
   @HttpCode(200)
   @Public()
   @UseGuards(ThrottlerGuard)
-  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) { //on récupère l'objet réponse d'Express pour y poser le cookie. passthrough: true est important : sans lui, NestJS considère que tu gères toute la réponse, et ton return serait ignoré. La requête resterait alors sans réponse.
+  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) { 
     const token = await this.authService.login(body);
-    res.cookie('access_token', token, { //ajoute à la réponse un en-tête Set-Cookie. Le navigateur le stocke, puis le renvoie tout seul à chaque requête suivante.
-      httpOnly: true, //le JavaScript de la page ne peut pas lire le cookie. C'est la protection contre le vol par XSS.
-      secure: true, //le cookie ne voyage qu'en HTTPS.
-      sameSite: 'lax', //le cookie n'est pas envoyé par les requêtes POST venues d'autres sites. C'est la protection contre le CSRF.
-      maxAge: 60 * 60 * 1000, //en millisecondes. Ici, 1 heure, la même durée que le JWT. Sinon, le navigateur garderait un cookie contenant un jeton déjà expiré.
-      path: '/', //le cookie est envoyé pour toutes les adresses du site.
+    res.cookie('access_token', token, {
+      httpOnly: true, 
+      secure: true, 
+      sameSite: 'lax', 
+      maxAge: 60 * 60 * 1000, 
+      path: '/', 
     });
-    return { message: 'Logged in' }; //le jeton ne figure plus dans le corps. Il n'existe que dans le cookie, inaccessible au JavaScript.
+    return { message: 'Logged in' }; 
     }
     @Get('me')
         me(@Req() req: Request & { user: JwtPayload }) {
