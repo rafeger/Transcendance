@@ -1,5 +1,6 @@
-import { useId, type ComponentProps } from 'react';
-import { CircleAlert } from 'lucide-react';
+import type { ComponentProps } from 'react';
+import { Field } from './Field';
+import { controlStyles, useField } from './useField';
 
 interface InputProps extends ComponentProps<'input'> {
   /** Texte du <label>, obligatoire : un champ doit toujours avoir un nom. */
@@ -16,71 +17,27 @@ export function Input({
   error,
   id,
   required,
-  disabled,
-  className = '',
-  'aria-describedby': describedByProp,
+  className,
+  'aria-describedby': describedBy,
   ...props
 }: InputProps) {
-  // useId génère un identifiant unique et stable, ex. « _r_1_ ».
-  const generatedId = useId();
-  const inputId = id ?? generatedId;
-  const hintId = `${inputId}-hint`;
-  const errorId = `${inputId}-error`;
-
-  // Liste des éléments qui décrivent le champ, séparés par des espaces.
-  const describedBy =
-    [describedByProp, hint && hintId, error && errorId]
-      .filter(Boolean)
-      .join(' ') || undefined;
-
-  const borderColor = error ? 'border-error' : 'border-muted';
-  const outlineColor = error
-    ? 'focus-visible:outline-error'
-    : 'focus-visible:outline-primary';
+  const field = useField({ id, hint, error, describedBy });
 
   return (
-    <div className={`flex flex-col gap-1.5 ${className}`}>
-      <label htmlFor={inputId} className="text-sm font-medium text-fg">
-        {label}
-        {required && (
-          <span aria-hidden="true" className="text-error">
-            {' '}
-            *
-          </span>
-        )}
-      </label>
-
+    <Field
+      field={field}
+      label={label}
+      hint={hint}
+      error={error}
+      required={required}
+      className={className}
+    >
       <input
         {...props}
-        id={inputId}
+        {...field.controlProps}
         required={required}
-        disabled={disabled}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy}
-        className={
-          `h-10 rounded-control border bg-surface px-3 text-sm text-fg ` +
-          `placeholder:text-muted transition-colors ` +
-          `focus-visible:outline-2 focus-visible:outline-offset-2 ` +
-          `disabled:cursor-not-allowed disabled:opacity-50 ` +
-          `${borderColor} ${outlineColor}`
-        }
+        className={controlStyles(!!error)}
       />
-
-      {hint && (
-        <p id={hintId} className="text-sm text-muted">
-          {hint}
-        </p>
-      )}
-
-      {error && (
-        <p
-          id={errorId}
-          className="flex items-center gap-1.5 text-sm text-error"
-        >
-          <CircleAlert className="size-4 shrink-0" aria-hidden="true" />
-          {error}
-        </p>
-      )}
-    </div>
+    </Field>
   );
 }

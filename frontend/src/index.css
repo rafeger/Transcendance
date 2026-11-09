@@ -4,22 +4,23 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  color-scheme: light; /* contrôles natifs (listes, barres de défilement) en clair */
   --bg: #f8fafc;
   --surface: #ffffff;
   --fg: #0f172a;
   --muted: #64748b;
   --border: #e2e8f0;
-  --error: #f87171; /* red-400 : 7.29:1 sur bg, 5.78:1 sur surface */
+  --error: #dc2626; /* red-600 : 4.62:1 sur bg, 4.83:1 sur surface */
 }
 
 .dark {
+  color-scheme: dark; /* … et en sombre */
   --bg: #020617; /* slate-950 */
   --surface: #1e1b4b; /* indigo-950 */
   --fg: #f8fafc;
   --muted: #94a3b8; /* slate-400 */
   --border: rgb(255 255 255 / 0.2);
   --error: #f87171; /* red-400 : 7.29:1 sur bg, 5.78:1 sur surface */
-  
 }
 
 @theme inline {
