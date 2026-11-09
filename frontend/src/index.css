@@ -9,6 +9,7 @@
   --fg: #0f172a;
   --muted: #64748b;
   --border: #e2e8f0;
+  --error: #f87171; /* red-400 : 7.29:1 sur bg, 5.78:1 sur surface */
 }
 
 .dark {
@@ -17,6 +18,8 @@
   --fg: #f8fafc;
   --muted: #94a3b8; /* slate-400 */
   --border: rgb(255 255 255 / 0.2);
+  --error: #f87171; /* red-400 : 7.29:1 sur bg, 5.78:1 sur surface */
+  
 }
 
 @theme inline {
@@ -25,6 +28,7 @@
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-error: var(--error); /* texte/bordure d'erreur, s'adapte au mode */
 
   /* blanc sur primary : 5.17:1, sur primary-hover : 6.7:1 (WCAG AA >= 4.5) */
   --color-primary: #2563eb; /* blue-600 */

@@ -1,7 +1,7 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { ArrowRight, Trash2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button, buttonStyles, Spinner } from '../../components/ui';
+import { Button, buttonStyles, Spinner, Input } from '../../components/ui';
 import { useTheme } from '../../contexts/ThemeContext';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -25,6 +25,17 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 function DevUi() {
   const { isDark, toggleTheme } = useTheme();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string>();
+
+  function handleDemoSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!email.includes('@')) {
+      setEmailError('Adresse email invalide');
+      return;
+    }
+    setEmailError(undefined);
+  }
 
   function fakeSave() {
     setLoading(true);
@@ -40,6 +51,43 @@ function DevUi() {
             Mode {isDark ? 'clair' : 'sombre'}
           </Button>
         </header>
+
+        <Section title="Input">
+          <div className="grid max-w-md gap-6">
+            <Input label="Pseudo" placeholder="ex. raph42" />
+            <Input
+              label="Mot de passe"
+              type="password"
+              hint="8 caractères minimum"
+              required
+            />
+            <Input
+              label="Email"
+              defaultValue="raph@"
+              error="Adresse email invalide"
+            />
+            <Input label="Désactivé" defaultValue="lecture seule" disabled />
+          </div>
+
+          <h3 className="pt-4 font-semibold">Démo : validation à l'envoi</h3>
+          <form
+            noValidate
+            onSubmit={handleDemoSubmit}
+            className="flex max-w-md flex-col gap-4"
+          >
+            <Input
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              error={emailError}
+            />
+            <Button type="submit" className="self-start">
+              Valider
+            </Button>
+          </form>
+        </Section>
+
 
         <Section title="Spinner">
           <Row label="Tailles">
