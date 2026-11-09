@@ -2,6 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // Get a free hosted Postgres database in seconds: `npx create-db`
+// name  Type  @attributes
 
 generator client {
   provider = "prisma-client"
@@ -12,7 +13,90 @@ datasource db {
   provider = "postgresql"
 }
 
-model Question { 
-  id Int @id @default(autoincrement())      
-  question String  @default("The Answer to the Ultimate Question of Life, the Universe, and Everything")
-} 
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+enum MatchStatus {
+  WAITING
+  IN_PROGRESS
+  FINISHED
+  CANCELLED
+}
+
+enum MatchMode {
+  SOLO
+  DUEL
+  MULTIPLAYER
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  userName  String    @unique
+  email     String    @unique
+  createdAt DateTime  @default(now())
+  passHash  String    @unique
+  attempts  Attempt[]
+}
+
+model Quiz {
+  id         Int        @id @default(autoincrement())
+  categoryId Int // real category : which cateory 
+  category   Category   @relation(fields: [categoryId], references: [id]) // quiz.category.type
+  title      String
+  difficulty Difficulty @default(EASY)
+  questions  Question[]
+  attempts    Attempt[]
+
+  @@index([categoryId])
+}
+
+model Category {
+  id      Int    @id @default(autoincrement())
+  type    String @default("N/A")
+  quizzes Quiz[]
+}
+
+model Question {
+  id       Int      @id @default(autoincrement())
+  text     String   @default("The Answer to the Ultimate Question of Life, the Universe, and Everything")
+  position Int // so questions have an order - do we need?
+  quizId   Int
+  quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers  Answer[]
+
+  @@unique([quizId, position]) // position do we need? 
+  @@index([quizId])
+}
+
+model Answer {
+  id         Int      @id @default(autoincrement())
+  text       String
+  isCorrect  Boolean  @default(false)
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
+}
+
+model Attempt {
+  id         Int       @id @default(autoincrement())
+  score      Int       @default(0)
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId     Int
+  quiz       Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([quizId])
+}
