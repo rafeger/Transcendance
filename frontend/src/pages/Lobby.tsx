@@ -20,7 +20,7 @@ function Lobby() {
                 <p className="text-center mt-4 text-slate-400">Join your friends be ready to play!</p>
             </div>
 
-            <section className="mt-6 rounded-2xl border border-white/10 bg-indigo-900 p-2">
+            <section className="mt-6 rounded-2xl border border-white/10 bg-indigo-900 p-2 w-100 mx-auto">
                 <h2 className="text-2xl font-semibold text-center">Join a room</h2>
 
                 <form onSubmit={handleJoinLobby} className="mt-6 space-y-4">

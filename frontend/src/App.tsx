@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { socket } from './lib/socket';
@@ -17,6 +18,10 @@ interface ChatMessage {
   content:  string;
   at:       string;
 }
+// Catalogue du design system : uniquement en développement (absent du build de prod).
+const DevUi = import.meta.env.DEV
+  ? lazy(() => import("./pages/dev/DevUi"))
+  : null;
 
 function App() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -58,6 +63,16 @@ function App() {
           <Route path="/friends" element={<Friends />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<CGU />} />
+          {DevUi && (
+            <Route
+              path="/dev/ui"
+              element={
+                <Suspense fallback={null}>
+                  <DevUi />
+                </Suspense>
+              }
+            />
+          )}
           <Route path="*" element={<Error404 />} />
         </Route>
       </Routes>
