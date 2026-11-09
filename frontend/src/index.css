@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* dark: s'active avec la classe .dark posée par ThemeContext */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -12,10 +12,10 @@
 }
 
 .dark {
-  --bg: #020617;       /* slate-950 */
-  --surface: #1e1b4b;  /* indigo-950 */
+  --bg: #020617; /* slate-950 */
+  --surface: #1e1b4b; /* indigo-950 */
   --fg: #f8fafc;
-  --muted: #94a3b8;    /* slate-400 */
+  --muted: #94a3b8; /* slate-400 */
   --border: rgb(255 255 255 / 0.2);
 }
 
@@ -27,16 +27,16 @@
   --color-border: var(--border);
 
   /* blanc sur primary : 5.17:1, sur primary-hover : 6.7:1 (WCAG AA >= 4.5) */
-  --color-primary: #2563eb;        /* blue-600 */
-  --color-primary-hover: #1d4ed8;  /* blue-700 */
+  --color-primary: #2563eb; /* blue-600 */
+  --color-primary-hover: #1d4ed8; /* blue-700 */
   --color-success: #34d399;
   --color-warning: #f59e0b;
   /* blanc sur danger : 4.83:1, sur danger-hover : 6.47:1 */
-  --color-danger: #dc2626;         /* red-600 */
-  --color-danger-hover: #b91c1c;   /* red-700 */
+  --color-danger: #dc2626; /* red-600 */
+  --color-danger-hover: #b91c1c; /* red-700 */
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-  --radius-control: 0.75rem;  /* boutons, inputs */
+  --radius-control: 0.75rem; /* boutons, inputs */
   --radius-card: 1rem;
 }

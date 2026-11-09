@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { Spinner } from './Spinner';
 import {
   buttonStyles,
   type ButtonSize,
@@ -30,9 +30,7 @@ export function Button({
       aria-busy={loading || undefined}
       className={buttonStyles({ variant, size, className })}
     >
-      {loading && (
-        <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-      )}
+      {loading && <Spinner size="sm" decorative />}
       {children}
     </button>
   );

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { ArrowRight, Trash2, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button, buttonStyles } from '../../components/ui';
+import { Button, buttonStyles, Spinner } from '../../components/ui';
 import { useTheme } from '../../contexts/ThemeContext';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -40,6 +40,29 @@ function DevUi() {
             Mode {isDark ? 'clair' : 'sombre'}
           </Button>
         </header>
+
+        <Section title="Spinner">
+          <Row label="Tailles">
+            <Spinner size="sm" />
+            <Spinner size="md" />
+            <Spinner size="lg" />
+          </Row>
+          <Row label="Couleur">
+            <Spinner className="text-primary" />
+            <Spinner className="text-muted" />
+            <Spinner className="text-danger" />
+          </Row>
+          <Row label="Avec texte">
+            <Spinner
+              showLabel
+              label="Chargement des amis…"
+              className="text-muted"
+            />
+          </Row>
+          <Row label="Dans Button">
+            <Button loading>Envoi…</Button>
+          </Row>
+        </Section>
 
         <Section title="Button">
           <Row label="Variantes">

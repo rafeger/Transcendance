@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { FaGithub, FaDiscord, FaInstagram } from "react-icons/fa";
+import { Link } from 'react-router-dom';
+import { FaGithub, FaDiscord, FaInstagram } from 'react-icons/fa';
 
 function Footer() {
   return (
@@ -17,34 +17,46 @@ function Footer() {
         </p>
 
         <div className="flex items-center gap-5">
-          <a href="https://github.com/" target="_blank" rel="noreferrer" aria-label="Github"
-          className="text-slate-400 transition hover:-translate-y-1 hover:text-white">
+          <a
+            href="https://github.com/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Github"
+            className="text-slate-400 transition hover:-translate-y-1 hover:text-white"
+          >
             <FaGithub size={24} />
           </a>
 
-          <a href="https://instagram.com/" target="_blank" rel="noreferrer" aria-label="Github"
-          className="text-slate-400 transition hover:-translate-y-1 hover:text-white">
+          <a
+            href="https://instagram.com/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Github"
+            className="text-slate-400 transition hover:-translate-y-1 hover:text-white"
+          >
             <FaInstagram size={24} />
           </a>
 
-          <a href="https://discord.com/" target="_blank" rel="noreferrer" aria-label="Github"
-          className="text-slate-400 transition hover:-translate-y-1 hover:text-white">
+          <a
+            href="https://discord.com/"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Github"
+            className="text-slate-400 transition hover:-translate-y-1 hover:text-white"
+          >
             <FaDiscord size={24} />
           </a>
         </div>
 
-        <nav aria-label="Liens légaux" className="flex flex-wrap justify-center gap-5 text-sm">
-          <Link
-            to="/privacy"
-            className="transition hover:text-white"
-          >
+        <nav
+          aria-label="Liens légaux"
+          className="flex flex-wrap justify-center gap-5 text-sm"
+        >
+          <Link to="/privacy" className="transition hover:text-white">
             Politique de confidentialité
           </Link>
 
-          <Link
-            to="/terms"
-            className="transition hover:text-white"
-          >
+          <Link to="/terms" className="transition hover:text-white">
             CGU
           </Link>
         </nav>
