@@ -7,7 +7,7 @@ type CreateRoomProps = {
     ) => void;
 };
 
-function createRoomForm({ onCreate }: CreateRoomProps) {
+function CreateRoomForm({ onCreate }: CreateRoomProps) {
     const [name, setName] = useState("");
     const [maxPlayers, setMaxPlayers] = useState(4);
 
@@ -16,7 +16,7 @@ function createRoomForm({ onCreate }: CreateRoomProps) {
 
         if (!name.trim()) {
             alert("Please enter a name.");
-            return ;
+            return;
         }
         onCreate(name.trim(), maxPlayers);
     }
@@ -26,8 +26,28 @@ function createRoomForm({ onCreate }: CreateRoomProps) {
             <h2 className="text-2xl font-bold">Create a Room</h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-                <input ></input>
+                <input 
+                    type="text" 
+                    value={name} 
+                    placeholder="Room Name"
+                    onChange={(event) => setName(event.target.value)}
+                    className="mt-6 w-full rounded-lg border border-white/20 bg-indigo-950 px-3 py-2" 
+                />
+
+                <select value={maxPlayers}
+                onChange={(event) => setMaxPlayers(Number(event.target.value))}
+                className="rounded-lg border border-white/20 bg-indigo-950 px-3 py-2">
+                    <option value={2}>2 players</option>
+                    <option value={4}>4 players</option>
+                    <option value={6}>6 players</option>
+                    <option value={8}>8 players</option>
+                </select>
+
+                <button type="submit" className="w-full rounded-lg bg-green-600 py-2
+                font-semibold hover:bg-green-500">Create Room</button>
             </form>
         </section>
     );
 }
+
+export default CreateRoomForm;
