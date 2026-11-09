@@ -2,6 +2,7 @@
 
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service.js';
+import { Public } from './auth/public.decorator.js';
 // import { IsEmail, IsNotEmpty } from 'class-validator';
 
 // export class CreateUserDto {
@@ -22,6 +23,7 @@ export class AppController {
   }
 
   @Get('ping')
+  @Public()
   getPing(): string {
     return this.appService.getPing();
   }
