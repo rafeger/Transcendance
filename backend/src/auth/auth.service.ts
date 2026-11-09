@@ -15,7 +15,7 @@ export class AuthService {
     try {
       return await this.prisma.user.create({
         data: { email: dto.email.trim().toLowerCase(), userName: dto.userName, passHash },
-        select: { id: true, email: true, userName: true, role: true, createdAt: true },
+        select: { id: true, email: true, userName: true, createdAt: true },
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
@@ -31,20 +31,20 @@ export class AuthService {
     const hash = user?.passHash ?? (await this.dummyHash);
     const isPasswordValid = await argon2.verify(hash, dto.password);
     if (!user || !isPasswordValid) {
-        throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
-   return this.jwt.signAsync({ sub: user.id, role: user.role });
+  return this.jwt.signAsync({ sub: user.id });
   }
+  
   async me(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, userName: true, role: true, createdAt: true },
+      select: { id: true, email: true, userName: true, createdAt: true },
     });
     if (!user) {
       throw new UnauthorizedException();
     }
     return user;
   }
-
 }
 

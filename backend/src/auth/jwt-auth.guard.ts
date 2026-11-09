@@ -4,9 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
 import { IS_PUBLIC_KEY } from './public.decorator.js';
 
-export interface JwtPayload { //JwtPayload : le type, qui décrit le contenu de ton jeton (sub et role, ce que tu as mis dans signAsync).
+export interface JwtPayload { //JwtPayload : le type, qui décrit le contenu de ton jeton 
   sub: number;
-  role: 'PLAYER' | 'ADMIN';
 }
 
 @Injectable()

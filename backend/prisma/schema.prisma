@@ -19,11 +19,6 @@ enum Difficulty {
   HARD
 }
 
-enum Role {
-  PLAYER
-  ADMIN
-}
-
 enum FriendshipStatus {
   PENDING
   ACCEPTED
@@ -49,7 +44,6 @@ model User {
   email     String    @unique
   createdAt DateTime  @default(now())
   passHash  String
-  role      Role      @default(PLAYER)
   attempts  Attempt[]
 }
 
