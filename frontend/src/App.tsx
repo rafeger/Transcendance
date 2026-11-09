@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { socket } from './lib/socket';
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
 import Auth from "./pages/Auth";
@@ -10,7 +12,40 @@ import Privacy from "./pages/Privacy";
 import CGU from "./pages/CGU";
 import Error404 from "./pages/Error404";
 
+interface ChatMessage {
+  from:     string;
+  content:  string;
+  at:       string;
+}
+
 function App() {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  // check connection state + log debug
+  useEffect(() => {
+    socket.on('connect', () => 
+    console.log('connected WS, id=', socket.id));
+    socket.on('disconnect', (reason) =>
+    console.log('disconnected WS :', (reason)));
+    socket.on('connect_error', (err) =>
+    console.log('refused WS :', err.message));
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('connect_error');
+    };
+  }, []);
+
+  //messages
+  useEffect(() => {
+  const onMessage = (msg:ChatMessage) => 
+    setMessages((prev) => [...prev,msg]);
+  socket.on('chatMessage', onMessage);
+  return () => {
+    socket.off('chatMessage',onMessage);//cleanup à chaque démontage
+  };
+}, []);
+
   return (
     <BrowserRouter>
       <Routes>
