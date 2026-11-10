@@ -6,9 +6,18 @@ import {
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
-    WsResponse
+    WsResponse,
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
+import { ValidationPipe, UsePipes, Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { SocketRegistryService } from './socket-registry.services.js';
+import { ChatMessageDto } from "./chat-message.dto.js";
+
+
+export interface AuthPayload {
+    sub:    string;
+}
 
 @WebSocketGateway({
     cors: {
@@ -16,31 +25,122 @@ import { Server, Socket } from "socket.io";
         credentials: true,
     },
 })
-export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+
+@UsePipes(
+    new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+    })
+)
+export class EventsGateway 
+implements OnGatewayConnection, OnGatewayDisconnect {
     
+    private readonly logger = new Logger(EventsGateway.name);
+
     @WebSocketServer()
     server: Server;
 
-    handleConnection(client: Socket): void {
-        this.server.emit('room', client.id + ' joined') 
+    constructor (
+        private readonly JwtService: JwtService,
+        private readonly registry: SocketRegistryService,
+    ) {}
+
+    async handleConnection(client: Socket): Promise<void> {
+        const token = this.extractJwtFromCookie(client);
+        if (!token) {
+            this.logger.warn(`Connection refused (no JWT cookie) : ${client.id}`);
+        }
+        client.disconnect(true);
+        return;
+    }
+    
+    private extractJwtFromCookie(client: Socket): string | null {
+        const cookieHeader: string | undefined = 
+        client.handshake.hearders?.cookie;
+        if (!cookieHeader)
+            return null;
+
+        const cookies = Object.fromEntries(
+            cookieHeader.split(';').map((part) => {
+                const idx = part.indexOf('=');
+                return [part.slice(0, idx).trim(), part.slice(idx + 1)];
+            }),
+        );
+        return cookies[jwt] ?? null;
+    }
+    
+    let payload: AuthPayload;
+    try {
+        payload = await this.jwtService.verifyAsync<AuthPayload>(token);
+    }
+    catch {
+        this.logger.warn(`Connection refused (invalid/expired JWT) : ${client.id}`);
+        client.disconnected(true);
+        return;
     }
 
+    const userId = payload.sub;
+    client.data.userId = userId;
+
+    this.registry.add(userId, client);
+
+    this.logger.log(`Connected : user=${userId} socket=${client.id} 
+            (${this.registry.count(userId)} socket(s))`);
+
+    //this.server.emit('room', client.id + ' joined');
+
+
     handleDisconnect(client: Socket): void {
+        const userId: string | undefined = client.data?.userId;
+        if (userId) {
+            this.registry.remove(userId, client);
+            this.logger.log(`Disconnected : user =${userId} socket=${client.id} 
+                (${this.registry.count(userId)} socket(s) left))`);
+        }
+        else {
+              this.logger.log(`Socket not Authentified closed : ${client.id}`);
+        }
         this.server.emit('room', client.id + ' left')
     }
 
-    @SubscribeMessage('customName')
-    handleMessage(client: Socket, message: any): void {
-        this.server.emit('room',`[${client.id}] -> ${message}`);
+    @SubscribeMessage('chatMessage')
+    handleEvent(
+        @MessageBody() dto: ChatMessageDto,
+        @ConnectedSocket() client: Socket,
+     ): void {
+        this.logger.log(`Message from user=${client.data.userId} : "${dto.content}"`);
+        this.server.emit('chatMessage', {
+            from: client.data.userId,
+            content: dot.content,
+            at: new Date().toISOString(),
+        });
     }
 
-    @SubscribeMessage('events')
-    handleEvent(
-        @MessageBody() data: unknown,
-        //@ConnectedSocket() client: Socket,
-     ): WsResponse<unknown> {
-        // id === messageBody.id
-        const event = 'events';
-        return { event, data };
-    }
+    //@SubscribeMessage('customName')
+    //handleMessage(client: Socket, message: any): void {
+    //    this.server.emit('room',`[${client.id}] -> ${message}`);
+    //}
+//
+    //@SubscribeMessage('events')
+    //handleEvent(
+    //    @MessageBody() data: unknown,
+    //    //@ConnectedSocket() client: Socket,
+    // ): WsResponse<unknown> {
+    //    // id === messageBody.id
+    //    const event = 'events';
+    //    return { event, data };
+    //}
+//
+    //@SubscribeMessage('events')
+    //onEvents(@MessageBody() data: unknown): Observable<WsResponse<number>> {
+    //    const event = 'events';
+    //    const response = [1, 2, 3];
+//
+    //    return from(response).pipe(
+    //        map(data => ({ event, data})),
+    //    );
+    //}
+
+  
 }
