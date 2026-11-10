@@ -7,12 +7,15 @@ import {
     WebSocketGateway,
     WebSocketServer,
     WsResponse,
+    WsException
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { ValidationPipe, UsePipes, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SocketRegistryService } from './socket-registry.services.js';
 import { ChatMessageDto } from "./chat-message.dto.js";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 
 
 export interface AuthPayload {
@@ -26,13 +29,14 @@ export interface AuthPayload {
     },
 })
 
-@UsePipes(
-    new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-    })
-)
+// @UsePipes(
+//     new ValidationPipe({
+//         whitelist: true,
+//         forbidNonWhitelisted: true,
+//         transform: true,
+//         exceptionFactory: (errors) => new WsException(errors)
+//     })
+// )
 export class EventsGateway 
 implements OnGatewayConnection, OnGatewayDisconnect {
     
@@ -42,7 +46,7 @@ implements OnGatewayConnection, OnGatewayDisconnect {
     server: Server;
 
     constructor (
-        private readonly JwtService: JwtService,
+        private readonly jwtService: JwtService,
         private readonly registry: SocketRegistryService,
     ) {}
 
@@ -50,14 +54,34 @@ implements OnGatewayConnection, OnGatewayDisconnect {
         const token = this.extractJwtFromCookie(client);
         if (!token) {
             this.logger.warn(`Connection refused (no JWT cookie) : ${client.id}`);
+            client.disconnect(true);
+            return;
         }
-        client.disconnect(true);
-        return;
-    }
     
+        let payload: AuthPayload;
+        try {
+            payload = await this.jwtService.verifyAsync<AuthPayload>(token);
+        }
+        catch {
+            this.logger.warn(`Connection refused (invalid/expired JWT) : ${client.id}`);
+            client.disconnect(true);
+            return;
+        }
+
+        const userId = payload.sub;
+        client.data.userId = userId;
+
+        this.registry.add(userId, client);
+
+        this.logger.log(`Connected : user=${userId} socket=${client.id} 
+                (${this.registry.count(userId)} socket(s))`);
+
+        this.server.emit('room', client.id + ' joined');
+    }
+
     private extractJwtFromCookie(client: Socket): string | null {
         const cookieHeader: string | undefined = 
-        client.handshake.hearders?.cookie;
+        client.handshake.headers?.cookie;
         if (!cookieHeader)
             return null;
 
@@ -67,29 +91,8 @@ implements OnGatewayConnection, OnGatewayDisconnect {
                 return [part.slice(0, idx).trim(), part.slice(idx + 1)];
             }),
         );
-        return cookies[jwt] ?? null;
+        return cookies['jwt'] ?? null;
     }
-    
-    let payload: AuthPayload;
-    try {
-        payload = await this.jwtService.verifyAsync<AuthPayload>(token);
-    }
-    catch {
-        this.logger.warn(`Connection refused (invalid/expired JWT) : ${client.id}`);
-        client.disconnected(true);
-        return;
-    }
-
-    const userId = payload.sub;
-    client.data.userId = userId;
-
-    this.registry.add(userId, client);
-
-    this.logger.log(`Connected : user=${userId} socket=${client.id} 
-            (${this.registry.count(userId)} socket(s))`);
-
-    //this.server.emit('room', client.id + ' joined');
-
 
     handleDisconnect(client: Socket): void {
         const userId: string | undefined = client.data?.userId;
@@ -101,18 +104,27 @@ implements OnGatewayConnection, OnGatewayDisconnect {
         else {
               this.logger.log(`Socket not Authentified closed : ${client.id}`);
         }
-        this.server.emit('room', client.id + ' left')
+        this.server.emit('room', client.id + ' left');
     }
 
     @SubscribeMessage('chatMessage')
-    handleEvent(
-        @MessageBody() dto: ChatMessageDto,
+    async handleChatMessage(
+        @MessageBody() rawData: unknown,
         @ConnectedSocket() client: Socket,
-     ): void {
+     ): Promise<void> {
+        const dto = plainToInstance(ChatMessageDto, rawData);
+        const errors = await validate(dto, {
+            whitelist: true,
+            forbidNonWhitelisted: true,
+        });
+        if (errors.length > 0) {
+            throw new WsException(errors);
+        }
+
         this.logger.log(`Message from user=${client.data.userId} : "${dto.content}"`);
         this.server.emit('chatMessage', {
             from: client.data.userId,
-            content: dot.content,
+            content: dto.content,
             at: new Date().toISOString(),
         });
     }
@@ -121,17 +133,20 @@ implements OnGatewayConnection, OnGatewayDisconnect {
     //handleMessage(client: Socket, message: any): void {
     //    this.server.emit('room',`[${client.id}] -> ${message}`);
     //}
-//
-    //@SubscribeMessage('events')
-    //handleEvent(
+
+    // @SubscribeMessage('events')
+    // handleEvents(
     //    @MessageBody() data: unknown,
-    //    //@ConnectedSocket() client: Socket,
+    //    @ConnectedSocket() client: Socket,
     // ): WsResponse<unknown> {
-    //    // id === messageBody.id
+    //    id === messageBody.id
+        // console.log('Message recu de React: ', data);
+        // this.logger.log(`Message recu de React : ${JSON.stringify(data)}`);
+// 
     //    const event = 'events';
-    //    return { event, data };
-    //}
-//
+    //    return { event: 'events', data };
+    // }
+
     //@SubscribeMessage('events')
     //onEvents(@MessageBody() data: unknown): Observable<WsResponse<number>> {
     //    const event = 'events';

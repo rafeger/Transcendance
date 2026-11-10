@@ -24,7 +24,7 @@ const DevUi = import.meta.env.DEV
   : null;
 
 function App() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
 
   // check connection state + log debug
   useEffect(() => {
@@ -34,6 +34,8 @@ function App() {
     console.log('disconnected WS :', (reason)));
     socket.on('connect_error', (err) =>
     console.log('refused WS :', err.message));
+    socket.on("exception", (err) => console.log("⚠️ Erreur ValidationPipe:", err));
+
     return () => {
       socket.off('connect');
       socket.off('disconnect');
@@ -42,6 +44,8 @@ function App() {
   }, []);
 
   //messages
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   useEffect(() => {
   const onMessage = (msg:ChatMessage) => 
     setMessages((prev) => [...prev,msg]);
@@ -50,6 +54,14 @@ function App() {
     socket.off('chatMessage',onMessage);//cleanup à chaque démontage
   };
 }, []);
+
+  const sendMessage = () => {
+    if (messages.trim()) {
+      socket.emit('message_to_server', messages);
+      setMessages('');
+    }
+  };
+
 
   return (
     <BrowserRouter>

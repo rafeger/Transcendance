@@ -10,10 +10,12 @@ export class SocketRegistryService {
 
     // create set if doesn't exist yet
     add(userId: string, client: Socket): void {
-        if (!this.users.has(userId)) {
-            this.users.set(userId, new Set())
+        let sockets = this.users.get(userId);
+        if (!sockets) {
+            sockets =  new Set<Socket>();
+            this.users.set(userId, sockets);
         }
-        this.users.get(userId).add(client);
+        sockets.add(client);
         this.logger.debug(`Registry: +1 socket for user=${userId}
              (total:${this.count(userId)})`)
     }
