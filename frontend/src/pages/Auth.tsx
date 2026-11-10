@@ -29,7 +29,7 @@ function Auth() {
         }
 
         const endpoint = isRegister ? "api/auth/register" : "api/auth/login";
-        const body = isRegister ? { email, username, password } : { email, password };
+        const body = isRegister ? { email, userName: username, password } : { email, password };
 
         try {
             const response = await fetch(endpoint, {
