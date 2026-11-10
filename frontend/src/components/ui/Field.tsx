@@ -27,7 +27,10 @@ export function Field({
       <label htmlFor={field.controlId} className="text-sm font-medium text-fg">
         {label}
         {required && (
-          <span aria-hidden="true" className="text-error"> *</span>
+          <span aria-hidden="true" className="text-error">
+            {' '}
+            *
+          </span>
         )}
       </label>
 

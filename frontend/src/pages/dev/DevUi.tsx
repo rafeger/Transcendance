@@ -62,7 +62,11 @@ function DevUi() {
 
   function confirmDelete() {
     setModalOpen(false);
-    showToast({ variant: 'error', title: 'Ami supprimé', message: 'raph42 a été retiré de ta liste.' });
+    showToast({
+      variant: 'error',
+      title: 'Ami supprimé',
+      message: 'raph42 a été retiré de ta liste.',
+    });
   }
 
   return (
@@ -124,22 +128,40 @@ function DevUi() {
             <Spinner className="text-error" />
           </Row>
           <Row label="Avec texte">
-            <Spinner showLabel label="Chargement des amis…" className="text-muted" />
+            <Spinner
+              showLabel
+              label="Chargement des amis…"
+              className="text-muted"
+            />
           </Row>
         </Section>
 
         <Section title="Input et Select">
           <div className="grid gap-6 sm:grid-cols-2">
             <Input label="Pseudo" placeholder="ex. raph42" />
-            <Input label="Mot de passe" type="password" hint="8 caractères minimum" required />
-            <Input label="Email" defaultValue="raph@" error="Adresse email invalide" />
+            <Input
+              label="Mot de passe"
+              type="password"
+              hint="8 caractères minimum"
+              required
+            />
+            <Input
+              label="Email"
+              defaultValue="raph@"
+              error="Adresse email invalide"
+            />
             <Input label="Désactivé" defaultValue="lecture seule" disabled />
             <Select label="Difficulté" defaultValue="medium">
               <option value="easy">Facile</option>
               <option value="medium">Moyen</option>
               <option value="hard">Difficile</option>
             </Select>
-            <Select label="Langue" hint="Langue des questions" defaultValue="" placeholder="Choisir…">
+            <Select
+              label="Langue"
+              hint="Langue des questions"
+              defaultValue=""
+              placeholder="Choisir…"
+            >
               <option value="fr">Français</option>
               <option value="en">English</option>
             </Select>
@@ -147,7 +169,11 @@ function DevUi() {
 
           <h3 className="pt-4 font-semibold">Démo : validation à l'envoi</h3>
           <Card as="section" className="max-w-md">
-            <form noValidate onSubmit={handleDemoSubmit} className="flex flex-col gap-4">
+            <form
+              noValidate
+              onSubmit={handleDemoSubmit}
+              className="flex flex-col gap-4"
+            >
               <Input
                 label="Email"
                 type="email"
@@ -215,7 +241,12 @@ function DevUi() {
           <Row label="Statut">
             <Avatar name="raph42" status="online" />
             <Avatar name="lzannis" status="offline" />
-            <Avatar name="Image cassée" src="/introuvable.png" status="online" size="lg" />
+            <Avatar
+              name="Image cassée"
+              src="/introuvable.png"
+              status="online"
+              size="lg"
+            />
           </Row>
         </Section>
 
@@ -229,15 +260,28 @@ function DevUi() {
               valueText={`Question ${question} sur 10`}
             />
             <div className="flex gap-2">
-              <Button size="sm" variant="secondary" onClick={() => setQuestion((q) => Math.max(q - 1, 0))}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setQuestion((q) => Math.max(q - 1, 0))}
+              >
                 −1
               </Button>
-              <Button size="sm" variant="secondary" onClick={() => setQuestion((q) => Math.min(q + 1, 10))}>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setQuestion((q) => Math.min(q + 1, 10))}
+              >
                 +1
               </Button>
             </div>
             <ProgressBar label="Temps restant" value={25} variant="danger" />
-            <ProgressBar label="Victoires" showLabel value={70} variant="success" />
+            <ProgressBar
+              label="Victoires"
+              showLabel
+              value={70}
+              variant="success"
+            />
           </div>
         </Section>
 
@@ -265,24 +309,46 @@ function DevUi() {
 
         <Section title="Toast">
           <Row label="Variantes">
-            <Button variant="secondary" onClick={() => showToast({ message: 'Nouvelle partie disponible.' })}>
+            <Button
+              variant="secondary"
+              onClick={() =>
+                showToast({ message: 'Nouvelle partie disponible.' })
+              }
+            >
               Info
             </Button>
             <Button
               variant="secondary"
-              onClick={() => showToast({ variant: 'success', title: 'Profil enregistré', message: 'Tes modifications sont en ligne.' })}
+              onClick={() =>
+                showToast({
+                  variant: 'success',
+                  title: 'Profil enregistré',
+                  message: 'Tes modifications sont en ligne.',
+                })
+              }
             >
               Success
             </Button>
             <Button
               variant="secondary"
-              onClick={() => showToast({ variant: 'warning', message: 'Plus que 10 secondes !' })}
+              onClick={() =>
+                showToast({
+                  variant: 'warning',
+                  message: 'Plus que 10 secondes !',
+                })
+              }
             >
               Warning
             </Button>
             <Button
               variant="secondary"
-              onClick={() => showToast({ variant: 'error', title: 'Connexion perdue', message: 'Reconnexion en cours…' })}
+              onClick={() =>
+                showToast({
+                  variant: 'error',
+                  title: 'Connexion perdue',
+                  message: 'Reconnexion en cours…',
+                })
+              }
             >
               Error
             </Button>
