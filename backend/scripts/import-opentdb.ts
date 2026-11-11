@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 type Category = {
     id: number;
     name: string;
@@ -49,6 +51,16 @@ type CountResponse = {
     category_question_count: CategoryQuestionCount;
 }
 
+type QuestionEntry = {
+    hash: string;
+    opentdbCategoryId: number;
+    type: string;
+    difficulty: string;
+    question: string;
+    correctAnswer: string;
+    incorrectAnswers: string[];
+}
+
 enum ResponseCode {
     Success = 0,
     NoResults = 1,
@@ -61,7 +73,7 @@ enum ResponseCode {
 const DELAY_MS = 5500;
 const MAX_ATTEMPTS = 5;
 let lastCallAt = 0;
-
+const BATCH_MAX = 50;
 const BASE_URL = "https://opentdb.com";
 
 // promise - function to  resolve the promise and to reject the promise
@@ -106,14 +118,6 @@ async function callApi(url: string): Promise<any>
     throw new Error(`Rate limited ${MAX_ATTEMPTS} times for ${url}`);
 }
 
-async function fetchCategories(): Promise<Category[]>
-{
-    const url = `${BASE_URL}/api_category.php`;
-
-    const data: CategoriesResponse = await callApi(url);
-    return data.trivia_categories; 
-}
-
 async function requestToken(): Promise<string>
 {
     const url = `${BASE_URL}/api_token.php?command=request`;
@@ -139,6 +143,14 @@ async function resetToken(oldToken : string): Promise<string>
     return data.token;
 }
 
+async function fetchCategories(): Promise<Category[]>
+{
+    const url = `${BASE_URL}/api_category.php`;
+
+    const data: CategoriesResponse = await callApi(url);
+    return data.trivia_categories; 
+}
+
 async function fetchQuestionCount(categoryId: number): Promise<number> {
     const url = `${BASE_URL}/api_count.php?category=${categoryId}`;
     const data: CountResponse = await callApi(url);
@@ -162,7 +174,7 @@ async function fetchBatch(
 }
 
 function decodeBase64(encoded: string): string {
-    const bytes = Buffer.from(`${encoded}`, "base64");
+    const bytes = Buffer.from(encoded, "base64");
     const txt = bytes.toString("utf8");
     return txt;
 }
@@ -189,27 +201,118 @@ function decodeQuestion(raw: RawQuestion): DecodedQuestion {
 //     return result;
 // }
 
-async function main() {
-    // const first- from whatever json my server sent
-    // trivia_categories come from : opentdb at run time
-    // datta = await res.json() takes the response texst
-
-    // const categories = await fetchCategories();
-    // console.log(categories.length);
-    // console.log(categories[0]);
-
-    const token = await requestToken();
-    console.log("token:", token);
-
-
-    // const totalcount = await fetchQuestionCount(9);
-    // console.log("count total: ", totalcount);
-
-    const batch = await fetchBatch(9, token, 3);
-    console.log("code: ", batch.response_code);
-    console.log("got", batch.results.length, " questions");
-    console.log(decodeQuestion(batch.results[0]));
-
+function hashQuestion(question: string, correctAnswer: string): string {
+    const cleanQuestion = question.trim().toLowerCase();
+    const cleanAnswer = correctAnswer.trim().toLowerCase();
+    const text = `${cleanQuestion}|${cleanAnswer}`;
+    return createHash("sha256").update(text).digest("hex");
 }
+
+function toEntry(decoded: DecodedQuestion, categoryId: number): QuestionEntry {
+    return {
+        hash: hashQuestion(decoded.question, decoded.correct_answer ),
+        opentdbCategoryId: categoryId,
+        type: decoded.type.toUpperCase(),
+        difficulty: decoded.difficulty.toUpperCase(),
+        question: decoded.question,
+        correctAnswer: decoded.correct_answer,
+        incorrectAnswers: decoded.incorrect_answers,
+    };
+}
+
+function addBatch(
+    results: RawQuestion[],
+    categoryId: number,
+    store: Map<string, QuestionEntry>,
+): number 
+{
+    let added = 0;
+    let i = 0; 
+    while (i < results.length)
+    {
+        const decoded = decodeQuestion(results[i]);
+        const entry= toEntry(decoded, categoryId);
+        if (!store.has(entry.hash)){
+            added++;
+        }
+        store.set(entry.hash, entry);
+        i++;
+    }
+    return added;
+}
+
+async function importCategory(
+    category: Category, token: string, store: Map<string, QuestionEntry>,): Promise<number> 
+{
+    const total = await fetchQuestionCount(category.id);
+    let fetched = 0;
+    let added = 0; 
+    let amount = BATCH_MAX;
+
+    while (fetched < total)
+    {
+        const remaining = total - fetched; 
+        if (amount > remaining)
+        {
+            amount = remaining;
+        }
+        const batch = await fetchBatch(category.id, token, amount);
+        if (batch.response_code === ResponseCode.TokenEmpty)
+        {
+            break;
+        }
+        if (batch.response_code === ResponseCode.NoResults)
+        {
+            amount = Math.floor(amount/2);
+            if (amount == 0){
+                break;
+            }
+            continue;
+        }
+        if (batch.results.length === 0) {
+            break ; 
+        }
+        added += addBatch(batch.results, category.id, store);
+        fetched += batch.results.length;
+        console.log(` ${category.name}: ${fetched}/ ${total}`);
+    }
+    return added ;
+}
+
+async function main() {
+  const token = await requestToken();
+  const store = new Map<string, QuestionEntry>();
+  const category = { id: 9, name: "General Knowledge" };
+
+  const added = await importCategory(category, token, store);
+  console.log("added:", added, "store size:", store.size);
+}
+
+// async function main() {
+//     // const first- from whatever json my server sent
+//     // trivia_categories come from : opentdb at run time
+//     // datta = await res.json() takes the response texst
+
+//     // const categories = await fetchCategories();
+//     // console.log(categories.length);
+//     // console.log(categories[0]);
+
+//     const token = await requestToken();
+//     console.log("token:", token);
+
+
+//     // // const totalcount = await fetchQuestionCount(9);
+//     // // console.log("count total: ", totalcount);
+
+//     // const batch = await fetchBatch(9, token, 3);
+//     // console.log("code: ", batch.response_code);
+//     // console.log("got", batch.results.length, " questions");
+//     // console.log(decodeQuestion(batch.results[0]));
+//     const store = new Map<string, QuestionEntry>();
+//     const batch = await fetchBatch(9, token, 3);
+//     console.log("added:", addBatch(batch.results, 9, store));
+//     console.log("added:", addBatch(batch.results, 9, store));
+//     console.log("store size:", store.size);      
+// }
 
 main();
