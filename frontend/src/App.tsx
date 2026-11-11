@@ -55,12 +55,12 @@ function App() {
   };
 }, []);
 
-  const sendMessage = () => {
-    if (messages.trim()) {
-      socket.emit('message_to_server', messages);
-      setMessages('');
-    }
-  };
+  // const sendMessage = () => {
+    // if (messages.trim()) {
+      // socket.emit('message_to_server', messages);
+      // setMessages('');
+    // }
+  // };
 
 
   return (
