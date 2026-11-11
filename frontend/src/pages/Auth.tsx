@@ -49,7 +49,7 @@ function Auth() {
         if (!socket.connected) {
             socket.connect();
         }
-        navigate("/lobby");
+        navigate();
     }
 
     return (
