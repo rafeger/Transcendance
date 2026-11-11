@@ -1,4 +1,11 @@
 import { createHash } from "node:crypto";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { dirname } from "node:path";
+
+const OUTPUT_PATH = "prisma/seed/questions.json";
+
+// JSON.stringify - object->text
+
 
 type Category = {
     id: number;
@@ -61,6 +68,18 @@ type QuestionEntry = {
     incorrectAnswers: string[];
 }
 
+type CategoryEntry = {
+    opentdbId: number; 
+    name: string;
+};
+
+type QuestionsFile = {
+    source: string;
+    license: string;
+    categories: CategoryEntry[];
+    questions: QuestionEntry[]; 
+}
+
 enum ResponseCode {
     Success = 0,
     NoResults = 1,
@@ -98,8 +117,15 @@ async function callApi(url: string): Promise<any>
         // res is fetch(url)'s Response object
         // res.ok - true, res.status - 200, res.headers, res.body - content
         // when fetch comes, have status and headers 
-        const res = await fetch(url); // wait for HTTP response
         lastCallAt = Date.now();
+        const res = await fetch(url); // wait for HTTP response
+        if (res.status === 429) {
+            attempts++;
+            const backoff = DELAY_MS * Math.pow(2, attempts); // Exponential backoff
+            console.warn(`[Rate Limited - 429] Retrying attempt ${attempts}/${MAX_ATTEMPTS} after ${backoff}ms...`);
+            await sleep(backoff);
+            continue;
+        }
         if (!res.ok)
         {
             throw new Error(`HTTP ${res.status} for ${url}`);
@@ -110,6 +136,7 @@ async function callApi(url: string): Promise<any>
         if (data.response_code === ResponseCode.RateLimit)
         {
             attempts++;
+            await sleep(DELAY_MS * 2);
             continue;
         }
         return data; // succes - stop here
@@ -136,8 +163,7 @@ async function resetToken(oldToken : string): Promise<string>
     const data: TokenResponse = await callApi(url);
     if (data.response_code !== ResponseCode.Success)
     {
-        throw new Error(`Token reset request failed (code ${data.response_code})
-            : ${data.response_message}`);
+        throw new Error(`Token reset request failed (code ${data.response_code}): ${data.response_message}`);
     }
     console.log("Old token successfully reset");
     return data.token;
@@ -167,8 +193,7 @@ async function fetchBatch(
     const data: QuestionsResponse = await callApi(url);
     if (data.response_code === ResponseCode.InvalidParameter || data.response_code === ResponseCode.TokenNotFound)
     {
-        throw new Error(`Batch failed for category ${categoryId} 
-            (code ${data.response_code})`);
+        throw new Error(`Batch failed for category ${categoryId} (code ${data.response_code})`);
     }
     return data;
 }
@@ -279,14 +304,71 @@ async function importCategory(
     return added ;
 }
 
-async function main() {
-  const token = await requestToken();
-  const store = new Map<string, QuestionEntry>();
-  const category = { id: 9, name: "General Knowledge" };
-
-  const added = await importCategory(category, token, store);
-  console.log("added:", added, "store size:", store.size);
+async function writeJson(
+  categories: Category[],
+  store: Map<string, QuestionEntry>,
+): Promise<void> {
+  const file: QuestionsFile = {
+    source: "Open Trivia Database (https://opentdb.com)",
+    license: "CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)",
+    categories: categories.map((c) => ({ opentdbId: c.id, name: c.name })),
+    questions: [...store.values()], // takes every entry out of map into array
+  };
+  await mkdir(dirname(OUTPUT_PATH), { recursive: true });
+  await writeFile(OUTPUT_PATH, JSON.stringify(file, null, 2), "utf8");
 }
+
+async function loadExisting(): Promise<Map<string, QuestionEntry>> {
+  const store = new Map<string, QuestionEntry>();
+  let text: string;
+  try {
+    text = await readFile(OUTPUT_PATH, "utf8");
+  } catch {
+    return store;
+  }
+  const file: QuestionsFile = JSON.parse(text);  
+  let i = 0;
+  while (i < file.questions.length) {
+    store.set(file.questions[i].hash, file.questions[i]);
+    i++;
+  }
+  return store;
+}
+
+
+async function main(): Promise<void> {
+  const store = await loadExisting();
+  console.log(`Existing questions: ${store.size}`);
+
+  const categories = await fetchCategories();
+  const token = await requestToken();
+
+  let i = 0;
+  while (i < categories.length) {
+    console.log(`[${i + 1}/${categories.length}] ${categories[i].name}`);
+    const added = await importCategory(categories[i], token, store);
+    console.log(`  → ${added} new`);
+    i++;
+  }
+
+  await writeJson(categories, store);
+  console.log(`Done: ${store.size} questions written to ${OUTPUT_PATH}`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
+
+
+// async function main() {
+//   const token = await requestToken();
+//   const store = new Map<string, QuestionEntry>();
+//   const category = { id: 9, name: "General Knowledge" };
+
+//   const added = await importCategory(category, token, store);
+//   console.log("added:", added, "store size:", store.size);
+// }
 
 // async function main() {
 //     // const first- from whatever json my server sent
