@@ -45,15 +45,15 @@ function App() {
 
   //messages
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  useEffect(() => {
-  const onMessage = (msg:ChatMessage) => 
-    setMessages((prev) => [...prev,msg]);
-  socket.on('chatMessage', onMessage);
-  return () => {
-    socket.off('chatMessage',onMessage);//cleanup à chaque démontage
-  };
-}, []);
+  // const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // useEffect(() => {
+  // const onMessage = (msg:ChatMessage) => 
+    // setMessages((prev) => [...prev,msg]);
+  // socket.on('chatMessage', onMessage);
+  // return () => {
+    // socket.off('chatMessage',onMessage);//cleanup à chaque démontage
+  // };
+  // }, []);
 
   // const sendMessage = () => {
     // if (messages.trim()) {
