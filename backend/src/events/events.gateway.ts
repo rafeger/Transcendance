@@ -10,21 +10,18 @@ import {
     WsException
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
-import { ValidationPipe, UsePipes, Logger, createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { 
+    ValidationPipe, 
+    UsePipes, 
+    Logger
+ } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SocketRegistryService } from './socket-registry.services.js';
 import { ChatMessageDto } from "./chat-message.dto.js";
-import { plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
-
 
 export interface AuthPayload {
     sub:    string;
 }
-
-const RawPayload = createParamDecorator(
-    (_data: unknown, ctx: ExecutionContext) => ctx.switchToWs().getData(),
-);
 
 @WebSocketGateway({
     cors: {
@@ -33,14 +30,15 @@ const RawPayload = createParamDecorator(
     },
 })
 
-// @UsePipes(
-//     new ValidationPipe({
-//         whitelist: true,
-//         forbidNonWhitelisted: true,
-//         transform: true,
-//         exceptionFactory: (errors) => new WsException(errors)
-//     })
-// )
+@UsePipes(
+    new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+        exceptionFactory: (errors) => new WsException(errors)
+    })
+)
+
 export class EventsGateway 
 implements OnGatewayConnection, OnGatewayDisconnect {
     
@@ -58,8 +56,6 @@ implements OnGatewayConnection, OnGatewayDisconnect {
         const token = this.extractJwtFromCookie(client);
         if (!token) {
             this.logger.warn(`Connection refused (no JWT cookie) : ${client.id}`);
-            //this.logger.warn(`Headers recus : ${JSON.stringify(client.handshake.headers)}`);
-
             client.disconnect(true);
             return;
         }
@@ -116,32 +112,16 @@ implements OnGatewayConnection, OnGatewayDisconnect {
 
     @SubscribeMessage('chatMessage')
     async handleChatMessage(
-        @RawPayload() rawData: unknown,
+        @MessageBody() dto: ChatMessageDto,
         @ConnectedSocket() client: Socket, 
      ): Promise<void> {
-        try {
 
-            const dto = plainToInstance(ChatMessageDto, rawData);
-            const errors = await validate(dto, {
-                whitelist: true,
-                forbidNonWhitelisted: true,
-            });
-            
-            if (errors.length > 0) {
-                throw new WsException(errors);
-            }
-            
             this.logger.log(`Message from user=${client.data.userId} : "${dto.content}"`);
             this.server.emit('chatMessage', {
                 from: client.data.userId,
                 content: dto.content,
                 at: new Date().toISOString(),
             });
-        }
-        catch (err) {
-            this.logger.error('Erreur dans handleChatMessage:', err);
-            throw err;
-        }
     }
 
     //@SubscribeMessage('customName')
@@ -171,7 +151,4 @@ implements OnGatewayConnection, OnGatewayDisconnect {
     //        map(data => ({ event, data})),
     //    );
     //}
-
-  
 }
-
