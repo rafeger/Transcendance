@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+// import { useEffect, useState } from 'react';
 import { socket } from './lib/socket';
 import Home from "./pages/Home";
 import Quiz from "./pages/Quiz";
@@ -13,11 +14,11 @@ import Privacy from "./pages/Privacy";
 import CGU from "./pages/CGU";
 import Error404 from "./pages/Error404";
 
-interface ChatMessage {
-  from:     string;
-  content:  string;
-  at:       string;
-}
+// interface ChatMessage {
+  // from:     string;
+  // content:  string;
+  // at:       string;
+// }
 // Catalogue du design system : uniquement en développement (absent du build de prod).
 const DevUi = import.meta.env.DEV
   ? lazy(() => import("./pages/dev/DevUi"))

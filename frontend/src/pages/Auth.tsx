@@ -10,11 +10,9 @@ function Auth() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
-    const [setError] = useState<string | null>(null);
 
     async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
-        setError(null);
 
         if (isRegister && username.trim() === "") {
             alert("You must enter a username.");
@@ -31,37 +29,27 @@ function Auth() {
         const endpoint = isRegister ? "api/auth/register" : "api/auth/login";
         const body = isRegister ? { email, userName: username, password } : { email, password };
 
-        try {
-            const response = await fetch(endpoint, {
-                method: "POST",
-                headers: { "Content-Type": "application/json"},
-                credentials: "include", //to save jwt in the front 
-                body: JSON.stringify(body),
-            });
-
-            if (!response.ok) {
-                const data = await response.json().catch(() => ({}));
-                throw new Error(data.message || "Authentification failed");
-            }
-
-            if (isRegister) {
-                //switch to login view after creating account
-                setRegister(false);
-                alert("Account created! Please sign in.");
-                return;
-            }
-
-            // connect websocket now that jwt cookie stored
-            if (!socket.connected) {
-                socket.connect();
-            }
-
-            navigate("/lobby");
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json"},
+            credentials: "include", //to save jwt in the front 
+            body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.message || "Authentification failed");
         }
-        catch(err: unknown) {
-            setError(err instanceof Error ? err.message : "An error occurred");
+        if (isRegister) {
+            //switch to login view after creating account
+            setRegister(false);
+            alert("Account created! Please sign in.");
+            return;
         }
-
+        // connect websocket now that jwt cookie stored
+        if (!socket.connected) {
+            socket.connect();
+        }
+        navigate("/lobby");
     }
 
     return (
