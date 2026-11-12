@@ -1,69 +1,36 @@
 import { useState } from "react";
-import type { Room } from "../types/room";
 import PublicRoomCard from "../components/lobby/PublicRoomCard";
 import { useNavigate } from "react-router-dom";
 import CreateRoomForm from "../components/lobby/CreateRoomForm";
+import { useRoom } from "../contexts/useRoom";
 
 function Lobby() {
     const navigate = useNavigate();
     const [codeQuiz, setCodeQuiz] = useState("");
-
-    const [rooms, setRooms] = useState<Room[]>([
-        {
-            id: "1",
-            code: "QUIZ42",
-            name: "General knowledge",
-            host: "PlayerOne",
-            players: 2,
-            maxPlayers: 4,
-            status: "waiting",
-        },
-        {
-            id: "2",
-            code: "ABC123",
-            name: "Video Games",
-            host: "PlayerTwo",
-            players: 3,
-            maxPlayers: 6,
-            status: "waiting",
-        },
-    ]);
+    const { rooms, createRoom, joinRoom } = useRoom();
 
     function handleJoinLobby(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        if (codeQuiz.trim() === "") {
-            alert("Please enter a quiz code.");
+        const room = joinRoom(codeQuiz.trim());
+        if (!room) {
+            alert("Room not found, full or already started!");
             return ;
         }
-        console.log("Quiz code: ", codeQuiz);
+        navigate(`/room/${room.code}`);
     }
 
     function handleRoom(code: string) {
-        const room = rooms.find((room) => room.code === code);
+        const room = joinRoom(code);
         if (!room) {
-            alert("Room not found.");
-            return ;
-        }
-        if (room.status !== "waiting") {
-            alert("This room is already playing.");
-            return ;
-        }
-        if (room.players >= room.maxPlayers) {
-            alert("This room is full.");
+            alert("This room cannot be joined!");
             return ;
         }
         navigate(`/room/${room.code}`);
     }
 
     function handleCreateRoom(name: string, maxPlayers: number) {
-        const code = crypto.randomUUID().slice(0, 6).toUpperCase();
-        const newRoom: Room = {
-            id: crypto.randomUUID(),
-            code, name, host: "You", players: 1, maxPlayers, status: "waiting",
-        };
-
-        setRooms((currentRooms) => [...currentRooms, newRoom]);
+        const newRoom = createRoom(name, maxPlayers);
         navigate(`/room/${newRoom.code}`);
     }
 
@@ -82,7 +49,7 @@ function Lobby() {
                 <h2 className="text-2xl font-semibold text-center">Join a room</h2>
 
                 <form onSubmit={handleJoinLobby} className="mt-6 space-y-4">
-                    <input type="text" placeholder="Enter the quiz code" value={codeQuiz.toUpperCase()}
+                    <input type="text" placeholder="Enter the quiz code" value={codeQuiz}
                     onChange={(event) =>setCodeQuiz(event.target.value)}
                     className="outline-none w-50 rounded-lg border border-white/50 bg-indigo-950
                     px-6 py-1 placeholder:text-slate-500 focus:border-blue-500"></input>

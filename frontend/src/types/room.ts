@@ -3,7 +3,13 @@ export type Room = {
     code: string;
     name: string;
     host: string;
-    players: number;
+    players: Player[];
     maxPlayers: number;
     status: "waiting" | "playing";
-}
+};
+
+export type Player = {
+    id: string;
+    username: string;
+    isHost: boolean;
+};
