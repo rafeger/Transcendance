@@ -1,6 +1,6 @@
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client';
 
 export const socket = io({
-    autoConnect: false,
-    withCredentials: true,
+  autoConnect: false,
+  withCredentials: true,
 });
