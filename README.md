@@ -265,6 +265,7 @@ erDiagram
 
 
 ## Resources
+Credit OpenTDB (licence CC BY-SA 4.0): for all questions used on our site, we took using API technology from OpenTDB. 
  
 ### References
  
