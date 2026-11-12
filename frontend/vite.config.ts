@@ -11,6 +11,15 @@ export default defineConfig({
     tailwindcss()
   ],
   server: {
-    proxy: {'/api': {
-      target: 'http://backend:3000/',},},},
+    proxy: {
+      '/api': {
+        target: 'http://backend:3000/',
+      },
+      'socket.io':{
+        target: 'http://backend:3000/',
+        ws: true, // keep conn open for Websocket
+      },
+    },
+  }
+      // adding in just to have the socket part as well for live -andi
 })
