@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink } from 'react-router-dom';
 
 function Header() {
   return (
@@ -10,13 +10,16 @@ function Header() {
         </Link>
 
         {/* Navigation */}
-        <nav aria-label="Navigation principale" className="flex items-center gap-4 md:gap-8">
+        <nav
+          aria-label="Navigation principale"
+          className="flex items-center gap-4 md:gap-8"
+        >
           <NavLink
             to="/"
             end
             className={({ isActive }) =>
               `hidden text-sm transition hover:text-white sm:block ${
-                isActive ? "text-white" : "text-slate-400"
+                isActive ? 'text-white' : 'text-slate-400'
               }`
             }
           >
@@ -27,7 +30,7 @@ function Header() {
             to="/quiz"
             className={({ isActive }) =>
               `text-sm transition hover:text-white ${
-                isActive ? "text-white" : "text-slate-400"
+                isActive ? 'text-white' : 'text-slate-400'
               }`
             }
           >
@@ -38,7 +41,7 @@ function Header() {
             to="/lobby"
             className={({ isActive }) =>
               `text-sm transition hover:text-white ${
-                isActive ? "text-white" : "text-slate-400"
+                isActive ? 'text-white' : 'text-slate-400'
               }`
             }
           >
@@ -49,7 +52,7 @@ function Header() {
             to="/profile"
             className={({ isActive }) =>
               `text-sm transition hover:text-white ${
-                isActive ? "text-white" : "text-slate-400"
+                isActive ? 'text-white' : 'text-slate-400'
               }`
             }
           >
@@ -60,7 +63,7 @@ function Header() {
             to="/friends"
             className={({ isActive }) =>
               `text-sm transition hover:text-white ${
-                isActive ? "text-white" : "text-slate-400"
+                isActive ? 'text-white' : 'text-slate-400'
               }`
             }
           >
