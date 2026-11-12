@@ -13,6 +13,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum QuestionType {
+  MULTIPLAYER
+  BOOLEAN
+}
+
 enum Difficulty {
   EASY
   MEDIUM
@@ -53,28 +58,43 @@ model Quiz {
   category   Category   @relation(fields: [categoryId], references: [id]) // quiz.category.type
   title      String
   difficulty Difficulty @default(EASY)
-  questions  Question[]
+  questions  QuizQuestion[]
   attempts    Attempt[]
 
   @@index([categoryId])
 }
 
 model Category {
-  id      Int    @id @default(autoincrement())
-  type    String @default("N/A")
-  quizzes Quiz[]
+  id          Int    @id @default(autoincrement())
+  opentdbId   Int    @unique // id from opentdb to link questions
+  name        String @unique
+  quizzes     Quiz[]
+  questions   Question[]
+}
+
+model QuizQuestion {
+  quizId     Int
+  questionId Int
+  position   Int
+  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([quizId, questionId]) // question once per quiz
+  @@unique([quizId, position]) // one question per position
 }
 
 model Question {
-  id       Int      @id @default(autoincrement())
-  text     String   @default("The Answer to the Ultimate Question of Life, the Universe, and Everything")
-  position Int // so questions have an order - do we need?
-  quizId   Int
-  quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  answers  Answer[]
+  id            Int      @id @default(autoincrement())
+  hash          String   @unique // for the seed - not twice 
+  text          String   @default("The Answer to the Ultimate Question of Life, the Universe, and Everything")
+  type          QuestionType
+  difficulty    Difficulty
+  categoryId    Int
+  category      Category    @relation(fields:[categoryId], references: [id])
+  answers       Answer[]
+  quizzes       QuizQuestion[]
 
-  @@unique([quizId, position]) // position do we need? 
-  @@index([quizId])
+  @@index([categoryId])
 }
 
 model Answer {
