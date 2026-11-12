@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
-import { socket } from '../lib/socket;
+import { socket } from '../lib/socket';
 
 function Auth() {
-    const navigate = useNavigate;
+    const navigate = useNavigate();
     const [isRegister, setRegister] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState('');
@@ -20,6 +20,7 @@ function Auth() {
         }
         if (email.trim() === '' || password === '') {
             alert('You must fill in all the fields.')
+            return;
         }
         if (password.length < 8) {
             alert('Your password must contain at least 8 characters.');
@@ -49,32 +50,8 @@ function Auth() {
         if (!socket.connected) {
             socket.connect();
         }
-        navigate();
-// import { useState } from 'react';
-// import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
-
-// function Auth() {
-//   const [isRegister, setRegister] = useState(false);
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [username, setUsername] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [email, setEmail] = useState('');
-
-//   function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-//     event.preventDefault();
-
-//     if (isRegister && username.trim() === '') {
-//       alert('You must enter a username.');
-//       return;
-//     }
-//     if (email.trim() === '' || password === '') {
-//       alert('You must fill in all the fields.');
-//     }
-//     if (password.length < 8) {
-//       alert('Your password must contain at least 8 characters.');
-//       return;
-//     }
-//   }
+        navigate('/');
+    }
 
   return (
     <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
