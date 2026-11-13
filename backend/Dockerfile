@@ -5,12 +5,13 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npx prisma generate
-CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npm run start:dev"]
+CMD ["sh", "-c", "npx prisma generate && npx prisma migrate deploy && npx prisma db seed && npm run start:dev"]
 #&& npx prisma db seed #need to code de seed script in package.json
 
 # step 2 : build (Node + npm)
 FROM dev AS build
 RUN npm run build
+RUN npx tsc -p tsconfig.seed.json
 
 # step 3 : final (Node + npm)
 FROM docker.io/library/node:24-alpine
@@ -18,8 +19,9 @@ WORKDIR /app
 COPY --from=build /app/package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/dist-seed ./dist-seed
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma7.config.ts ./prisma7.config.ts
 USER node
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist-seed/prisma/seed.js &&node dist/main.js"]
