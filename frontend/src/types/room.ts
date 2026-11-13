@@ -11,5 +11,7 @@ export type Room = {
 export type Player = {
     id: string;
     username: string;
+    avatar: string;
+    isReady: boolean;
     isHost: boolean;
 };

@@ -1,6 +1,7 @@
 
 import { useParams, useNavigate } from "react-router-dom";
 import { useRoom } from "../contexts/useRoom";
+import PlayerCard from "../components/room/PlayerCard";
 
 function Room() {
     const { code } = useParams();
@@ -12,6 +13,7 @@ function Room() {
         leaveRoom,
         removePlayer,
         startRoom,
+        toggleReady,
     } = useRoom();
 
     const room = code ? getRoom(code) : undefined;
@@ -93,29 +95,9 @@ function Room() {
 
                     <div className="mt-5 space-y-3">
                         {room.players.map((player) => (
-                            <div
-                                key={player.id}
-                                className="flex items-center justify-between rounded-lg bg-indigo-950 p-4"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <span>{player.username}</span>
-
-                                    {player.isHost && (
-                                        <span className="text-yellow-400">
-                                            Host
-                                        </span>
-                                    )}
-                                </div>
-
-                                {isHost && !player.isHost && (
-                                    <button
-                                        onClick={() => handleRemovePlayer(player.id)}
-                                        className="text-red-400 hover:text-red-300"
-                                    >
-                                        Remove
-                                    </button>
-                                )}
-                            </div>
+                            <PlayerCard key={player.id} player={player}
+                            isCurrentPlayer={player.id === currentPlayer.id}
+                            isHost={isHost} onRemove={handleRemovePlayer} />
                         ))}
                     </div>
 
@@ -138,6 +120,12 @@ function Room() {
                         Leave Room
                     </button>
 
+                    <button onClick={() => toggleReady(room.code)}
+                    className="mt-6 rounded-lg bg-blue-600 px-2 py-3 hover:bg-blue-500">
+                        {room.players.find(
+                            (player) => player.id === currentPlayer.id
+                        )?.isReady ? "Not ready" : "Ready"}
+                    </button>
                 </section>
             </div>
         </main>

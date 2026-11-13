@@ -12,6 +12,7 @@ export type RoomContextType = {
     removePlayer: (code: string, playerId: string) => boolean;
     startRoom: (code: string) => boolean;
     getRoom: (code: string) => Room | undefined;
+    toggleReady: (code: string) => void;
     currentPlayer: Player;
 };
 

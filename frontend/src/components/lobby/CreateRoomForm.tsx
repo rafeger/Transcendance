@@ -38,9 +38,10 @@ function CreateRoomForm({ onCreate }: CreateRoomProps) {
                 onChange={(event) => setMaxPlayers(Number(event.target.value))}
                 className="rounded-lg border border-white/20 bg-indigo-950 px-3 py-2">
                     <option value={2}>2 players</option>
+                    <option value={3}>3 players</option>
                     <option value={4}>4 players</option>
+                    <option value={5}>5 players</option>
                     <option value={6}>6 players</option>
-                    <option value={8}>8 players</option>
                 </select>
 
                 <button type="submit" className="w-full rounded-lg bg-green-600 py-2

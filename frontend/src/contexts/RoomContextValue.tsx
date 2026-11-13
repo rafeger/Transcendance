@@ -9,10 +9,46 @@ const initialRooms: Room[] = [
         name: "General Knowledge",
         host: "PlayerOne",
         players: [
-            { id: "p1", username: "PlayerOne", isHost: true },
-            { id: "p2", username: "PlayerTwo", isHost: false },
+            {
+                id: "p1",
+                username: "PlayerOne",
+                avatar: "/avatars/player1.png",
+                isHost: true,
+                isReady: true,
+            },
+            {
+                id: "p2",
+                username: "PlayerTwo",
+                avatar: "/avatars/player2.png",
+                isHost: false,
+                isReady: false,
+            },
         ],
         maxPlayers: 4,
+        status: "waiting",
+    },
+    {
+        id: "2",
+        code: "QUIZ99",
+        name: "General",
+        host: "PlayerOne",
+        players: [
+            {
+                id: "p1",
+                username: "PlayerOne",
+                avatar: "/avatars/player1.png",
+                isHost: true,
+                isReady: true,
+            },
+            {
+                id: "p2",
+                username: "PlayerTwo",
+                avatar: "/avatars/player2.png",
+                isHost: false,
+                isReady: true,
+            },
+        ],
+        maxPlayers: 3,
         status: "waiting",
     },
 ];
@@ -23,7 +59,9 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     const [currentPlayer] = useState<Player>(() => ({
         id: crypto.randomUUID(),
         username: "You",
+        avatar: "/avatars/default.png",
         isHost: false,
+        isReady: false,
     }));
 
     function createRoom(name: string, maxPlayers: number): Room {
@@ -113,12 +151,18 @@ export function RoomProvider({ children }: { children: ReactNode }) {
 
     function startRoom(code: string): boolean {
         const room = getRoom(code);
+
         if (!room || room.status !== "waiting") return (false);
 
         const isHost = room.players.some(
             (player) => player.id === currentPlayer.id && player.isHost
         );
-        if (!isHost || room.players.length < 2) {
+
+        const allPlayersReady = room?.players.every(
+            (player) => player.isReady
+        );
+
+        if (!isHost || room.players.length < 2 || !allPlayersReady) {
             return (false);
         }
         setRooms((currentRooms) =>
@@ -133,9 +177,24 @@ export function RoomProvider({ children }: { children: ReactNode }) {
         return (rooms.find((room) => room.code === code.toUpperCase()));
     }
 
+    function toggleReady(code: string) {
+        setRooms((currentRooms) => 
+            currentRooms.map((room) => {
+                if (room.code !== code) return (room);
+
+                return {
+                    ...room,
+                    players: room.players.map((player) =>
+                        player.id === currentPlayer.id ?
+                            { ...player, isReady: !player.isReady}
+                            : player),
+                };
+            }));
+    }
+
     return (
         <RoomContext.Provider value={{ rooms, createRoom, joinRoom, leaveRoom,
-        removePlayer, startRoom, getRoom, currentPlayer }}>
+        removePlayer, startRoom, getRoom, currentPlayer, toggleReady, }}>
             {children}
         </RoomContext.Provider>
     );
