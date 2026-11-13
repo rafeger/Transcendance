@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/env.validation.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { HealthModule } from './health/health.module.js'
+import { EventsModule } from './events/events.module.js';
 import { AuthModule } from './auth/auth.module.js';
 
 @Module({
@@ -18,6 +19,7 @@ import { AuthModule } from './auth/auth.module.js';
     // PrismaModule needs ConfigModule so order matters
     PrismaModule,
     HealthModule,
+    EventsModule,
     AuthModule,
   ], // loads .env file and we cna use config mod in other places
   controllers: [AppController],
