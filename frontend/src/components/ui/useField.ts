@@ -19,9 +19,8 @@ export function useField({ id, hint, error, describedBy }: UseFieldOptions) {
   const errorId = `${controlId}-error`;
 
   const ariaDescribedBy =
-    [describedBy, hint && hintId, error && errorId]
-      .filter(Boolean)
-      .join(' ') || undefined;
+    [describedBy, hint && hintId, error && errorId].filter(Boolean).join(' ') ||
+    undefined;
 
   return {
     controlId,
