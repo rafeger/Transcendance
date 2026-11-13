@@ -13,6 +13,7 @@ import Friends from './pages/Friends';
 import Privacy from './pages/Privacy';
 import CGU from './pages/CGU';
 import Error404 from './pages/Error404';
+import Room from './pages/Room';
 
 // interface ChatMessage {
   // from:     string;
@@ -87,6 +88,7 @@ function App() {
             />
           )}
           <Route path="*" element={<Error404 />} />
+          <Route path="/room/:code" element={<Room />} />
         </Route>
       </Routes>
     </BrowserRouter>
