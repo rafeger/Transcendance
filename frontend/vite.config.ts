@@ -11,6 +11,18 @@ export default defineConfig({
     tailwindcss()
   ],
   server: {
-    proxy: {'/api': {
-      target: 'http://backend:3000/',},},},
+    host: true,
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://backend:3000/',
+        changeOrigin: true,
+      },
+      '/socket.io' : {
+        target: 'http://backend:3000',
+        changeOrigin: true,
+        ws: true,
+      }
+    },
+  }
 })

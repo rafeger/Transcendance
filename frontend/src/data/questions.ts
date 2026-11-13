@@ -1,4 +1,4 @@
-export type Category = "maths" | "geography";
+export type Category = 'maths' | 'geography';
 
 export type Question = {
     id: number;
