@@ -5,6 +5,7 @@ import {
   Matches,
   MaxLength,
   IsStrongPassword,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class RegisterDto {
@@ -43,5 +44,6 @@ export class LoginDto {
 
   @IsString()
   @MaxLength(128)
+  @IsNotEmpty()
   password!: string;
 }
