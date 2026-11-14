@@ -2,58 +2,102 @@ import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../lib/socket';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { 
+  loginSchema, 
+  registerSchema, 
+  type LoginFormData, 
+  type RegisterFormData 
+} from '../schemas/auth.ts';
+
 
 function Auth() {
     const navigate = useNavigate();
     const [isRegister, setRegister] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [email, setEmail] = useState('');
+    const [serverError, setServerError] = useState<string | null>(null);
+    
+    // const [username, setUsername] = useState('');
+    // const [password, setPassword] = useState('');
+    // const [email, setEmail] = useState('');
+       
+    // async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+    //     event.preventDefault();
+        
+    //     if (isRegister && username.trim() === '') {
+    //         alert('You must enter a username.');
+    //         return ;
+    //     }
+    //     if (email.trim() === '' || password === '') {
+    //         alert('You must fill in all the fields.')
+    //         return;
+    //     }
+    //     if (password.length < 8) {
+    //         alert('Your password must contain at least 8 characters.');
+    //         return ;
+    //     }
+              
+    const currentSchema = isRegister ? registerSchema : loginSchema;
 
-    async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-        event.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm<RegisterFormData>({
+        resolver: zodResolver(currentSchema),
+    });
 
-        if (isRegister && username.trim() === '') {
-            alert('You must enter a username.');
-            return ;
-        }
-        if (email.trim() === '' || password === '') {
-            alert('You must fill in all the fields.')
-            return;
-        }
-        if (password.length < 8) {
-            alert('Your password must contain at least 8 characters.');
-            return ;
-        }
 
-        const endpoint = isRegister ? 'api/auth/register' : 'api/auth/login';
-        const body = isRegister ? { email, userName: username, password } : { email, password };
+    const toggleMode = (registerMode: boolean) => {
+      setRegister(registerMode);
+      setServerError(null);
+      reset();//vide champs + erreurs precedentes
 
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json'},
-            credentials: 'include', //to save jwt in the front 
-            body: JSON.stringify(body),
-        });
-        if (!response.ok) {
-            const data = await response.json().catch(() => ({}));
-            throw new Error(data.message || 'Authentification failed');
-        }
-        if (isRegister) {
-            //switch to login view after creating account
-            setRegister(false);
-            alert('Account created! Please sign in.');
-            return;
-        }
-        // connect websocket now that jwt cookie stored
-        if (!socket.connected) {
-            socket.connect();
-        }
-        navigate('/');
     }
 
-  return (
+     const onSubmit = async (data: RegisterFormData) => {
+      //  console.log(data);
+       setServerError(null);
+       try {
+
+         const endpoint = isRegister ? 'api/auth/register' : 'api/auth/login';
+         const body = isRegister 
+         ? { email: data.email, userName: data.username, password: data.password } 
+         : { email: data.email, password: data.password };
+         
+         const response = await fetch(endpoint, {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json'},
+           credentials: 'include', //to save jwt in the front 
+           body: JSON.stringify(body),
+          });
+
+          if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.message || 'Authentification failed');
+          }
+          
+          if (isRegister) {
+            toggleMode(false);
+            alert('Account created! Please sign in.');
+            return;
+          }
+
+          // connect websocket now that jwt cookie stored
+          if (!socket.connected) {
+            socket.connect();
+          }
+          navigate('/profile');
+        }
+        catch (err: any) {
+          setServerError(err.message || 'An error occured');
+
+        }
+    };
+          
+    return (
     <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
       <div className="mx-auto max-w-md text-center">
         <h1 className="mb-6 text-3xl font-bold">
@@ -61,10 +105,12 @@ function Auth() {
         </h1>
       </div>
 
+      {/* Onglets  SIgn IN/ Regiter*/}
       <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-indigo-950 p-1 w-150 mx-auto">
         <button
           type="button"
-          onClick={() => setRegister(false)}
+           /*onClick={() => setRegister(false)}*/
+          onClick={() => toggleMode(false)}
           className={`rounded-md px-4 py-2 font-medium transition ${
             !isRegister
               ? 'bg-blue-600 text-white'
@@ -76,7 +122,8 @@ function Auth() {
 
         <button
           type="button"
-          onClick={() => setRegister(true)}
+          /*onClick={() => setRegister(true)}*/
+          onClick={() => toggleMode(true)}
           className={`rounded-md px-4 py-2 font-medium transition ${
             isRegister
               ? 'bg-blue-600 text-white'
@@ -87,23 +134,30 @@ function Auth() {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-5 text-center">
+      {/* Affichage erreur serveur */}
+      {serverError && (
+        <div className="mx-auto mt-4 max-w-md rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-center text-sm text-red-400">
+          {serverError}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5 text-center">
         {isRegister && (
           <div>
-            <label
-              htmlFor="username"
-              className="mb-2 block text-sm font-medium"
-            >
+            <label htmlFor="username" className="mb-2 block text-sm font-medium">
               Username
             </label>
-            <input
+            <input { ... register('username')}
               id="username"
               type="text"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              // value={username}
+              // onChange={(event) => setUsername(event.target.value)}
               placeholder="Your username"
               className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
-            ></input>
+            />
+            {errors.username && (
+            <p className="mt-1 text-xs text-red-400">{errors.username.message}</p>
+            )}
           </div>
         )}
 
@@ -111,28 +165,33 @@ function Auth() {
           <label htmlFor="email" className="mb-2 block text-sm font-medium">
             Email
           </label>
-          <input
-            id="email"
-            type="text"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="Your email"
-            className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
-          ></input>
+          <input 
+          { ... register('email')}
+          id="email"
+          type="text"
+          // value={email}
+          // onChange={(event) => setEmail(event.target.value)}
+          placeholder="Your email"
+          className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
+          />
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
+          )}
         </div>
 
         <div>
           <label htmlFor="password" className="mb-2 block text-sm font-medium">
             Password
           </label>
-          <input
-            id="password"
-            type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="Your password"
-            className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
-          ></input>
+          <input 
+          { ... register('password')}
+          id="password"
+          type={showPassword ? 'text' : 'password'}
+          // value={password}
+          // onChange={(event) => setPassword(event.target.value)}
+          placeholder="Your password"
+          className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
+          />
           <button
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
@@ -140,14 +199,20 @@ function Auth() {
           >
             {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
           </button>
+            {errors.password && (
+              <p className="mt-1 text-xs text-red-400">{errors.password.message}</p>
+            )}
         </div>
 
         <button
           type="submit"
+          disabled={isSubmitting}
           className="mt-10 inline-flex items-center gap-3 rounded-xl bg-blue-500 px-7 py-4 
                 font-bold text-white transition hover:-translate-y-1 hover:bg-blue-400"
         >
-          {isRegister ? 'Create an account' : 'Login'}
+          {isSubmitting
+          ? 'Loading...'
+          : isRegister ? 'Create an account' : 'Login'}
         </button>
       </form>
     </main>
