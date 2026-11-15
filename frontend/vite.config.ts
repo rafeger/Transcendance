@@ -11,15 +11,18 @@ export default defineConfig({
     tailwindcss()
   ],
   server: {
+    host: true,
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://backend:3000/',
+        changeOrigin: true,
       },
-      'socket.io':{
-        target: 'http://backend:3000/',
-        ws: true, // keep conn open for Websocket
-      },
+      '/socket.io' : {
+        target: 'http://backend:3000',
+        changeOrigin: true,
+        ws: true,
+      }
     },
   }
-      // adding in just to have the socket part as well for live -andi
 })

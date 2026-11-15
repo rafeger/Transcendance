@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@nestjs/platform-socket.io": "^12.4.2",
+    "@nestjs/websockets": "^12.4.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "express": "^4.22.3",
+    "jwt": "^0.2.0",
+    "socket.io-client": "^4.8.4"
+  },
+  "allowScripts": {
+    "node-base64@0.0.1": true
+  }
+}

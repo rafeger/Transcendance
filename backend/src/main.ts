@@ -1,4 +1,5 @@
 // creates entry file of the application - the server
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ConsoleLogger, ValidationPipe } from '@nestjs/common';

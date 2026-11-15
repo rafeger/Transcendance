@@ -1,20 +1,14 @@
-//import { Link, useNavigate } from "react-router-dom";
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { AiFillThunderbolt } from 'react-icons/ai';
-import { BiSolidTrophy } from 'react-icons/bi';
-import { GiBrain } from 'react-icons/gi';
-import { IoSettingsSharp } from 'react-icons/io5';
-import { useTheme } from '../contexts/ThemeContext';
-//import { FaSearch } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { AiFillThunderbolt } from "react-icons/ai";
+import { BiSolidTrophy } from "react-icons/bi";
+import { GiBrain } from "react-icons/gi";
+import { IoSettingsSharp } from "react-icons/io5";
+import { useTheme } from "../contexts/ThemeContext";
 
 function Home() {
   const { isDark, toggleTheme } = useTheme();
   const [isSettingOpen, setSettingOpen] = useState(false);
-  //const navigate = useNavigate();
-  //const [search, setSearch] = useState("");
-
-  //const themes = ["Science", "History", "Cinema"];
 
   return (
     <main

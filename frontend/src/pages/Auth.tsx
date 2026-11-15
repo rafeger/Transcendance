@@ -1,28 +1,57 @@
 import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
+import { useNavigate } from 'react-router-dom';
+import { socket } from '../lib/socket';
 
 function Auth() {
-  const [isRegister, setRegister] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
+    const navigate = useNavigate();
+    const [isRegister, setRegister] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
 
-  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
+    async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+        event.preventDefault();
 
-    if (isRegister && username.trim() === '') {
-      alert('You must enter a username.');
-      return;
+        if (isRegister && username.trim() === '') {
+            alert('You must enter a username.');
+            return ;
+        }
+        if (email.trim() === '' || password === '') {
+            alert('You must fill in all the fields.')
+            return;
+        }
+        if (password.length < 8) {
+            alert('Your password must contain at least 8 characters.');
+            return ;
+        }
+
+        const endpoint = isRegister ? 'api/auth/register' : 'api/auth/login';
+        const body = isRegister ? { email, userName: username, password } : { email, password };
+
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json'},
+            credentials: 'include', //to save jwt in the front 
+            body: JSON.stringify(body),
+        });
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.message || 'Authentification failed');
+        }
+        if (isRegister) {
+            //switch to login view after creating account
+            setRegister(false);
+            alert('Account created! Please sign in.');
+            return;
+        }
+        // connect websocket now that jwt cookie stored
+        if (!socket.connected) {
+            socket.connect();
+        }
+        navigate('/');
     }
-    if (email.trim() === '' || password === '') {
-      alert('You must fill in all the fields.');
-    }
-    if (password.length < 8) {
-      alert('Your password must contain at least 8 characters.');
-      return;
-    }
-  }
 
   return (
     <main className="min-h-screen bg-slate-950 text-white px-4 py-16">

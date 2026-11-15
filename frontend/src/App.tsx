@@ -1,5 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+// import { useEffect, useState } from 'react';
+import { socket } from './lib/socket';
 import Home from './pages/Home';
 import Quiz from './pages/Quiz';
 import Auth from './pages/Auth';
@@ -10,13 +13,58 @@ import Friends from './pages/Friends';
 import Privacy from './pages/Privacy';
 import CGU from './pages/CGU';
 import Error404 from './pages/Error404';
+import Room from './pages/Room';
 
+// interface ChatMessage {
+  // from:     string;
+  // content:  string;
+  // at:       string;
+// }
 // Catalogue du design system : uniquement en développement (absent du build de prod).
 const DevUi = import.meta.env.DEV
   ? lazy(() => import('./pages/dev/DevUi'))
   : null;
 
 function App() {
+
+
+  // check connection state + log debug
+  useEffect(() => {
+    socket.on('connect', () => 
+    console.log('connected WS, id=', socket.id));
+    socket.on('disconnect', (reason) =>
+    console.log('disconnected WS :', (reason)));
+    socket.on('connect_error', (err) =>
+    console.log('refused WS :', err.message));
+    socket.on("exception", (err) => console.log('⚠️ Erreur ValidationPipe:', err));
+
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('connect_error');
+    };
+  }, []);
+
+  //messages
+
+  // const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // useEffect(() => {
+  // const onMessage = (msg:ChatMessage) => 
+    // setMessages((prev) => [...prev,msg]);
+  // socket.on('chatMessage', onMessage);
+  // return () => {
+    // socket.off('chatMessage',onMessage);//cleanup à chaque démontage
+  // };
+  // }, []);
+
+  // const sendMessage = () => {
+    // if (messages.trim()) {
+      // socket.emit('message_to_server', messages);
+      // setMessages('');
+    // }
+  // };
+
+
   return (
     <BrowserRouter>
       <Routes>
@@ -40,6 +88,7 @@ function App() {
             />
           )}
           <Route path="*" element={<Error404 />} />
+          <Route path="/room/:code" element={<Room />} />
         </Route>
       </Routes>
     </BrowserRouter>
