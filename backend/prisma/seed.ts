@@ -129,7 +129,7 @@ async function seedAnswer(questions: QuestionEntry[],
     while (i < questions.length)
     {
         const q = questions[i];
-        const questionId = questionIds.get(questions[i].id);
+        const questionId = questionIds.get(questions[i].hash);
         if (questionId === undefined)
         {
             throw new Error(`No question row for hash ${q.hash}`);
