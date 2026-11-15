@@ -37,10 +37,23 @@ enum MatchStatus {
   CANCELLED
 }
 
-enum MatchMode {
+enum Mode {
   SOLO
   DUEL
   MULTIPLAYER
+}
+
+model Friendship {
+  id        Int              @id @default(autoincrement())
+  status    FriendshipStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  userId    Int    //send
+  friendId  Int
+  user      User             @relation("SentRequests",     fields: [userId],   references: [id], onDelete: Cascade)
+  friend    User             @relation("ReceivedRequests", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId]) 
+  @@index([friendId])
 }
 
 model User {
@@ -49,17 +62,28 @@ model User {
   email     String    @unique
   createdAt DateTime  @default(now())
   passHash  String
-  attempts  Attempt[]
+  avatarUrl String?
+  games     GamePlayer[]
+  sentRequests     Friendship[] @relation("SentRequests")
+  receivedRequests Friendship[] @relation("ReceivedRequests")
+
+  totalScore   Int    @default(0)
+  gamesPlayed  Int    @default(0)
 }
 
-model Quiz {
+model Game {
   id         Int        @id @default(autoincrement())
+  title      String
   categoryId Int // real category : which cateory 
   category   Category   @relation(fields: [categoryId], references: [id]) // quiz.category.type
-  title      String
-  difficulty Difficulty @default(EASY)
-  questions  QuizQuestion[]
-  attempts    Attempt[]
+  mode       Mode
+  status     MatchStatus   @default(WAITING)
+  difficulty  Difficulty  @default(EASY)
+  questions  GameQuestion[]
+  players    GamePlayer[]
+  startedAt   DateTime?
+  endedAt     DateTime?
+
 
   @@index([categoryId])
 }
@@ -68,19 +92,19 @@ model Category {
   id          Int    @id @default(autoincrement())
   opentdbId   Int    @unique // id from opentdb to link questions
   name        String @unique
-  quizzes     Quiz[]
+  games     Game[]
   questions   Question[]
 }
 
-model QuizQuestion {
-  quizId     Int
+model GameQuestion {
+  gameId     Int
   questionId Int
   position   Int
-  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
-  @@id([quizId, questionId]) // question once per quiz
-  @@unique([quizId, position]) // one question per position
+  @@id([gameId, questionId]) // question once per quiz
+  @@unique([gameId, position]) // one question per position
 }
 
 model Question {
@@ -92,8 +116,7 @@ model Question {
   categoryId    Int
   category      Category    @relation(fields:[categoryId], references: [id])
   answers       Answer[]
-  quizzes       QuizQuestion[]
-
+  games         GameQuestion[]
   @@index([categoryId])
 }
 
@@ -107,16 +130,17 @@ model Answer {
   @@index([questionId])
 }
 
-model Attempt {
+
+model GamePlayer {
   id         Int       @id @default(autoincrement())
   score      Int       @default(0)
-  startedAt  DateTime  @default(now())
+  joinedAt   DateTime  @default(now())
   finishedAt DateTime?
   userId     Int
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  quizId     Int
-  quiz       Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  gameId     Int
+  game       Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
+  @@unique([gameId, userId]) // player joins once 
   @@index([userId])
-  @@index([quizId])
 }
