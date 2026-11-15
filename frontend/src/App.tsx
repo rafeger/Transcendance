@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 // import { useForm } from 'react-hook-form';
 // import { useEffect, useState } from 'react';
 import { socket } from './lib/socket';
+import { ProtectedRoute } from './components/guard/ProtectedRoute';
 import Home from './pages/Home';
 import Quiz from './pages/Quiz';
 import Auth from './pages/Auth';
@@ -71,11 +72,12 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/login" element={<Auth />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/lobby" element={<Lobby />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/friends" element={<Friends />} />
+          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/lobby" element={<ProtectedRoute><Lobby /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<CGU />} />
           {DevUi && (
@@ -89,7 +91,7 @@ function App() {
             />
           )}
           <Route path="*" element={<Error404 />} />
-          <Route path="/room/:code" element={<Room />} />
+          <Route path="/room/:code" element={<ProtectedRoute><Room /></ProtectedRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>
