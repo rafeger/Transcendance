@@ -14,7 +14,7 @@ datasource db {
 }
 
 enum QuestionType {
-  MULTIPLAYER
+  MULTIPLE
   BOOLEAN
 }
 

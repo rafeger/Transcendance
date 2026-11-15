@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 config({ path: "../.env" });
-import { PrismaClient, QuestionType, difficultyifficulty } from "../src/generated/prisma/client.js";
+import { PrismaClient, QuestionType, Difficulty } from "../src/generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { readFile } from "node:fs/promises";
 
@@ -91,7 +91,7 @@ function toQuestionRow(q: QuestionEntry, categoryIds: Map<number, number>)
         text: q.question,
         type: q.type as QuestionType,
         difficulty: q.difficulty as Difficulty,
-        categoryId: categoryId;
+        categoryId: categoryId,
     }
 }
 
@@ -134,11 +134,19 @@ async function seedAnswer(questions: QuestionEntry[],
         {
             throw new Error(`No question row for hash ${q.hash}`);
         }
-        data.push({})
+        data.push({ text: q.correctAnswer, isCorrect: true, questionId: questionId });
+        let j = 0;
+        while (j < q.incorrectAnswers.length) {
+        data.push({ text: q.incorrectAnswers[j], isCorrect: false, questionId: questionId });
+        j++;
+        }
+        i++;
     }
+    const result = await prisma.answer.createMany({ data: data });
+    return result.count;
 }
 
-async function seedQuestions() {
+async function seedRest() {
     if (!(await isQuestionTableEmpty()))
     {
         console.log("Questions already seeded, skipping");
@@ -148,14 +156,16 @@ async function seedQuestions() {
     console.log(`File: ${file.categories.length} categories, ${file.questions.length} questions`);
     const categoryIds = await seedCategories(file.categories);
     console.log(`Categories: ${categoryIds.size}`);
-    const questionIds = await seedquestionRows(file.questions, categoryIds);
-    console.log(`Questions: ${questionIds.size}`);
+    // const questionIds = await seedQuestionRows(file.questions, categoryIds);
+    // console.log(`Questions: ${questionIds.size}`);
+    // const answerCount = await seedAnswers(file.questions, questionIds);
+    // console.log(`Answers: ${answerCount}`);
 }
 
 async function seed()
 {
     await seedUsers()
-    await seedQuestions();
+    await seedRest();
 }
 
 seed()
