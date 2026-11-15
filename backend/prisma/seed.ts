@@ -13,7 +13,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { readFile } from "node:fs/promises";
 // le temps de testers users si jamais sans jennifer 
 import * as argon2 from "argon2";
-const QUESTIONS_FILE = new URL("./seed/questions.json", import.meta.url);
+const QUESTIONS_FILE = "prisma/seed/questions.json";
 
 // Types: the shape of questions.json (same as import-opentdb.ts)
 
