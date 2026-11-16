@@ -32,6 +32,8 @@ services:
       db:
         condition: service_healthy
     init: true
+    environment:
+      SEED_DEMO_USERS: "false"
     networks:
       - transnet
     healthcheck: 

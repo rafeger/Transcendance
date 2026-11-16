@@ -210,7 +210,9 @@ async function seedQuestions(): Promise<void> {
 
 
 async function seed(): Promise<void> {
-  await seedUsers();
+  if (process.env.SEED_DEMO_USERS === "true") {
+    await seedUsers();
+  }
   await seedQuestions();
 }
 

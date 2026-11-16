@@ -20,6 +20,8 @@ services:
       - ../backend/prisma:/app/prisma:Z
     env_file:
       - ../.env
+    environment:
+      SEED_DEMO_USERS: "true"
     depends_on:
       db:
         condition: service_healthy
