@@ -2,16 +2,19 @@ import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { socket } from '../lib/socket';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { 
   loginSchema, 
-  registerSchema, 
-  type RegisterFormData 
+  registerSchema
 } from '../schemas/auth.ts';
 import { useAuth } from '../contexts/useAuth';
 
-
+type AuthFormData = {
+  email:    string;
+  password: string;
+  username?: string;
+};
 
 function Auth() {
   const navigate = useNavigate();
@@ -49,8 +52,8 @@ function Auth() {
         handleSubmit,
         reset,
         formState: { errors, isSubmitting },
-  } = useForm<RegisterFormData>({
-      resolver: zodResolver(currentSchema),
+  } = useForm<AuthFormData>({
+      resolver: zodResolver(currentSchema) as Resolver<AuthFormData>,
   });
 
 
@@ -60,7 +63,7 @@ function Auth() {
     reset();//vide champs + erreurs precedentes
   }
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (data: AuthFormData) => {
       //  console.log(data);
     setServerError(null);
     try {
@@ -83,9 +86,13 @@ function Auth() {
       }
       
       if (isRegister) {
+        console.log('Register:', data.email, data.password, data.username!);
         toggleMode(false);
         alert('Account created! Please sign in.');
         return;
+      }
+      else {
+        console.log('Login:', data.email, data.password);
       }
       
       // connect websocket now that jwt cookie stored
