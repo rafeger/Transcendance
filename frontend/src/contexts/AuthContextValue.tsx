@@ -13,7 +13,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function checkAuth(): Promise<void> {
     
     try {
-
       const response = await fetch('/api/auth/me' ,{
         method:      'GET',
         credentials:  'include',
@@ -38,7 +37,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    checkAuth();
+    let ignore = false;
+
+    async function initAuth() {
+      try {
+        
+        const response = await fetch('/api/auth/me' ,{
+          method:      'GET',
+          credentials:  'include',
+        });
+        if (ignore) return;
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (!socket.connected) {
+            socket.connect();
+            setUser(data);
+          }  
+        }
+        else {
+          setUser(null);
+        }
+      }
+      catch {
+        if (!ignore) {
+          return setUser(null);
+        }
+      }
+      finally {
+        if (!ignore) {
+          setIsLoading(false);//isLoading stays at false in all circonstances
+        }
+      }
+    }
+
+    initAuth();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   async function logout() {

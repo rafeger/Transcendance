@@ -97,8 +97,13 @@ function Auth() {
 
       navigate(from, { replace: true });
     }
-    catch (err: any) {
-      setServerError(err.message || 'An error occured');
+    catch (err: unknown) {
+      if (err instanceof Error)  {
+        setServerError(err.message);
+      }
+      else {
+        setServerError('An error occured');
+      }
     }
   };
           
