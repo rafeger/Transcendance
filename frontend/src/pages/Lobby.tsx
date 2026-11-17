@@ -35,7 +35,7 @@ function Lobby() {
     }
 
     return (
-        <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
+        <main className="px-4 py-16">
             <div className="mx-auto max-w-3xl">
             <h1 className="text-center text-4xl font-bold">Lobby Quiz Arena</h1>
                 <p className="text-center mt-4 text-slate-400">Join your friends be ready to play!</p>

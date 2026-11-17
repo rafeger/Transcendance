@@ -54,7 +54,7 @@ function Auth() {
     }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
+    <main className="px-4 py-16">
       <div className="mx-auto max-w-md text-center">
         <h1 className="mb-6 text-3xl font-bold">
           {isRegister ? 'Create an account' : 'Welcome!'}

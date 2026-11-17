@@ -2,7 +2,7 @@ import { Link, NavLink } from 'react-router-dom';
 
 function Header() {
   return (
-    <header className="border-b border-white/50 bg-indigo-950 text-white">
+    <header className="border-b border-white/50 bg-linear-65 from-purple-500 to-pink-500 text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-12">
         {/* Logo */}
         <Link to="/" className="text-2xl font-extrabold tracking-tight">
@@ -18,7 +18,7 @@ function Header() {
             to="/"
             end
             className={({ isActive }) =>
-              `hidden text-sm transition hover:text-white sm:block ${
+              `hidden text-xl font-semibold transition hover:text-white sm:block ${
                 isActive ? 'text-white' : 'text-slate-400'
               }`
             }
@@ -29,7 +29,7 @@ function Header() {
           <NavLink
             to="/quiz"
             className={({ isActive }) =>
-              `text-sm transition hover:text-white ${
+              `text-xl font-semibold transition hover:text-white ${
                 isActive ? 'text-white' : 'text-slate-400'
               }`
             }
@@ -40,7 +40,7 @@ function Header() {
           <NavLink
             to="/lobby"
             className={({ isActive }) =>
-              `text-sm transition hover:text-white ${
+              `text-xl font-semibold transition hover:text-white ${
                 isActive ? 'text-white' : 'text-slate-400'
               }`
             }
@@ -51,7 +51,7 @@ function Header() {
           <NavLink
             to="/profile"
             className={({ isActive }) =>
-              `text-sm transition hover:text-white ${
+              `text-xl font-semibold transition hover:text-white ${
                 isActive ? 'text-white' : 'text-slate-400'
               }`
             }
@@ -62,7 +62,7 @@ function Header() {
           <NavLink
             to="/friends"
             className={({ isActive }) =>
-              `text-sm transition hover:text-white ${
+              `text-xl font-semibold transition hover:text-white ${
                 isActive ? 'text-white' : 'text-slate-400'
               }`
             }

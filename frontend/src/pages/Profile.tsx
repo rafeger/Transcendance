@@ -67,7 +67,7 @@ function Profile() {
     }
 
     return (
-        <main className="min-h-screen bg-slate-950 px-4 py-16 text-white">
+        <main className="px-4 py-16">
             <div className="mb-8 flex items-center gap-4">
                 <div className="flex h-24 w-24 items-center justify-center
                 overflow-hidden rounded-full bg-blue-600 text-3xl font-bold">

@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import Quiz from './pages/Quiz';
 import Auth from './pages/Auth';
 import Lobby from './pages/Lobby';
-import MainLayout from './layout/Layout';
+import Layout from './layout/Layout';
 import Profile from './pages/Profile';
 import Friends from './pages/Friends';
 import Privacy from './pages/Privacy';
@@ -68,7 +68,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<MainLayout />}>
+        <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/quiz" element={<Quiz />} />
           <Route path="/auth" element={<Auth />} />

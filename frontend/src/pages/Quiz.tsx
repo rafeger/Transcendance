@@ -36,7 +36,7 @@ function Quiz() {
 
     if (isFinished) {
         return (
-            <main className="min-h-screen bg-slate-950 px-4 py-16 text-white">
+            <main className="px-4 py-16">
                 <div className="mx-auto max-w-2xl rounded-2xl bg-indigo-900
                 p-8 text-center">
                     <h1 className="text-4xl font-bold">Quiz finished!</h1>
@@ -52,7 +52,7 @@ function Quiz() {
     }
 
     return (
-        <main className="min-h-screen bg-slate-950 px-4 py-16 text-white">
+        <main className="px-4 py-16">
             <div className="mx-auto max-w-3xl">
                 <h1 className="text-center text-bold text-4xl">Quiz Arena</h1>
                 <p className="mt-4 text-center text-slate-400">
