@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
 import { socket } from '../lib/socket';
+import { useTheme } from '../contexts/ThemeContext';
 
 function Auth() {
+    const { isDark } = useTheme();
     const navigate = useNavigate();
     const [isRegister, setRegister] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +56,7 @@ function Auth() {
     }
 
   return (
-    <main className="px-4 py-16">
+    <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
       <div className="mx-auto max-w-md text-center">
         <h1 className="mb-6 text-3xl font-bold">
           {isRegister ? 'Create an account' : 'Welcome!'}
@@ -102,7 +104,7 @@ function Auth() {
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               placeholder="Your username"
-              className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
+              className="rounded-lg border border-white/20 bg-purple-500 py-1 outline-none"
             ></input>
           </div>
         )}
@@ -117,7 +119,7 @@ function Auth() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="Your email"
-            className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
+            className="rounded-lg border border-white/20 bg-purple-500 py-1 outline-none"
           ></input>
         </div>
 
@@ -131,7 +133,7 @@ function Auth() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Your password"
-            className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
+            className="rounded-lg border border-white/20 bg-purple-500 py-1 outline-none"
           ></input>
           <button
             type="button"

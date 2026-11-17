@@ -3,13 +3,18 @@ import { AiFillThunderbolt } from "react-icons/ai";
 import { BiSolidTrophy } from "react-icons/bi";
 import { GiBrain } from "react-icons/gi";
 import { useTheme } from "../contexts/ThemeContext";
+import { SiQuizlet } from "react-icons/si";
 
 
 function Home() {
   const { isDark } = useTheme();
 
   return (
-    <main className="px-4 py-16">
+    <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
+      <section className="flex flex-col items-end px-8">
+        <SiQuizlet size={48} />
+      </section>
+
       <section className="flex flex-col items-center px-6 py-24 text-center md:py-32">
         <span className={`rounded-full border border-blue-400/30 bg-blue-400/10 px-4 
         py-2 text-sm font-semibold ${isDark
@@ -25,8 +30,6 @@ function Home() {
                                 : "text-purple-500"}`}>
           Test your knowledges.
         </h1>
-
-        <div></div>
 
         <Link
           to="/quiz"

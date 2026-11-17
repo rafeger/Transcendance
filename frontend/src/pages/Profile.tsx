@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { useTheme } from '../contexts/ThemeContext';
 
 type Profile = { firstName: string; lastName: string; username: string; dateBirth: string;
     country: string; city: string; bio: string;
  }
 
 function Profile() {
+    const { isDark } = useTheme();
     const [profile, setProfile] = useState<Profile>({
         firstName: "",
         lastName: "",
@@ -67,7 +69,7 @@ function Profile() {
     }
 
     return (
-        <main className="px-4 py-16">
+        <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
             <div className="mb-8 flex items-center gap-4">
                 <div className="flex h-24 w-24 items-center justify-center
                 overflow-hidden rounded-full bg-blue-600 text-3xl font-bold">
