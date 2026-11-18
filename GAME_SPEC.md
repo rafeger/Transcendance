@@ -10,16 +10,16 @@
 
 ### 1.1 Format d'une partie
 
-| Paramètre | Valeur par défaut | Choix possibles |
-|---|---|---|
-| Joueurs | 1 | 1 à 6 |
-| Nombre de questions | 5 | 5 / 10 / 15 | ou slider ?
-| Catégorie | Mix | n'importe quelle catégorie OpenTDB |
-| Difficulté | Mix | `easy` / `medium` / `hard` / mix |
-| Type de question | Fixe | modulable selon ce qui est pull par l api OpenTDB (peut etre modif par boosts in game) |
-| Temps par question | 15 s | fixe |
-| Temps de révélation | 4 s | fixe |
-| Compte à rebours de départ | 3 s | fixe |
+| Paramètre                  | Valeur par défaut | Choix possibles                                                                        |
+| -------------------------- | ----------------- | -------------------------------------------------------------------------------------- |
+| Joueurs                    | 1                 | 1 à 6                                                                                  |
+| Nombre de questions        | 5                 | 5 / 10 / 15                                                                            | ou slider ? |
+| Catégorie                  | Mix               | n'importe quelle catégorie OpenTDB                                                     |
+| Difficulté                 | Mix               | `easy` / `medium` / `hard` / mix                                                       |
+| Type de question           | Fixe              | modulable selon ce qui est pull par l api OpenTDB (peut etre modif par boosts in game) |
+| Temps par question         | 15 s              | fixe                                                                                   |
+| Temps de révélation        | 4 s               | fixe                                                                                   |
+| Compte à rebours de départ | 3 s               | fixe                                                                                   |
 
 L'hôte (créateur du salon) choisit les paramètres. Les paramètres sont figés au lancement.
 
@@ -45,26 +45,26 @@ Une bonne réponse rapporte :
 ```
 points = round( base × (0.5 + 0.5 × temps_restant / temps_total) )
 ```
+
 Ainsi la rapidite de reponse rentre en compte dans le calcul des points, une reponse rapide est recompensee.
 
 | Difficulté | `base` | Réponse instantanée | Réponse à la dernière seconde |
-|---|---|---|---|
-| easy | 100 | 100 | ~50 |
-| medium | 200 | 200 | ~100 |
-| hard | 300 | 300 | ~150 |
+| ---------- | ------ | ------------------- | ----------------------------- |
+| easy       | 100    | 100                 | ~50                           |
+| medium     | 200    | 200                 | ~100                          |
+| hard       | 300    | 300                 | ~150                          |
 
 - Pour calculer le temps restant, cela se fait cote serv a la reception de la reponse, pas du cote client sinn on peut tricher en modifiant lhorodatage etc fin bon ca arrivera pas mais faut y penser
 
-
 ### 1.4 Déconnexion et abandon
 
-| Situation | Comportement |
-|---|---|
-| Déconnexion pendant la partie | La partie continue. Le joueur a **15 s** pour se reconnecter et reprend à la question en cours (il récupère l'état complet). Les questions manquées valent 0. |
-| Pas de reconnexion en 15 s | Le joueur est marqué `forfeit`. Il est classé dernier. |
-| Un seul joueur restant | La partie s'arrête, le joueur restant gagne par forfait. |
-| Message `room:leave` pendant la partie | Forfait immédiat (pas de délai). |
-| Déconnexion dans le `LOBBY` | Le joueur est retiré du salon. Si c'était l'hôte, le salon est transféré au joueur arrivé le plus tôt ; s'il n'en reste aucun, le salon est supprimé. |
+| Situation                              | Comportement                                                                                                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Déconnexion pendant la partie          | La partie continue. Le joueur a **15 s** pour se reconnecter et reprend à la question en cours (il récupère l'état complet). Les questions manquées valent 0. |
+| Pas de reconnexion en 15 s             | Le joueur est marqué `forfeit`. Il est classé dernier.                                                                                                        |
+| Un seul joueur restant                 | La partie s'arrête, le joueur restant gagne par forfait.                                                                                                      |
+| Message `room:leave` pendant la partie | Forfait immédiat (pas de délai).                                                                                                                              |
+| Déconnexion dans le `LOBBY`            | Le joueur est retiré du salon. Si c'était l'hôte, le salon est transféré au joueur arrivé le plus tôt ; s'il n'en reste aucun, le salon est supprimé.         |
 
 La condition « tous ont répondu » ne prend en compte que les joueurs **connectés**.
 
@@ -115,21 +115,30 @@ Tout est en JSON, un objet par trame.
 **Client → serveur**
 
 ```json
-{ "type": "answer:submit", "reqId": "c-42", "payload": { "questionIndex": 3, "choiceId": "b" } }
+{
+  "type": "answer:submit",
+  "reqId": "c-42",
+  "payload": { "questionIndex": 3, "choiceId": "b" }
+}
 ```
 
 **Serveur → client**
 
 ```json
-{ "type": "answer:ack", "reqId": "c-42", "ts": 1761665000123, "payload": { "questionIndex": 3 } }
+{
+  "type": "answer:ack",
+  "reqId": "c-42",
+  "ts": 1761665000123,
+  "payload": { "questionIndex": 3 }
+}
 ```
 
-| Champ | Sens |
-|---|---|
-| `type` | Nom du message, format `domaine:action`. |
-| `reqId` | Optionnel, fourni par le client. Le serveur le renvoie dans la réponse directe (`ack` ou `error`) pour faire la correspondance. |
-| `ts` | Heure serveur (epoch ms), présente sur tous les messages serveur. |
-| `payload` | Contenu ; toujours un objet (éventuellement vide). |
+| Champ     | Sens                                                                                                                            |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | Nom du message, format `domaine:action`.                                                                                        |
+| `reqId`   | Optionnel, fourni par le client. Le serveur le renvoie dans la réponse directe (`ack` ou `error`) pour faire la correspondance. |
+| `ts`      | Heure serveur (epoch ms), présente sur tous les messages serveur.                                                               |
+| `payload` | Contenu ; toujours un objet (éventuellement vide).                                                                              |
 
 Taille max d'un message client : **4 Ko** (au-delà : fermeture `1009`).
 
@@ -148,22 +157,28 @@ Un message reçu dans un état où il n'a pas de sens renvoie `error` avec le co
 
 ### 2.4 Messages client → serveur
 
-| `type` | Payload | État requis | Effet |
-|---|---|---|---|
-| `room:create` | `{ settings }` | aucun salon | Crée un salon, l'émetteur devient hôte. |
-| `room:join` | `{ roomCode }` | aucun salon | Rejoint un salon en `LOBBY`. |
-| `room:leave` | `{}` | dans un salon | Quitte (forfait si partie en cours). |
-| `room:ready` | `{ ready: boolean }` | `LOBBY` | Change son statut prêt. |
-| `room:settings` | `{ settings }` | `LOBBY`, hôte | Modifie les paramètres (remet tout le monde « non prêt »). |
-| `room:start` | `{}` | `LOBBY`, hôte | Lance la partie si ≥ 2 joueurs, tous prêts. |
-| `answer:submit` | `{ questionIndex, choiceId }` | `QUESTION` | Envoie sa réponse (une seule fois). |
-| `matchmaking:join` | `{ settings? }` | aucun salon | *(si module matchmaking)* entre dans la file. |
-| `matchmaking:leave` | `{}` | en file | Quitte la file. |
+| `type`              | Payload                       | État requis   | Effet                                                      |
+| ------------------- | ----------------------------- | ------------- | ---------------------------------------------------------- |
+| `room:create`       | `{ settings }`                | aucun salon   | Crée un salon, l'émetteur devient hôte.                    |
+| `room:join`         | `{ roomCode }`                | aucun salon   | Rejoint un salon en `LOBBY`.                               |
+| `room:leave`        | `{}`                          | dans un salon | Quitte (forfait si partie en cours).                       |
+| `room:ready`        | `{ ready: boolean }`          | `LOBBY`       | Change son statut prêt.                                    |
+| `room:settings`     | `{ settings }`                | `LOBBY`, hôte | Modifie les paramètres (remet tout le monde « non prêt »). |
+| `room:start`        | `{}`                          | `LOBBY`, hôte | Lance la partie si ≥ 2 joueurs, tous prêts.                |
+| `answer:submit`     | `{ questionIndex, choiceId }` | `QUESTION`    | Envoie sa réponse (une seule fois).                        |
+| `matchmaking:join`  | `{ settings? }`               | aucun salon   | _(si module matchmaking)_ entre dans la file.              |
+| `matchmaking:leave` | `{}`                          | en file       | Quitte la file.                                            |
 
 `settings` :
 
 ```json
-{ "questionCount": 10, "category": 9, "difficulty": "medium", "type": "multiple", "maxPlayers": 2 }
+{
+  "questionCount": 10,
+  "category": 9,
+  "difficulty": "medium",
+  "type": "multiple",
+  "maxPlayers": 2
+}
 ```
 
 `category`, `difficulty` et `type` peuvent valoir `null` (= mix).
@@ -172,21 +187,21 @@ Le battement de cœur utilise les **ping/pong natifs du protocole WebSocket** (p
 
 ### 2.5 Messages serveur → client
 
-| `type` | Destinataires | Payload |
-|---|---|---|
-| `session:ready` | le client | `{ userId, protocolVersion: 1, currentRoom: RoomState \| null }` — envoyé juste après la connexion ; `currentRoom` non nul = reconnexion. |
-| `room:state` | tout le salon | `RoomState` complet — envoyé à chaque changement dans le `LOBBY`. |
-| `game:countdown` | tout le salon | `{ startsAt }` |
-| `question:new` | tout le salon | `{ index, total, category, difficulty, type, text, choices: [{id, text}], deadline, durationMs }` |
-| `answer:ack` | l'émetteur | `{ questionIndex }` — réponse enregistrée (sans dire si elle est juste). |
-| `question:progress` | tout le salon | `{ index, answered: [userId] }` |
-| `question:reveal` | tout le salon | `{ index, correctChoiceId, results: [{ userId, choiceId \| null, correct, points, responseMs \| null }], scores: [{ userId, score }], nextAt }` |
-| `player:disconnected` | tout le salon | `{ userId, graceUntil }` |
-| `player:reconnected` | tout le salon | `{ userId }` |
-| `player:forfeit` | tout le salon | `{ userId }` |
-| `game:over` | tout le salon | `{ ranking: [{ userId, score, correctCount, totalCorrectMs, forfeit }], winnerId \| null, matchId }` |
-| `match:found` | joueurs appariés | `{ roomCode }` *(matchmaking)* |
-| `error` | l'émetteur | `{ code, message }` |
+| `type`                | Destinataires    | Payload                                                                                                                                         |
+| --------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `session:ready`       | le client        | `{ userId, protocolVersion: 1, currentRoom: RoomState \| null }` — envoyé juste après la connexion ; `currentRoom` non nul = reconnexion.       |
+| `room:state`          | tout le salon    | `RoomState` complet — envoyé à chaque changement dans le `LOBBY`.                                                                               |
+| `game:countdown`      | tout le salon    | `{ startsAt }`                                                                                                                                  |
+| `question:new`        | tout le salon    | `{ index, total, category, difficulty, type, text, choices: [{id, text}], deadline, durationMs }`                                               |
+| `answer:ack`          | l'émetteur       | `{ questionIndex }` — réponse enregistrée (sans dire si elle est juste).                                                                        |
+| `question:progress`   | tout le salon    | `{ index, answered: [userId] }`                                                                                                                 |
+| `question:reveal`     | tout le salon    | `{ index, correctChoiceId, results: [{ userId, choiceId \| null, correct, points, responseMs \| null }], scores: [{ userId, score }], nextAt }` |
+| `player:disconnected` | tout le salon    | `{ userId, graceUntil }`                                                                                                                        |
+| `player:reconnected`  | tout le salon    | `{ userId }`                                                                                                                                    |
+| `player:forfeit`      | tout le salon    | `{ userId }`                                                                                                                                    |
+| `game:over`           | tout le salon    | `{ ranking: [{ userId, score, correctCount, totalCorrectMs, forfeit }], winnerId \| null, matchId }`                                            |
+| `match:found`         | joueurs appariés | `{ roomCode }` _(matchmaking)_                                                                                                                  |
+| `error`               | l'émetteur       | `{ code, message }`                                                                                                                             |
 
 `RoomState` :
 
@@ -195,9 +210,22 @@ Le battement de cœur utilise les **ping/pong natifs du protocole WebSocket** (p
   "code": "K7Q2PM",
   "state": "LOBBY",
   "hostId": 12,
-  "settings": { "questionCount": 10, "category": null, "difficulty": null, "type": null, "maxPlayers": 2 },
+  "settings": {
+    "questionCount": 10,
+    "category": null,
+    "difficulty": null,
+    "type": null,
+    "maxPlayers": 2
+  },
   "players": [
-    { "userId": 12, "displayName": "raph", "avatarUrl": "/avatars/12.png", "ready": true, "connected": true, "score": 0 }
+    {
+      "userId": 12,
+      "displayName": "raph",
+      "avatarUrl": "/avatars/12.png",
+      "ready": true,
+      "connected": true,
+      "score": 0
+    }
   ],
   "question": null
 }
@@ -220,32 +248,32 @@ Le timer affiché est purement visuel ; seule l'heure serveur compte pour accept
 
 **Erreurs applicatives** (message `error`, la connexion reste ouverte) :
 
-| `code` | Cas |
-|---|---|
-| `BAD_MESSAGE` | JSON invalide, `type` inconnu, payload mal formé |
-| `INVALID_STATE` | Action impossible dans l'état actuel du salon |
-| `NOT_HOST` | Action réservée à l'hôte |
-| `ROOM_NOT_FOUND` | Code de salon inconnu |
-| `ROOM_FULL` | Salon plein |
-| `ALREADY_IN_ROOM` | Le joueur est déjà dans un salon |
-| `NOT_ENOUGH_PLAYERS` | Lancement avec < 2 joueurs ou joueurs non prêts |
-| `ALREADY_ANSWERED` | Deuxième réponse à la même question |
-| `WRONG_QUESTION` | `questionIndex` différent de la question en cours |
-| `TOO_LATE` | Réponse après la deadline |
-| `INVALID_CHOICE` | `choiceId` inexistant |
-| `QUESTIONS_UNAVAILABLE` | OpenTDB et le cache ont échoué |
-| `RATE_LIMITED` | Trop de messages (> 20 / s) |
+| `code`                  | Cas                                               |
+| ----------------------- | ------------------------------------------------- |
+| `BAD_MESSAGE`           | JSON invalide, `type` inconnu, payload mal formé  |
+| `INVALID_STATE`         | Action impossible dans l'état actuel du salon     |
+| `NOT_HOST`              | Action réservée à l'hôte                          |
+| `ROOM_NOT_FOUND`        | Code de salon inconnu                             |
+| `ROOM_FULL`             | Salon plein                                       |
+| `ALREADY_IN_ROOM`       | Le joueur est déjà dans un salon                  |
+| `NOT_ENOUGH_PLAYERS`    | Lancement avec < 2 joueurs ou joueurs non prêts   |
+| `ALREADY_ANSWERED`      | Deuxième réponse à la même question               |
+| `WRONG_QUESTION`        | `questionIndex` différent de la question en cours |
+| `TOO_LATE`              | Réponse après la deadline                         |
+| `INVALID_CHOICE`        | `choiceId` inexistant                             |
+| `QUESTIONS_UNAVAILABLE` | OpenTDB et le cache ont échoué                    |
+| `RATE_LIMITED`          | Trop de messages (> 20 / s)                       |
 
 **Codes de fermeture WebSocket** : IMPORTANT IMPORTANT
 
-| Code | Sens |
-|---|---|
-| `1000` | Fermeture normale |
-| `1008` | Origin refusée |
-| `1009` | Message trop gros |
-| `4001` | Non authentifié / token invalide ou expiré |
+| Code   | Sens                                                    |
+| ------ | ------------------------------------------------------- |
+| `1000` | Fermeture normale                                       |
+| `1008` | Origin refusée                                          |
+| `1009` | Message trop gros                                       |
+| `4001` | Non authentifié / token invalide ou expiré              |
 | `4002` | Remplacé par une nouvelle connexion du même utilisateur |
-| `4003` | Expulsé (abus, rate limit répété) |
+| `4003` | Expulsé (abus, rate limit répété)                       |
 
 ### 2.8 Exemple de séquence (duel)
 

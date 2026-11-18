@@ -7,7 +7,6 @@ import { AppModule } from './app.module.js';
 import cookieParser from 'cookie-parser';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 
-
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new ConsoleLogger({
@@ -17,7 +16,7 @@ async function bootstrap() {
     }),
   });
   app.set('trust proxy', 1);
-  app.use(cookieParser());// le guard (jwt-auth.guard.ts) qui lit le cookie. Le contrôleur, lui, le pose, avec res.cookie(), qui n'a pas besoin de cookie-parser.
+  app.use(cookieParser()); // le guard (jwt-auth.guard.ts) qui lit le cookie. Le contrôleur, lui, le pose, avec res.cookie(), qui n'a pas besoin de cookie-parser.
   app.setGlobalPrefix('api');
 
   const config = app.get(ConfigService);

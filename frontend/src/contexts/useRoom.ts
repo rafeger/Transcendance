@@ -1,12 +1,12 @@
-import { useContext } from "react";
-import { RoomContext } from "./RoomContext";
+import { useContext } from 'react';
+import { RoomContext } from './RoomContext';
 
 export function useRoom() {
-    const context = useContext(RoomContext);
+  const context = useContext(RoomContext);
 
-    if (!context) {
-        throw new Error("useRoom must be used inside Provider");
-    }
+  if (!context) {
+    throw new Error('useRoom must be used inside Provider');
+  }
 
-    return (context);
+  return context;
 }
