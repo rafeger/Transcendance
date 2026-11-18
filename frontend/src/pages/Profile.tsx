@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AvatarUploader } from '../components/profile/AvatarUploader';
+import { useAuth } from '../contexts/useAuth';
 
 type Profile = {
   firstName: string;
@@ -11,6 +13,7 @@ type Profile = {
 };
 
 function Profile() {
+  const { user, updateUser } = useAuth();
   const [profile, setProfile] = useState<Profile>({
     firstName: '',
     lastName: '',
@@ -25,7 +28,6 @@ function Profile() {
   const [isEdit, setEdit] = useState(false);
   const [addFriend, setAddFriend] = useState(false);
   const [friendUsername, setFriendUsername] = useState('');
-  const [avatar, setAvatar] = useState<string | null>(null);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -62,53 +64,18 @@ function Profile() {
     setAddFriend(false);
   }
 
-  function handleAvatar(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image.');
-      return;
-    }
-    const imageUrl = URL.createObjectURL(file);
-    setAvatar(imageUrl);
-  }
-
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-16 text-white">
-      <div className="mb-8 flex items-center gap-4">
-        <div
-          className="flex h-24 w-24 items-center justify-center
-                overflow-hidden rounded-full bg-blue-600 text-3xl font-bold"
-        >
-          {avatar ? (
-            <img
-              src={avatar}
-              alt="Profile avatar"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            profile.username.charAt(0).toUpperCase()
-          )}
-        </div>
-
-        <div>
-          <h2 className="text-xl font-bold">{profile.username}</h2>
-          <label
-            htmlFor="avatar"
-            className="mt-2 inline-block cursor-pointer
-                    rounded-lg bg-blue-600 px-3 py-2 hover:bg-blue-700"
-          >
-            Change avatar
-          </label>
-          <input
-            id="avatar"
-            type="file"
-            accept="image/*"
-            onChange={handleAvatar}
-            className="hidden"
+      {user && (
+        <div className="mb-8 space-y-3">
+          <h2 className="text-xl font-bold">{user.userName}</h2>
+          <AvatarUploader
+            userName={user.userName}
+            avatarUrl={user.avatarUrl}
+            onChange={(avatarUrl) => updateUser({ avatarUrl })}
           />
         </div>
-      </div>
+      )}
 
       <div className="mt-4">
         <button
