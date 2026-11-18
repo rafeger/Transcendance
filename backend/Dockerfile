@@ -20,6 +20,9 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma7.config.ts ./prisma7.config.ts
+COPY --from=build /app/assets ./assets
+# Dossier des avatars créé avec node comme propriétaire : le volume monté ici en hérite.
+RUN mkdir -p uploads/avatars && chown -R node:node uploads
 USER node
 EXPOSE 3000
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]

@@ -28,6 +28,8 @@ services:
     build: ./backend
     env_file:
       - .env
+    volumes:
+      - avatars:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -42,6 +44,7 @@ services:
       start_period: 30s
 volumes:
   dbdata:
+  avatars:
 networks:
   transnet:
     driver: bridge
