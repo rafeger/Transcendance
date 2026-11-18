@@ -23,20 +23,20 @@ function CreateRoomForm({ onCreate }: CreateRoomProps) {
 
     return (
         <section className="">
-            <h2 className="text-2xl font-bold">Create a Room</h2>
+            <h2 className="text-2xl font-bold text-white">Create a Room</h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <input 
-                    type="text" 
+                    type="text"
                     value={name} 
                     placeholder="Room Name"
                     onChange={(event) => setName(event.target.value)}
-                    className="mt-6 w-full rounded-lg border border-white/20 bg-indigo-950 px-3 py-2" 
+                    className="mt-6 w-full rounded-lg text-white border 
+                    border-white/20 bg-indigo-950 px-3 py-2" 
                 />
-
                 <select value={maxPlayers}
                 onChange={(event) => setMaxPlayers(Number(event.target.value))}
-                className="rounded-lg border border-white/20 bg-indigo-950 px-3 py-2">
+                className="rounded-lg text-white border border-white/20 bg-indigo-950 px-3 py-2">
                     <option value={2}>2 players</option>
                     <option value={3}>3 players</option>
                     <option value={4}>4 players</option>

@@ -84,7 +84,7 @@ function Profile() {
                 <div>
                     <h2 className="text-xl font-bold">{profile.username}</h2>
                     <label htmlFor="avatar" className="mt-2 inline-block cursor-pointer
-                    rounded-lg bg-blue-600 px-3 py-2 hover:bg-blue-700">Change avatar</label>
+                    rounded-lg bg-blue-600 text-white px-3 py-2 hover:bg-blue-700">Change avatar</label>
                     <input id="avatar" type="file" accept="image/*"
                     onChange={handleAvatar} className="hidden" />
                 </div>
@@ -93,7 +93,7 @@ function Profile() {
             <div className="mt-4">
                 <button type="button" onClick={() => setAddFriend(!addFriend)}
                 className="rounded-lg bg-blue-600 px-3 py-2 font-semibold
-                hover:bg-blue-700">Add a friend</button>
+                hover:bg-blue-700 text-white">Add a friend</button>
 
                 {addFriend && (
                     <form onSubmit={handleFriend} 
@@ -125,50 +125,28 @@ function Profile() {
                             <label className="block mb-2">First Name</label>
                             <input name="firstName" value={tempProfile.firstName}
                             onChange={handleChange} placeholder="Your first name"
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1" />
+                            className="rounded-lg border border-white/20 bg-slate-800 p-1 text-white" />
                         </div>
 
                         <div>
                             <label className="block mb-2">Last Name</label>
                             <input name="lastName" value={tempProfile.lastName}
                             onChange={handleChange} placeholder="Your last name"
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1" />
+                            className="rounded-lg border border-white/20 bg-slate-800 p-1 text-white" />
                         </div>
 
                         <div>
                             <label className="block mb-2">Username</label>
                             <input name="username" value={tempProfile.username}
                             onChange={handleChange} placeholder="Your username"
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1" />
+                            className="rounded-lg border border-white/20 bg-slate-800 p-1 text-white" />
                         </div>
 
                         <div>
-                            <label className="block mb-2">Date of Birth</label>
-                            <input type="date" name="dateBirth" value={tempProfile.dateBirth}
-                            onChange={handleChange} placeholder="Your date of birth"
-                            max={new Date().toISOString().split("T")[0]}
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1" />
-                        </div>
-
-                        <div>
-                            <label className="block mb-2">Country</label>
-                            <input name="country" value={tempProfile.country}
-                            onChange={handleChange} placeholder="Your country"
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1" />
-                        </div>
-
-                        <div>
-                            <label className="block mb-2">City</label>
-                            <input name="city" value={tempProfile.city}
-                            onChange={handleChange} placeholder="Your city"
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1" />
-                        </div>
-
-                        <div>
-                            <label className="block mb-2">Biography</label>
+                            <label className="block mb-2">Biography (optional)</label>
                             <input name="bio" value={tempProfile.bio}
                             onChange={handleChange}
-                            className="size-32 w-full rounded-lg border border-white/20 bg-slate-800 p-1" />
+                            className="size-32 w-full rounded-lg border border-white/20 bg-slate-800 p-1 text-white" />
                         </div>
 
                         <button type="submit" className="rounded-lg bg-blue-600 

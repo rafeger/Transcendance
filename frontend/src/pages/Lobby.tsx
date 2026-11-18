@@ -48,7 +48,7 @@ function Lobby() {
             </section>
 
             <section className="mt-6 rounded-2xl border border-white/10 bg-indigo-900 p-4 w-100 mx-auto">
-                <h2 className="text-2xl font-semibold text-center">Join a room</h2>
+                <h2 className="text-2xl text-white font-semibold text-center">Join a room</h2>
 
                 <form onSubmit={handleJoinLobby} className="mt-6 space-y-4">
                     <input type="text" placeholder="Enter the quiz code" value={codeQuiz}
@@ -57,7 +57,7 @@ function Lobby() {
                     px-6 py-1 placeholder:text-slate-500 focus:border-blue-500"></input>
 
                     <button type="submit" className="w-20 py-1 rounded-lg border 
-                    border-white/50 hover:bg-blue-500">Join</button>
+                    border-white/50 hover:bg-blue-500 text-white">Join</button>
                 </form>
             </section>
 

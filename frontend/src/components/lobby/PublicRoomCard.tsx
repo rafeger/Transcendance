@@ -12,7 +12,7 @@ export default function PublicRoomCard({ room, onJoin }: Props) {
     return (
         <div className="rounded-xl border border-gray-700 bg-gray-900 p-4">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold">{room.name}</h3>
+                <h3 className="text-lg font-bold text-white">{room.name}</h3>
                 <span className="text-sm text-green-400">
                     {room.status === "waiting" ? "Waiting" : "Playing"}
                 </span>
