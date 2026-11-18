@@ -62,7 +62,7 @@ export class AuthService {
         email: true,
         userName: true,
         createdAt: true,
-        avatar: true,
+        avatarUrl: true,
       },
     });
     if (!user) {

@@ -24,15 +24,12 @@ export const AVATAR_EXTENSIONS: Record<string, string> = {
   'image/webp': 'webp',
 };
 
-/** Nom de fichier en base → URL publique (avatar par défaut si null). */
-export function toAvatarUrl(avatar: string | null): string {
-  return avatar ? `${AVATAR_URL_PREFIX}/${avatar}` : DEFAULT_AVATAR_URL;
+/** URL publique d'un avatar envoyé, telle qu'on la stocke dans User.avatarUrl. */
+export function uploadedAvatarUrl(fileName: string): string {
+  return `${AVATAR_URL_PREFIX}/${fileName}`;
 }
 
-/** Remplace le champ `avatar` (stocké en base) par `avatarUrl` (exposé par l'API). */
-export function withAvatarUrl<T extends { avatar: string | null }>({
-  avatar,
-  ...user
-}: T) {
-  return { ...user, avatarUrl: toAvatarUrl(avatar) };
+/** User.avatarUrl null (pas d'avatar envoyé) → URL de l'avatar par défaut. */
+export function withAvatarUrl<T extends { avatarUrl: string | null }>(user: T) {
+  return { ...user, avatarUrl: user.avatarUrl ?? DEFAULT_AVATAR_URL };
 }

@@ -9,7 +9,13 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { AVATAR_DIR, AVATAR_EXTENSIONS, toAvatarUrl } from './avatar.utils.js';
+import {
+  AVATAR_DIR,
+  AVATAR_EXTENSIONS,
+  AVATAR_URL_PREFIX,
+  DEFAULT_AVATAR_URL,
+  uploadedAvatarUrl,
+} from './avatar.utils.js';
 
 /** Fichier tel que FileInterceptor le fournit (multer, stockage en mémoire). */
 export interface UploadedAvatar {
@@ -38,48 +44,51 @@ export class UsersService implements OnModuleInit {
 
     // Nom aléatoire : rien ne vient du client (ni nom, ni extension).
     const fileName = `${randomUUID()}.${extension}`;
+    const avatarUrl = uploadedAvatarUrl(fileName);
     await writeFile(join(AVATAR_DIR, fileName), file.buffer, { flag: 'wx' });
     try {
       await this.prisma.user.update({
         where: { id: userId },
-        data: { avatar: fileName },
+        data: { avatarUrl },
       });
     } catch (error) {
-      await this.deleteFile(fileName);
+      await this.deleteFile(avatarUrl);
       throw error;
     }
     await this.deleteFile(previous);
-    return { avatarUrl: toAvatarUrl(fileName) };
+    return { avatarUrl };
   }
 
   async resetAvatar(userId: number) {
     const previous = await this.getAvatar(userId);
     await this.prisma.user.update({
       where: { id: userId },
-      data: { avatar: null },
+      data: { avatarUrl: null },
     });
     await this.deleteFile(previous);
-    return { avatarUrl: toAvatarUrl(null) };
+    return { avatarUrl: DEFAULT_AVATAR_URL };
   }
 
   private async getAvatar(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { avatar: true },
+      select: { avatarUrl: true },
     });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return user.avatar;
+    return user.avatarUrl;
   }
 
   /** Supprime un ancien avatar. Un échec ne doit pas faire échouer la requête. */
-  private async deleteFile(fileName: string | null) {
-    if (!fileName) {
+  private async deleteFile(avatarUrl: string | null) {
+    // On ne supprime que nos propres fichiers (pas une URL externe éventuelle).
+    if (!avatarUrl?.startsWith(`${AVATAR_URL_PREFIX}/`)) {
       return;
     }
+    const fileName = basename(avatarUrl);
     try {
-      await unlink(join(AVATAR_DIR, basename(fileName)));
+      await unlink(join(AVATAR_DIR, fileName));
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
         this.logger.warn(`Could not delete avatar ${fileName}: ${String(error)}`);
