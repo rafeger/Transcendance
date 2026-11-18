@@ -4,13 +4,14 @@ import { Button } from '../components/ui/Button';
 import { Input } from "../components/ui";
 import { useToast } from "../components/ui";
 import { Card } from "../components/ui";
+import { profileSchema, type ProfileFormData } from "../schemas/profile";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 type Profile = { firstName: string; lastName: string; username: string; bio: string;
  }
 
 function Profile() {
-    const { showToast } = useToast();
-    const { isDark } = useTheme();
     const [profile, setProfile] = useState<Profile>({
         firstName: "",
         lastName: "",
@@ -18,43 +19,42 @@ function Profile() {
         bio: "",
     });
 
-    const [tempProfile, setTempProfile] = useState(profile);
-    const [loading, setLoading] = useState(false);
+    const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+} = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: profile,
+});
+
+    const onSubmit = (data: ProfileFormData) => {
+        setProfile(data);
+        setEdit(false);
+
+        showToast({
+            title: "Success",
+            message: "Your profile has been updated!",
+            variant: "success",
+        });
+    };
+
+    const { showToast } = useToast();
+    const { isDark } = useTheme();
+
     const [isEdit, setEdit] = useState(false);
     const [addFriend, setAddFriend] = useState(false);
     const [friendUsername, setFriendUsername] = useState("");
     const [avatar, setAvatar] = useState<string | null>(null);
 
-    function handleChange(
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) {
-        const {name, value} = e.target;
-        setTempProfile((previous) => ({
-            ...previous, [name]: value,
-        }));
-    }
-
-    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setLoading(true);
-
-        try {
-            setProfile(tempProfile);
-            setEdit(false);
-        } catch (error) {
-            console.error("Impossible to modify profile", error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
     function handleEdit() {
-        setTempProfile({ ...profile });
+        reset(profile);
         setEdit(true);
     }
 
     function handleCancel() {
-        setTempProfile({ ...profile });
+        reset(profile);
         setEdit(false);
     }
 
@@ -76,14 +76,6 @@ function Profile() {
         }
         const imageUrl = URL.createObjectURL(file);
         setAvatar(imageUrl);
-    }
-
-    function handleUpdateProfile() {
-        showToast({
-            title: "Success",
-            message: "Your profile has been updated!",
-            variant: "success",
-        });
     }
 
     return (
@@ -138,25 +130,21 @@ function Profile() {
                 </div>
 
                 {isEdit ? (
-                    <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                        <Input label="First Name" name="firstName"
-                        value={tempProfile.firstName} onChange={handleChange}
-                        placeholder="Your first name" />
+                    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+                        <Input label="First Name" {... register('firstName')}
+                        error={errors.firstName?.message} />
 
-                        <Input label="Last Name" name="lastName"
-                        value={tempProfile.lastName} onChange={handleChange}
-                        placeholder="Your last name" />
+                        <Input label="Last Name" {... register('lastName')}
+                        error={errors.lastName?.message} />
 
-                        <Input label="Username" name="username"
-                        value={tempProfile.username} onChange={handleChange}
-                        placeholder="Your username" />
+                        <Input label="Username" {... register('username')}
+                        error={errors.username?.message} />
 
-                        <Input label="Biography (optional)" name="bio"
-                        value={tempProfile.bio} onChange={handleChange}
-                        placeholder="Your biography" />
+                        <Input label="Biography (optional)" {... register('bio')}
+                        error={errors.bio?.message} />
 
-                        <Button type="submit" loading={loading} onClick={handleUpdateProfile}
-                        variant="secondary" size="md" className="mr-2">Submit</Button>
+                        <Button type="submit" variant="secondary"
+                        size="md" className="mr-2">Submit</Button>
 
                         <Button type="button" onClick={handleCancel}
                         variant="danger" size="md">Cancel</Button>
