@@ -4,6 +4,7 @@ import { BiSolidTrophy } from "react-icons/bi";
 import { GiBrain } from "react-icons/gi";
 import { useTheme } from "../contexts/ThemeContext";
 import { SiQuizlet } from "react-icons/si";
+import { Card } from "../components/ui";
 
 
 function Home() {
@@ -42,7 +43,7 @@ function Home() {
 
       <section className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 
       pb-24 sm:grid-cols-3">
-        <article className="border rounded-lg px-4 py-4 bg-pink-500">
+        <Card as="article" padding="md" className="bg-red-500">
           <span className="text-3xl">
             <GiBrain size={40} color="pink" />
           </span>
@@ -50,9 +51,9 @@ function Home() {
           <p>
             Discover some new subjects.
           </p>
-        </article>
+        </Card>
 
-        <article className="border rounded-lg px-4 py-4 bg-blue-500">
+        <Card as="article" padding="md">
           <span className="text-3xl">
             <BiSolidTrophy size={40} color="yellow" />
           </span>
@@ -60,9 +61,9 @@ function Home() {
           <p>
             Get some results and watch your progress!
           </p>
-        </article>
+        </Card>
 
-        <article className="border rounded-lg px-4 py-4 bg-green-500">
+        <Card as="article" padding="md">
           <span className="text-3xl">
             <AiFillThunderbolt size={40} color="yellow" />
           </span>
@@ -70,7 +71,7 @@ function Home() {
           <p>
             Put your knowledge to the test.
           </p>
-        </article>
+        </Card>
       </section>
     </main>
   );

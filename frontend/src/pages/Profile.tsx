@@ -3,6 +3,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Button } from '../components/ui/Button';
 import { Input } from "../components/ui";
 import { useToast } from "../components/ui";
+import { Card } from "../components/ui";
 
 type Profile = { firstName: string; lastName: string; username: string; bio: string;
  }
@@ -173,6 +174,20 @@ function Profile() {
             <section className="mt-10">
                 <div className="flex items-center justify-between border-b border-white/20 pb-2">
                     <h2 className="text-2xl font-bold">Stats</h2>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-4 mt-4">
+                    <Card as="article" padding="sm">
+                        <h3 className="text-xl text-muted">Games played</h3>
+                    </Card>
+
+                    <Card as="article" padding="sm">
+                        <h3 className="text-xl text-muted">Games won</h3>
+                    </Card>
+
+                    <Card as="article" padding="sm">
+                        <h3 className="text-xl text-muted">Win rate</h3>
+                    </Card>
                 </div>
             </section>
         </main>
