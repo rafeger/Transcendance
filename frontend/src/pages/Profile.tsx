@@ -1,23 +1,24 @@
 import React, { useState } from "react";
 import { useTheme } from '../contexts/ThemeContext';
+import { Button } from '../components/ui/Button';
+import { Input } from "../components/ui";
+import { useToast } from "../components/ui";
 
-type Profile = { firstName: string; lastName: string; username: string; dateBirth: string;
-    country: string; city: string; bio: string;
+type Profile = { firstName: string; lastName: string; username: string; bio: string;
  }
 
 function Profile() {
+    const { showToast } = useToast();
     const { isDark } = useTheme();
     const [profile, setProfile] = useState<Profile>({
         firstName: "",
         lastName: "",
         username: "",
-        dateBirth: "",
-        country: "",
-        city: "",
         bio: "",
     });
 
     const [tempProfile, setTempProfile] = useState(profile);
+    const [loading, setLoading] = useState(false);
     const [isEdit, setEdit] = useState(false);
     const [addFriend, setAddFriend] = useState(false);
     const [friendUsername, setFriendUsername] = useState("");
@@ -32,10 +33,18 @@ function Profile() {
         }));
     }
 
-    function handleSubmit(e: React.SubmitEvent) {
+    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-        setProfile(tempProfile);
-        setEdit(false);
+        setLoading(true);
+
+        try {
+            setProfile(tempProfile);
+            setEdit(false);
+        } catch (error) {
+            console.error("Impossible to modify profile", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     function handleEdit() {
@@ -68,6 +77,14 @@ function Profile() {
         setAvatar(imageUrl);
     }
 
+    function handleUpdateProfile() {
+        showToast({
+            title: "Success",
+            message: "Your profile has been updated!",
+            variant: "success",
+        });
+    }
+
     return (
         <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
             <div className="mb-8 flex items-center gap-4">
@@ -84,16 +101,17 @@ function Profile() {
                 <div>
                     <h2 className="text-xl font-bold">{profile.username}</h2>
                     <label htmlFor="avatar" className="mt-2 inline-block cursor-pointer
-                    rounded-lg bg-blue-600 text-white px-3 py-2 hover:bg-blue-700">Change avatar</label>
+                    rounded-lg bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
+                        Change Avatar
+                    </label>
                     <input id="avatar" type="file" accept="image/*"
-                    onChange={handleAvatar} className="hidden" />
+                    onChange={handleAvatar} className="hidden"/>
                 </div>
             </div>
 
             <div className="mt-4">
-                <button type="button" onClick={() => setAddFriend(!addFriend)}
-                className="rounded-lg bg-blue-600 px-3 py-2 font-semibold
-                hover:bg-blue-700 text-white">Add a friend</button>
+                <Button type="button" variant="primary" size="md" 
+                onClick={() => setAddFriend(!addFriend)}>Add a friend</Button>
 
                 {addFriend && (
                     <form onSubmit={handleFriend} 
@@ -104,8 +122,7 @@ function Profile() {
                         className="min-w-0 rounded-lg border border-white/20
                         bg-slate-800 p-2" />
 
-                        <button type="submit" className="rounded-lg bg-green-600
-                        px-3 py-2 hover:bg-green-700">Send</button>
+                        <Button type="submit" variant="primary" size="md">Send</Button>
                     </form>
                 )}
             </div>
@@ -114,55 +131,40 @@ function Profile() {
                 <div className="flex items-center justify-between border-b border-white/20 pb-2">
                     <h2 className="text-2xl font-bold">Informations</h2>
                     {!isEdit && (
-                        <button type="button" onClick={handleEdit}
-                        className="rounded-lg bg-blue-600 px-3 py-2 hover:bg-blue-700">Modify</button>
+                        <Button type="button" onClick={handleEdit}
+                        variant="primary" size="md">Modify Profile</Button>
                     )}
                 </div>
 
                 {isEdit ? (
                     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                        <div>
-                            <label className="block mb-2">First Name</label>
-                            <input name="firstName" value={tempProfile.firstName}
-                            onChange={handleChange} placeholder="Your first name"
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1 text-white" />
-                        </div>
+                        <Input label="First Name" name="firstName"
+                        value={tempProfile.firstName} onChange={handleChange}
+                        placeholder="Your first name" />
 
-                        <div>
-                            <label className="block mb-2">Last Name</label>
-                            <input name="lastName" value={tempProfile.lastName}
-                            onChange={handleChange} placeholder="Your last name"
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1 text-white" />
-                        </div>
+                        <Input label="Last Name" name="lastName"
+                        value={tempProfile.lastName} onChange={handleChange}
+                        placeholder="Your last name" />
 
-                        <div>
-                            <label className="block mb-2">Username</label>
-                            <input name="username" value={tempProfile.username}
-                            onChange={handleChange} placeholder="Your username"
-                            className="rounded-lg border border-white/20 bg-slate-800 p-1 text-white" />
-                        </div>
+                        <Input label="Username" name="username"
+                        value={tempProfile.username} onChange={handleChange}
+                        placeholder="Your username" />
 
-                        <div>
-                            <label className="block mb-2">Biography (optional)</label>
-                            <input name="bio" value={tempProfile.bio}
-                            onChange={handleChange}
-                            className="size-32 w-full rounded-lg border border-white/20 bg-slate-800 p-1 text-white" />
-                        </div>
+                        <Input label="Biography (optional)" name="bio"
+                        value={tempProfile.bio} onChange={handleChange}
+                        placeholder="Your biography" />
 
-                        <button type="submit" className="rounded-lg bg-blue-600 
-                        px-3 py-2 font-semibold hover: bg-blue-700">Submit</button>
+                        <Button type="submit" loading={loading} onClick={handleUpdateProfile}
+                        variant="secondary" size="md" className="mr-2">Submit</Button>
 
-                        <button type="button" onClick={handleCancel}
-                        className="ml-2 rounded-lg bg-slate-700 px-3 py-2 hover:bg-slate-600">Cancel</button>
+                        <Button type="button" onClick={handleCancel}
+                        variant="danger" size="md">Cancel</Button>
                     </form>
                 ) : (
-                    <div className="mt-6 space-y-4 rounded-lg border p-2">
+                    <div className="mt-6 space-y-4 p-2">
                         <p>First Name: {profile.firstName || "No information"}</p>
                         <p>Last Name: {profile.lastName || "No information"}</p>
                         <p>Username: {profile.username || "No information"}</p>
-                        <p>Date of birth: {profile.dateBirth || "No information"}</p>
-                        <p>Country: {profile.country || "No information"}</p>
-                        <p>City: {profile.city || "No information"}</p>
                         <p>Biography: {profile.bio || "No information"}</p>
                     </div>
                 )}
