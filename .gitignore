@@ -20,3 +20,4 @@ secrets/
 *.swp
 .DS_Store
 .idea/
+backend/dist-seed
