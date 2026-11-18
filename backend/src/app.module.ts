@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
 import { HealthModule } from './health/health.module.js'
 import { EventsModule } from './events/events.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { UsersModule } from './users/users.module.js';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from './auth/auth.module.js';
     HealthModule,
     EventsModule,
     AuthModule,
+    UsersModule,
   ], // loads .env file and we cna use config mod in other places
   controllers: [AppController],
   providers: [AppService],
