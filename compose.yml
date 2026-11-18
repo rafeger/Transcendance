@@ -6,8 +6,8 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "8443:443"
-      - "8080:80"
+      - '8443:443'
+      - '8080:80'
     networks:
       - transnet
   db:
@@ -19,7 +19,7 @@ services:
     networks:
       - transnet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
       interval: 5s
       timeout: 20s
       retries: 5
@@ -36,8 +36,12 @@ services:
     init: true
     networks:
       - transnet
-    healthcheck: 
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/api/health || exit 1"]
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget -q --spider http://localhost:3000/api/health || exit 1',
+        ]
       interval: 5s
       timeout: 20s
       retries: 5

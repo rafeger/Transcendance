@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { Prisma } from '../generated/prisma/client.js';
@@ -8,18 +12,31 @@ import { withAvatarUrl } from '../users/avatar.utils.js';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService) {}
-  private readonly dummyHash = argon2.hash('fauxpassHash+pour+simuler_lememetempsdereponse', { type: argon2.argon2id });
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
+  ) {}
+  private readonly dummyHash = argon2.hash(
+    'fauxpassHash+pour+simuler_lememetempsdereponse',
+    { type: argon2.argon2id },
+  );
 
   async register(dto: RegisterDto) {
     const passHash = await argon2.hash(dto.password, { type: argon2.argon2id });
     try {
       return await this.prisma.user.create({
-        data: { email: dto.email.trim().toLowerCase(), userName: dto.userName, passHash },
+        data: {
+          email: dto.email.trim().toLowerCase(),
+          userName: dto.userName,
+          passHash,
+        },
         select: { id: true, email: true, userName: true, createdAt: true },
       });
     } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === 'P2002'
+      ) {
         throw new ConflictException('Registration failed');
       }
       throw e;
@@ -34,9 +51,9 @@ export class AuthService {
     if (!user || !isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-  return this.jwt.signAsync({ sub: user.id });
+    return this.jwt.signAsync({ sub: user.id });
   }
-  
+
   async me(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -48,4 +65,3 @@ export class AuthService {
     return user;
   }
 }
-

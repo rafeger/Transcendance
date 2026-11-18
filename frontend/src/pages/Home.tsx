@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { AiFillThunderbolt } from "react-icons/ai";
-import { BiSolidTrophy } from "react-icons/bi";
-import { GiBrain } from "react-icons/gi";
-import { IoSettingsSharp } from "react-icons/io5";
-import { useTheme } from "../contexts/ThemeContext";
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { AiFillThunderbolt } from 'react-icons/ai';
+import { BiSolidTrophy } from 'react-icons/bi';
+import { GiBrain } from 'react-icons/gi';
+import { IoSettingsSharp } from 'react-icons/io5';
+import { useTheme } from '../contexts/ThemeContext';
 
 function Home() {
   const { isDark, toggleTheme } = useTheme();

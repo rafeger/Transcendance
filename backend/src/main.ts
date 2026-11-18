@@ -6,7 +6,6 @@ import { ConsoleLogger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module.js';
 import cookieParser from 'cookie-parser';
 import type { NestExpressApplication } from '@nestjs/platform-express';
-
 import type { ServerResponse } from 'node:http';
 import {
   AVATAR_DIR,
@@ -14,13 +13,12 @@ import {
   DEFAULT_AVATAR_DIR,
 } from './users/avatar.utils.js';
 
-// En-tetes des images servies : le navigateur ne doit jamais les interpreter
+// En-têtes des images servies : le navigateur ne doit jamais les interpréter
 // comme autre chose qu'une image (pas de HTML, pas de script).
 function setAvatarHeaders(res: ServerResponse) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
 }
-
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -31,10 +29,10 @@ async function bootstrap() {
     }),
   });
   app.set('trust proxy', 1);
-  app.use(cookieParser());// le guard (jwt-auth.guard.ts) qui lit le cookie. Le controleur, lui, le pose, avec res.cookie(), qui n'a pas besoin de cookie-parser.
+  app.use(cookieParser()); // le guard (jwt-auth.guard.ts) qui lit le cookie. Le contrôleur, lui, le pose, avec res.cookie(), qui n'a pas besoin de cookie-parser.
   app.setGlobalPrefix('api');
 
-  // Avatars envoyes : nom aleatoire jamais reutilise -> cache navigateur d'un an.
+  // Avatars envoyés : nom aléatoire jamais réutilisé → cache navigateur d'un an.
   app.useStaticAssets(AVATAR_DIR, {
     prefix: AVATAR_URL_PREFIX,
     index: false,
@@ -43,7 +41,7 @@ async function bootstrap() {
     maxAge: '365d',
     setHeaders: setAvatarHeaders,
   });
-  // Si le fichier n'est pas dans uploads/, on cherche l'avatar par defaut.
+  // Si le fichier n'est pas dans uploads/, on cherche l'avatar par défaut.
   app.useStaticAssets(DEFAULT_AVATAR_DIR, {
     prefix: AVATAR_URL_PREFIX,
     index: false,

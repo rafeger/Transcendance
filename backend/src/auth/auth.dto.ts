@@ -1,4 +1,12 @@
-import { IsEmail, IsString, Length, Matches, MaxLength, IsStrongPassword } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  Length,
+  Matches,
+  MaxLength,
+  IsStrongPassword,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
@@ -7,10 +15,24 @@ export class RegisterDto {
 
   @IsString()
   @Length(3, 20)
-  @Matches(/^[a-zA-Z0-9_-]+$/, { message: 'userName may only contain letters, digits, _ and -' })
+  @Matches(/^[a-zA-Z0-9_-]+$/, {
+    message: 'userName may only contain letters, digits, _ and -',
+  })
   userName!: string;
 
-  @IsStrongPassword({ minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 0 }, {message : 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.'})
+  @IsStrongPassword(
+    {
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 0,
+    },
+    {
+      message:
+        'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.',
+    },
+  )
   @MaxLength(128)
   password!: string;
 }
@@ -22,5 +44,6 @@ export class LoginDto {
 
   @IsString()
   @MaxLength(128)
+  @IsNotEmpty()
   password!: string;
 }
