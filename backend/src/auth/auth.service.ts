@@ -4,6 +4,7 @@ import * as argon2 from 'argon2';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { RegisterDto, LoginDto } from './auth.dto.js';
+import { withAvatarUrl } from '../users/avatar.utils.js';
 
 @Injectable()
 export class AuthService {
