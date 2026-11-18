@@ -59,11 +59,11 @@ model Friendship {
 model User {
   id        Int       @id @default(autoincrement())
   userName  String    @unique
+  bio       String?
   email     String    @unique
   createdAt DateTime  @default(now())
   passHash  String
   avatarUrl String?
-  bio       String?
   games     GamePlayer[]
   sentRequests     Friendship[] @relation("SentRequests")
   receivedRequests Friendship[] @relation("ReceivedRequests")
