@@ -44,6 +44,9 @@ model User {
   email     String    @unique
   createdAt DateTime  @default(now())
   passHash  String
+  // Nom du fichier dans uploads/avatars (ex. "3f2b…c1.webp").
+  // null = l'utilisateur n'a pas d'avatar : l'API renvoie l'avatar par défaut.
+  avatar    String?
   attempts  Attempt[]
 }
 
