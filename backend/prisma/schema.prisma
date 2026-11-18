@@ -63,6 +63,7 @@ model User {
   createdAt DateTime  @default(now())
   passHash  String
   avatarUrl String?
+  bio       String?
   games     GamePlayer[]
   sentRequests     Friendship[] @relation("SentRequests")
   receivedRequests Friendship[] @relation("ReceivedRequests")
@@ -120,7 +121,7 @@ model Question {
   @@index([categoryId])
 }
 
-model Answer {
+model Answer {i
   id         Int      @id @default(autoincrement())
   text       String
   isCorrect  Boolean  @default(false)
