@@ -21,4 +21,4 @@ body:
     id: notes
     attributes:
       label: Notes techniques / dépendances
-      description: "Ex : bloqué par #4"
+      description: 'Ex : bloqué par #4'

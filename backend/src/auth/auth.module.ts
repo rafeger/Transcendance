@@ -11,15 +11,15 @@ import { ThrottlerModule } from '@nestjs/throttler';
   providers: [AuthService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
   controllers: [AuthController],
   imports: [
-  JwtModule.registerAsync({
-    inject: [ConfigService],
-    useFactory: (config: ConfigService) => ({
-      secret: config.getOrThrow<string>('JWT_SECRET'),
-      signOptions: { expiresIn: '1h', algorithm: 'HS256' },
-      verifyOptions: { algorithms: ['HS256'] },
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.getOrThrow<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1h', algorithm: 'HS256' },
+        verifyOptions: { algorithms: ['HS256'] },
+      }),
     }),
-  }),
-  ThrottlerModule.forRoot([{ ttl: 60_000, limit: 5 }]),
-],
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 5 }]),
+  ],
 })
 export class AuthModule {}
