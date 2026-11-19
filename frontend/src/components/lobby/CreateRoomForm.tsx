@@ -1,4 +1,5 @@
 import { useState, type SubmitEvent } from "react";
+import { Input, Button } from "../ui";
 
 type CreateRoomProps = {
     onCreate: (
@@ -10,42 +11,58 @@ type CreateRoomProps = {
 function CreateRoomForm({ onCreate }: CreateRoomProps) {
     const [name, setName] = useState("");
     const [maxPlayers, setMaxPlayers] = useState(4);
+    const [error, setError] = useState("");
 
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        if (!name.trim()) {
-            alert("Please enter a name.");
+        const roomName = name.trim();
+
+        if (!roomName) {
+            setError("Please enter a room name!");
             return;
         }
-        onCreate(name.trim(), maxPlayers);
+        setError("");
+        onCreate(roomName, maxPlayers);
     }
 
     return (
         <section className="">
-            <h2 className="text-2xl font-bold text-white">Create a Room</h2>
+            <h2 className="text-2xl font-bold">Create a Room</h2>
+            <p className="mt-2 text-sm text-muted">
+                Create a room and invite your friends to play
+            </p>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <input 
-                    type="text"
-                    value={name} 
-                    placeholder="Room Name"
-                    onChange={(event) => setName(event.target.value)}
-                    className="mt-6 w-full rounded-lg text-white border 
-                    border-white/20 bg-indigo-950 px-3 py-2" 
-                />
-                <select value={maxPlayers}
-                onChange={(event) => setMaxPlayers(Number(event.target.value))}
-                className="rounded-lg text-white border border-white/20 bg-indigo-950 px-3 py-2">
-                    <option value={2}>2 players</option>
-                    <option value={3}>3 players</option>
-                    <option value={4}>4 players</option>
-                    <option value={5}>5 players</option>
-                    <option value={6}>6 players</option>
-                </select>
+            <form onSubmit={handleSubmit} className="space-y-4 mt-6">
+                <div>
+                    <label htmlFor="roomName" className="mb-2 block text-sm font-medium">
+                        Room name
+                    </label>
 
-                <button type="submit" className="w-full rounded-lg bg-green-600 py-2
-                font-semibold hover:bg-green-500">Create Room</button>
+                    <Input label="" id="roomName" type="text" value={name}
+                    placeholder="Enter a room name"
+                    onChange={(e) => setName(e.target.value)} />
+
+                    {error && (
+                        <p className="mt-2 text-sm text-error">{error}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label htmlFor="maxPlayers" className="mb-2 block text-sm font medium">
+                        Maximum players
+                    </label>
+
+                    <select id="maxPlayers" value={maxPlayers}
+                    onChange={(e) => setMaxPlayers(Number(e.target.value))}
+                    className="w-full rounded-lg border border-border bg-surface
+                    px-3 py-2 text-fg">{[2, 3, 4, 5, 6].map((number) => (
+                        <option key={number} value={number}>
+                            {number} players
+                        </option>
+                    ))}
+                    </select>
+                </div>
             </form>
         </section>
     );

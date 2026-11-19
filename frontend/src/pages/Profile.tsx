@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { useTheme } from '../contexts/ThemeContext';
-import { Button } from '../components/ui/Button';
-import { Input } from "../components/ui";
-import { useToast } from "../components/ui";
-import { Card } from "../components/ui";
+import { Input, Button, useToast, Card } from "../components/ui";
 import { profileSchema, type ProfileFormData } from "../schemas/profile";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

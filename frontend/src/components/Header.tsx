@@ -44,7 +44,7 @@ function Header() {
         )}
       </div>
 
-        <Link to="/" className="text-5xl font-extrabold tracking-tight">
+        <Link to="/" className="text-5xl font-extrabold tracking-wide">
           <span className='text-pink-400'>Quiz</span>
           <span className="text-blue-400">Arena</span>
         </Link>
