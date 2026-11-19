@@ -1,0 +1,37 @@
+@baseUrl = http://localhost:5173/api
+
+### 1. Connexion d'Alice (récupère le token automatiquement)
+# @name loginAlice
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "alice123"
+}
+
+### 2. Lire son propre profil (200 OK - email visible, pas de hash)
+GET {{baseUrl}}/users/me
+
+### 3. Mettre à jour sa bio (200 OK)
+PATCH {{baseUrl}}/users/me
+Content-Type: application/json
+
+{
+  "pseudo": "alice",
+  "bio": "Nouvelle bio testée avec REST Client"
+}
+
+### 4. Tester le blocage sur un pseudo déjà pris (409 Conflict)
+PATCH {{baseUrl}}/users/me
+Content-Type: application/json
+
+{
+  "pseudo": "bob"
+}
+
+### 5. Consulter le profil public d'un autre utilisateur (200 OK - sans email ni hash)
+GET {{baseUrl}}/users/bob
+
+### 6. Recherche paginée insensible à la casse (200 OK)
+GET {{baseUrl}}/users?search=ali&page=1&limit=5
