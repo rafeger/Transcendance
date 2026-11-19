@@ -4,8 +4,7 @@ import { FaGithub, FaDiscord, FaInstagram } from 'react-icons/fa';
 function Footer() {
   return (
     <footer className="border-t border-white/10 bg-slate-950 text-slate-400">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between 
-      gap-4 px-6 py-8 sm:flex-row md:px-12">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row md:px-12">
         <Link
           to="/"
           className="text-lg font-bold text-white transition hover:text-blue-400"
