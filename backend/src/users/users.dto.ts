@@ -36,6 +36,9 @@ export class SearchUserQueryDto {
 
     @IsOptional()
     @IsString()
+    @Matches(/^[a-zA-Z0-9_-]*$/,
+        { message: 'Search can only contain letters, numbers, underscores, and hyphens.'}
+    )
     search?: string;
 
     @IsOptional()
