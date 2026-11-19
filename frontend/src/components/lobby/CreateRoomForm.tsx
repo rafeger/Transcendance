@@ -1,5 +1,5 @@
 import { useState, type SubmitEvent } from "react";
-import { Input, Button } from "../ui";
+import { Input } from "../ui";
 
 type CreateRoomProps = {
     onCreate: (
