@@ -44,8 +44,9 @@ function Header() {
         )}
       </div>
 
-        <Link to="/" className="text-2xl font-extrabold tracking-tight">
-          Quiz <span className="text-blue-400">Arena</span>
+        <Link to="/" className="text-5xl font-extrabold tracking-tight">
+          <span className='text-pink-400'>Quiz</span>
+          <span className="text-blue-400">Arena</span>
         </Link>
         <nav
           aria-label="Navigation principale"

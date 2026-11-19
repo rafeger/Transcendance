@@ -10,7 +10,7 @@ export const profileSchema = z.object({
     .max(30, 'The last name cannot exceed 30 characters.'),
 
   username: z.string().trim()
-    .min(8, 'The username must contain at least 8 characters.')
+    .min(3, 'The username must contain at least 3 characters.')
     .max(20, 'The username cannot exceed 20 characters.'),
 
   bio: z.string().trim()

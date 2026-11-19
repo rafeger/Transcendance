@@ -19,31 +19,32 @@ function Home() {
       <section className="flex flex-col items-center px-6 py-24 text-center md:py-32">
         <span className={`rounded-full border border-blue-400/30 bg-blue-400/10 px-4 
         py-2 text-sm font-semibold ${isDark
-                                ? "border-white/20 bg-purple-900"
-                                : "bg-red-500 text-blue-500"}`}
+                                ? "border-white/20 bg-purple-700 text-pink-500"
+                                : "bg-slate-200 text-purple-500"}`}
         >
           The challenge begins here
         </span>
 
         <h1 className={`mt-8 max-w-4xl text-4xl font-extrabold tracking-tight 
         sm:text-6xl md:text-7xl ${isDark
-                                ? "text-red-500"
+                                ? "text-pink-500"
                                 : "text-purple-500"}`}>
           Test your knowledges.
         </h1>
 
         <Link
           to="/quiz"
-          className="mt-10 inline-flex items-center gap-3 rounded-xl bg-blue-500 px-7 py-4 font-bold text-white transition hover:-translate-y-1 hover:bg-blue-400"
+          className="mt-10 inline-flex items-center gap-3 rounded-xl bg-blue-500 
+          px-7 py-4 font-bold text-white transition hover:-translate-y-1 hover:bg-blue-400"
         >
           Begin to play
           <span aria-hidden="true">{' ->'}</span>
         </Link>
       </section>
 
-      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-6 
-      pb-24 sm:grid-cols-3">
-        <Card as="article" padding="md" className="bg-red-500">
+      <section className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4
+      pb-4 sm:grid-cols-3 pt-4">
+        <Card as="article" padding="md">
           <span className="text-3xl">
             <GiBrain size={40} color="pink" />
           </span>
