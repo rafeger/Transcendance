@@ -25,26 +25,6 @@ function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
     
-  // const [username, setUsername] = useState('');
-  // const [password, setPassword] = useState('');
-  // const [email, setEmail] = useState('');
-     
-  // async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-  //     event.preventDefault();
-      
-  //     if (isRegister && username.trim() === '') {
-  //         alert('You must enter a username.');
-  //         return ;
-  //     }
-  //     if (email.trim() === '' || password === '') {
-  //         alert('You must fill in all the fields.')
-  //         return;
-  //     }
-  //     if (password.length < 8) {
-  //         alert('Your password must contain at least 8 characters.');
-  //         return ;
-  //     }
-            
   const currentSchema = isRegister ? registerSchema : loginSchema;
 
   const {

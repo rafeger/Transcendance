@@ -49,6 +49,16 @@ export class UsersService {
 
         async updateMe(userId: number, dto: UpdateProfileDto): Promise<PrivateUserDto> {
             try {
+                if (dto.userName) {
+                    const existingUser = await this.prisma.user.findFirst({
+                        where: { 
+                            userName: { equals: dto.userName, mode: 'insensitive'},
+                        },
+                    });
+                    if (existingUser && existingUser.id !== userId) {
+                        throw new ConflictException('This username is already taken');
+                    }
+                }
                 return await this.prisma.user.update({
                     where: { id: userId },
                     data: {

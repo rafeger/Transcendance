@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 export const profileSchema = z.object({
-  firstName: z.string().trim()
-    .min(1, 'The first name is required.')
-    .max(30, 'The first name cannot exceed 30 characters.'),
-
-  lastName: z.string().trim()
-    .min(1, 'The last name is required.')
-    .max(30, 'The last name cannot exceed 30 characters.'),
+  //firstName: z.string().trim()
+  //  .min(1, 'The first name is required.')
+  //  .max(30, 'The first name cannot exceed 30 characters.'),
+//
+  //lastName: z.string().trim()
+  //  .min(1, 'The last name is required.')
+  //  .max(30, 'The last name cannot exceed 30 characters.'),
 
   username: z.string().trim()
     .min(3, 'The username must contain at least 3 characters.')
