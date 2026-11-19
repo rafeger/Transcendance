@@ -11,7 +11,6 @@ import {
   ValidationError,
 } from 'class-validator';
 
-
 enum Env {
   DEV = 'development',
   PROD = 'production',
@@ -34,7 +33,6 @@ class EnvVar {
   @IsString()
   @MinLength(32)
   JWT_SECRET!: string;
-
 }
 
 function formatErrors(errors: ValidationError[]): string {

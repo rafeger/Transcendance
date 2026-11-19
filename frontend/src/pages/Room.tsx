@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { useRoom } from "../contexts/useRoom";
 import PlayerCard from "../components/room/PlayerCard";

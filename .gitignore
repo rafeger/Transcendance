@@ -3,6 +3,7 @@ frontend/node_modules/
 frontend/dist/
 build/
 coverage/
+node_modules/
 
 # Secrets : jamais dans Git
 .env
@@ -19,3 +20,4 @@ secrets/
 *.swp
 .DS_Store
 .idea/
+backend/dist-seed
