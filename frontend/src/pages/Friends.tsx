@@ -19,7 +19,7 @@ function Friends() {
 
   if (isPending) {
     return (
-      <main className="px-4 py-16">
+      <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
         <div className="mx-auto max-w_3xl">
           <p className="text-slate-400">Loading friends...</p>
         </div>
@@ -29,7 +29,7 @@ function Friends() {
 
   if (isError) {
     return (
-      <main className="px-4 py-16">
+      <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
         <div className="mx-auto max-w_3xl">
           <p className="text-slate-400">Impossible to load friends.</p>
         </div>
@@ -38,7 +38,7 @@ function Friends() {
   }
 
   return (
-    <main className="px-4 py-16">
+    <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
       <div className="mx-auto max-w_3xl">
         <h1 className="text-3xl font-bold">My Friends</h1>
       </div>
