@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
-import { AiFillThunderbolt } from "react-icons/ai";
-import { BiSolidTrophy } from "react-icons/bi";
-import { GiBrain } from "react-icons/gi";
-import { useTheme } from "../contexts/ThemeContext";
-import { SiQuizlet } from "react-icons/si";
-import { Card, Button } from "../components/ui";
+import { Link } from 'react-router-dom';
+import { AiFillThunderbolt } from 'react-icons/ai';
+import { BiSolidTrophy } from 'react-icons/bi';
+import { GiBrain } from 'react-icons/gi';
+import { useTheme } from '../contexts/ThemeContext';
+import { SiQuizlet } from 'react-icons/si';
+import { Card, Button } from '../components/ui';
 
 
 function Home() {
