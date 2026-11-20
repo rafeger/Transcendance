@@ -8,6 +8,7 @@ import * as argon2 from 'argon2';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { RegisterDto, LoginDto } from './auth.dto.js';
+import { withAvatarUrl } from '../users/avatar.utils.js';
 
 @Injectable()
 export class AuthService {
@@ -56,11 +57,17 @@ export class AuthService {
   async me(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, userName: true, createdAt: true },
+      select: {
+        id: true,
+        email: true,
+        userName: true,
+        createdAt: true,
+        avatarUrl: true,
+      },
     });
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    return withAvatarUrl(user);
   }
 }
