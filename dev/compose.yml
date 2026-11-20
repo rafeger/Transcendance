@@ -18,6 +18,7 @@ services:
     volumes:
       - ../backend/src:/app/src:Z
       - ../backend/prisma:/app/prisma:Z
+      - avatars:/app/uploads
     env_file:
       - ../.env
     environment:
@@ -56,6 +57,7 @@ services:
       start_period: 30s
 volumes:
   dbdata:
+  avatars:
 networks:
   transnet-dev:
     driver: bridge

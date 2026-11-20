@@ -78,6 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  function updateUser(changes: Partial<User>) {
+    setUser((current) => (current ? { ...current, ...changes } : current));
+  }
+  
   async function logout() {
     try {
       
@@ -93,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, checkAuth, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, checkAuth, updateUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
