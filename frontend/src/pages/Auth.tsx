@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { socket } from '../lib/socket';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { 
@@ -86,20 +85,11 @@ function Auth() {
       }
       
       if (isRegister) {
-        console.log('Register:', data.email, data.password, data.username!);
         toggleMode(false);
         alert('Account created! Please sign in.');
         return;
       }
-      else {
-        console.log('Login:', data.email, data.password);
-      }
-      
-      // connect websocket now that jwt cookie stored
-      if (!socket.connected) {
-        socket.connect();
-      }
-
+	  
       await checkAuth();
 
       navigate(from, { replace: true });
