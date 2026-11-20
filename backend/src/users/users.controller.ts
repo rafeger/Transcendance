@@ -2,10 +2,7 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
-  Post,
   Req,
-  Res,
   Patch,
   UseGuards,
   Query,
@@ -50,6 +47,5 @@ export class UsersController {
     async getPublicProfile(@Param('username') userName: string): Promise<PublicUserDto> {
         return this.usersService.getPublicProfile(userName);
     }
-
 
 }
