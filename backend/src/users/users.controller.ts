@@ -3,7 +3,7 @@ import {
   Delete,
   FileTypeValidator,
   ParseFilePipe,
-  Put,
+  Post,
   Req,
   UploadedFile,
   UseGuards,
@@ -21,8 +21,8 @@ import type { UploadedAvatar } from './users.service.js';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  /** PUT /api/users/me/avatar — multipart/form-data, champ « avatar ». */
-  @Put('me/avatar')
+  /** POST /api/users/me/avatar — multipart/form-data, champ « avatar ». */
+  @Post('me/avatar')
   @UseGuards(ThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @UseInterceptors(
