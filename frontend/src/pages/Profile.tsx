@@ -4,11 +4,11 @@ import { Input, Button, useToast, Card } from "../components/ui";
 import { profileSchema, type ProfileFormData } from "../schemas/profile";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { socket } from '../lib/socket';
 
-
-type Profile = { username: string; bio: string;
- }
+type Profile = {
+    username:   string; 
+    bio:        string;
+};
 
 function Profile() {
     const [profile, setProfile] = useState<Profile>({
@@ -31,31 +31,91 @@ function Profile() {
     const { showToast } = useToast();
     const { isDark } = useTheme();
 
-    useEffect(()) => {
-        
-    }
-
+    
     const [isEdit, setEdit] = useState(false);
     const [addFriend, setAddFriend] = useState(false);
     const [friendUsername, setFriendUsername] = useState("");
     const [avatar, setAvatar] = useState<string | null>(null);
 
+    // Charge profil depuis backend
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch('/api/users/me', {
+                    method: 'GET',
+                    credentials: 'include', //to save jwt in the front 
+                });
+                if (response.ok) {
+                    const userData = await response.json();
+                    const user = userData.user || userData;
+
+                    const formattedProfile: Profile = {
+                        username: user.userName || "",
+                        bio: user.bio || "",
+                    };
+
+                    setProfile(formattedProfile);
+                    reset(formattedProfile); //pre remplit formulaire
+                }
+            }
+            catch (error){
+                console.error("Error during thue update of the profile: ", error);
+
+            }
+        };
+
+        fetchProfile();
+    }, [reset]);
+
+
       const onSubmit = async (data: ProfileFormData) => {
-        setProfile(data);
-        setEdit(false);
+        try {
+            const payload = {
+                userName: data.username,
+                bio: data.bio,
+            };
 
-        const response = await fetch('/api/users/me', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json'},
-        credentials: 'include', //to save jwt in the front 
-        body: JSON.stringify(data),
-        });
+            const response = await fetch('/api/users/me', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json'},
+                credentials: 'include', //to save jwt in the front 
+                body: JSON.stringify(payload),
+            });
 
-        showToast({
-            title: "Success",
-            message: "Your profile has been updated!",
-            variant: "success",
-        });
+            const result = await response.json();
+
+            // si username déjà pris : error
+            if (!response.ok) {
+                showToast({
+                    title: "Error",
+                    message: result.message || "Failed to update profile !",
+                    variant: "error",
+                });
+                return;
+            }
+            
+            const updatedUser = result.user || result;
+            setProfile({
+
+                ...profile,
+                username: updatedUser.userName || data.username,
+                bio: updatedUser.bio ?? data.bio,
+            });
+            setEdit(false);
+            
+            showToast({
+                title: "Success",
+                message: "Your profile has been updated!",
+                variant: "success",
+            });
+        }
+        catch (error) {
+            showToast({
+                title: "Network Error",
+                message: "Unable to reach server",
+                variant: "error",
+            });
+        }
     };
 
     function handleEdit() {
@@ -97,7 +157,7 @@ function Profile() {
                         <img src={avatar} alt="Profile avatar"
                         className="h-full w-full object-cover" />
                     ) : (
-                        profile.username.charAt(0).toUpperCase()
+                        profile?.username?.charAt(0).toUpperCase() || "?"
                     )}
                 </div>
 
