@@ -12,6 +12,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
   controllers: [AuthController],
   imports: [
     JwtModule.registerAsync({
+      global: true,
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>('JWT_SECRET'),
