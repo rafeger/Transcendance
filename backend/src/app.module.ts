@@ -22,7 +22,7 @@ import { UsersModule } from './users/users.module.js';
     HealthModule,
     EventsModule,
     AuthModule,
-    UsersModule
+    UsersModule,
   ], // loads .env file and we cna use config mod in other places
   controllers: [AppController],
   providers: [AppService],

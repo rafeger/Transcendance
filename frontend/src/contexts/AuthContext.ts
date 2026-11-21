@@ -8,9 +8,14 @@ export type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   checkAuth:  () => Promise<void>;
+  /** Met à jour localement l'utilisateur connecté (ex. après un changement d'avatar). */
+  updateUser: (changes: Partial<User>) => void;
   logout: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined,
 );
+
+
+

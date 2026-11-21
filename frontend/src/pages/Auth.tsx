@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { socket } from '../lib/socket';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { 
@@ -25,6 +24,26 @@ function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
     
+  // const [username, setUsername] = useState('');
+  // const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('');
+     
+  // async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
+  //     event.preventDefault();
+      
+  //     if (isRegister && username.trim() === '') {
+  //         alert('You must enter a username.');
+  //         return ;
+  //     }
+  //     if (email.trim() === '' || password === '') {
+  //         alert('You must fill in all the fields.')
+  //         return;
+  //     }
+  //     if (password.length < 8) {
+  //         alert('Your password must contain at least 8 characters.');
+  //         return ;
+  //     }
+            
   const currentSchema = isRegister ? registerSchema : loginSchema;
 
   const {
@@ -66,20 +85,11 @@ function Auth() {
       }
       
       if (isRegister) {
-        console.log('Register:', data.email, data.password, data.username!);
         toggleMode(false);
         alert('Account created! Please sign in.');
         return;
       }
-      else {
-        console.log('Login:', data.email, data.password);
-      }
-      
-      // connect websocket now that jwt cookie stored
-      if (!socket.connected) {
-        socket.connect();
-      }
-
+	  
       await checkAuth();
 
       navigate(from, { replace: true });

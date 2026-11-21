@@ -121,7 +121,7 @@ model Question {
   @@index([categoryId])
 }
 
-model Answer {i
+model Answer {
   id         Int      @id @default(autoincrement())
   text       String
   isCorrect  Boolean  @default(false)

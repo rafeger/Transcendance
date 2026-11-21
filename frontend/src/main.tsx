@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './contexts/ThemeContext.tsx';
 import { AuthProvider } from './contexts/AuthContextValue.tsx';
-import App from './App.tsx'
-import "./index.css";
+import App from './App.tsx';
+import './index.css';
 import { RoomProvider } from './contexts/RoomContextValue.tsx';
 import { ToastProvider } from './components/ui/ToastProvider.tsx';
 
