@@ -1,59 +1,51 @@
 import {
+  Body,
   Controller,
-  Delete,
-  FileTypeValidator,
-  ParseFilePipe,
-  Post,
+  Get,
   Req,
-  UploadedFile,
+  Patch,
   UseGuards,
-  UseInterceptors,
+  Query,
+  Param
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import type { Request } from 'express';
-import type { JwtPayload } from '../auth/jwt-auth.guard.js';
-import { AVATAR_MAX_BYTES, AVATAR_MIME_TYPES } from './avatar.utils.js';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
+import { 
+    UpdateProfileDto,
+    SearchUserQueryDto,
+    PublicUserDto,
+    PrivateUserDto,
+    PaginateUsersDto
+} from './users.dto.js';
 import { UsersService } from './users.service.js';
-import type { UploadedAvatar } from './users.service.js';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersService) {}
 
-  /** POST /api/users/me/avatar — multipart/form-data, champ « avatar ». */
-  @Post('me/avatar')
-  @UseGuards(ThrottlerGuard)
-  @Throttle({ default: { limit: 10, ttl: 60_000 } })
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      // Au-delà de fileSize, multer coupe la lecture et Nest répond 413.
-      limits: { fileSize: AVATAR_MAX_BYTES, files: 1, fields: 0 },
-    }),
-  )
-  uploadAvatar(
-    @Req() req: Request & { user: JwtPayload },
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [
-          // Lit les premiers octets du fichier : le Content-Type et le nom
-          // envoyés par le client ne sont pas pris en compte.
-          new FileTypeValidator({
-            fileType: AVATAR_MIME_TYPES,
-            overrideMimeType: true,
-            errorMessage: 'Avatar must be a PNG, JPEG or WebP image',
-          }),
-        ],
-      }),
-    )
-    file: UploadedAvatar,
-  ) {
-    return this.usersService.updateAvatar(req.user.sub, file);
-  }
+    @Get('me')
+    async getMe(@Req() req: any): Promise<PrivateUserDto> {
+        const userId = req.user.sub;
+        return this.usersService.getMe(userId);
+    }
 
-  /** DELETE /api/users/me/avatar — revient à l'avatar par défaut. */
-  @Delete('me/avatar')
-  resetAvatar(@Req() req: Request & { user: JwtPayload }) {
-    return this.usersService.resetAvatar(req.user.sub);
-  }
+    @Patch('me')
+    async updateMe(
+        @Req() req: any,
+        @Body() dto: UpdateProfileDto,
+    ): Promise<PrivateUserDto> {
+         const userId = req.user.sub;
+        return this.usersService.updateMe(userId, dto);
+    }
+
+    @Get()
+    async searchUsers(@Query() query: SearchUserQueryDto): Promise<PaginateUsersDto> {
+        return this.usersService.searchUsers(query);
+    }
+
+    @Get(':username')
+    async getPublicProfile(@Param('username') userName: string): Promise<PublicUserDto> {
+        return this.usersService.getPublicProfile(userName);
+    }
+
 }

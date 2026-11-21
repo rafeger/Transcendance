@@ -1,49 +1,122 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from '../contexts/ThemeContext';
 import { Input, Button, useToast, Card } from "../components/ui";
 import { profileSchema, type ProfileFormData } from "../schemas/profile";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-type Profile = { firstName: string; lastName: string; username: string; bio: string;
- }
+type Profile = {
+    username:   string; 
+    bio:        string;
+};
 
 function Profile() {
     const [profile, setProfile] = useState<Profile>({
-        firstName: "",
-        lastName: "",
+        //firstName: "",
+        //lastName: "",
         username: "",
         bio: "",
     });
 
     const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-} = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: profile,
-});
-
-    const onSubmit = (data: ProfileFormData) => {
-        setProfile(data);
-        setEdit(false);
-
-        showToast({
-            title: "Success",
-            message: "Your profile has been updated!",
-            variant: "success",
-        });
-    };
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<ProfileFormData>({
+        resolver: zodResolver(profileSchema),
+        defaultValues: profile,
+    });
 
     const { showToast } = useToast();
     const { isDark } = useTheme();
 
+    
     const [isEdit, setEdit] = useState(false);
     const [addFriend, setAddFriend] = useState(false);
     const [friendUsername, setFriendUsername] = useState("");
     const [avatar, setAvatar] = useState<string | null>(null);
+
+    // Charge profil depuis backend
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch('/api/users/me', {
+                    method: 'GET',
+                    credentials: 'include', //to save jwt in the front 
+                });
+                if (response.ok) {
+                    const userData = await response.json();
+                    const user = userData.user || userData;
+
+                    const formattedProfile: Profile = {
+                        username: user.userName || "",
+                        bio: user.bio || "",
+                    };
+
+                    setProfile(formattedProfile);
+                    reset(formattedProfile); //pre remplit formulaire
+                }
+            }
+            catch (error){
+                console.error("Error during thue update of the profile: ", error);
+
+            }
+        };
+
+        fetchProfile();
+    }, [reset]);
+
+
+      const onSubmit = async (data: ProfileFormData) => {
+        try {
+            const payload = {
+                userName: data.username,
+                bio: data.bio,
+            };
+
+            const response = await fetch('/api/users/me', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json'},
+                credentials: 'include', //to save jwt in the front 
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+
+            // si username déjà pris : error
+            if (!response.ok) {
+                showToast({
+                    title: "Error",
+                    message: result.message || "Failed to update profile !",
+                    variant: "error",
+                });
+                return;
+            }
+            
+            const updatedUser = result.user || result;
+            setProfile({
+
+                ...profile,
+                username: updatedUser.userName || data.username,
+                bio: updatedUser.bio ?? data.bio,
+            });
+            setEdit(false);
+            
+            showToast({
+                title: "Success",
+                message: "Your profile has been updated!",
+                variant: "success",
+            });
+        }
+        catch {
+            showToast({
+                title: "Network Error",
+                message: "Unable to reach server",
+                variant: "error",
+            });
+        }
+    };
 
     function handleEdit() {
         reset(profile);
@@ -84,7 +157,7 @@ function Profile() {
                         <img src={avatar} alt="Profile avatar"
                         className="h-full w-full object-cover" />
                     ) : (
-                        profile.username.charAt(0).toUpperCase()
+                        profile?.username?.charAt(0).toUpperCase() || "?"
                     )}
                 </div>
 
@@ -128,11 +201,12 @@ function Profile() {
 
                 {isEdit ? (
                     <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
-                        <Input label="First Name" {... register('firstName')}
-                        error={errors.firstName?.message} />
+                        {//<Input label="First Name" {... register('firstName')}
+                        //error={errors.firstName?.message} />
 
-                        <Input label="Last Name" {... register('lastName')}
-                        error={errors.lastName?.message} />
+                        //<Input label="Last Name" {... register('lastName')}
+                        //error={errors.lastName?.message} />
+                        }
 
                         <Input label="Username" {... register('username')}
                         error={errors.username?.message} />
@@ -148,8 +222,9 @@ function Profile() {
                     </form>
                 ) : (
                     <div className="mt-6 space-y-4 p-2">
-                        <p>First Name: {profile.firstName || "No information"}</p>
-                        <p>Last Name: {profile.lastName || "No information"}</p>
+                        {//<p>First Name: {profile.firstName || "No information"}</p>
+                        //<p>Last Name: {profile.lastName || "No information"}</p>
+                }
                         <p>Username: {profile.username || "No information"}</p>
                         <p>Biography: {profile.bio || "No information"}</p>
                     </div>
