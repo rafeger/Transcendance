@@ -10,7 +10,7 @@ export default function PublicRoomCard({ room, onJoin }: Props) {
   const canJoin = room.status === 'waiting' && !isFull;
 
   return (
-    <div className="rounded-xl border border-gray-700 bg-gray-900 p-4">
+    <div className="rounded-xl border border-gray-700 bg-gray-900 p-4 text-white">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold">{room.name}</h3>
         <span className="text-sm text-green-400">

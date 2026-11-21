@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { questions } from '../data/questions';
 import QuestionCard from '../components/quiz/QuestionCard';
+import { useTheme } from '../contexts/ThemeContext';
 
 function Quiz() {
+  const { isDark } = useTheme();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -36,11 +38,10 @@ function Quiz() {
 
   if (isFinished) {
     return (
-      <main className="min-h-screen bg-slate-950 px-4 py-16 text-white">
-        <div
-          className="mx-auto max-w-2xl rounded-2xl bg-indigo-900
-                p-8 text-center"
-        >
+      <main
+      className={`min-h-screen px-4 py-16 ${isDark ? 'bg-slate-800' : 'bg-slate-50'}`}
+      >
+        <div className="mx-auto max-w-2xl rounded-2xl bg-indigo-900 p-8 text-center text-white">
           <h1 className="text-4xl font-bold">Quiz finished!</h1>
           <p className="mt-6 text-2xl">
             Your score: {score}/{questions.length}
@@ -58,13 +59,15 @@ function Quiz() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-16 text-white">
+    <main
+        className={`min-h-screen px-4 py-16 ${isDark ? 'bg-slate-800' : 'bg-slate-50'}`}
+      >
       <div className="mx-auto max-w-3xl">
         <h1 className="text-center text-bold text-4xl">Quiz Arena</h1>
         <p className="mt-4 text-center text-slate-400">
           Question: {currentQuestionIndex + 1} / {questions.length}
         </p>
-        <div className="mt-8">
+        <div className="mt-8 text-white">
           <QuestionCard
             question={currentQuestion}
             selectedAnswer={selectedAnswer}

@@ -6,6 +6,7 @@ import { AuthProvider } from './contexts/AuthContextValue.tsx';
 import App from './App.tsx';
 import './index.css';
 import { RoomProvider } from './contexts/RoomContextValue.tsx';
+import { ToastProvider } from './components/ui/ToastProvider.tsx';
 
 const queryClient = new QueryClient();
 
@@ -13,11 +14,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <RoomProvider>
-            <App />
-          </RoomProvider>
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <RoomProvider>
+              <App />
+            </RoomProvider>
+          </AuthProvider>
+        </ToastProvider>
       </QueryClientProvider>
     </ThemeProvider>
   </StrictMode>,
