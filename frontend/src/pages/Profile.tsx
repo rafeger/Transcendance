@@ -88,7 +88,7 @@ function Profile() {
             if (!response.ok) {
                 showToast({
                     title: "Error",
-                    message: result.message || "Failed to update profile !",
+                    message: result.message || "Failed to update profile !",
                     variant: "error",
                 });
                 return;
@@ -109,7 +109,7 @@ function Profile() {
                 variant: "success",
             });
         }
-        catch (error) {
+        catch {
             showToast({
                 title: "Network Error",
                 message: "Unable to reach server",
