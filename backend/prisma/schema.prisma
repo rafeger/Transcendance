@@ -59,6 +59,7 @@ model Friendship {
 model User {
   id        Int       @id @default(autoincrement())
   userName  String    @unique
+  bio       String?
   email     String    @unique
   createdAt DateTime  @default(now())
   passHash  String
@@ -120,7 +121,7 @@ model Question {
   @@index([categoryId])
 }
 
-model Answer {
+model Answer {i
   id         Int      @id @default(autoincrement())
   text       String
   isCorrect  Boolean  @default(false)
