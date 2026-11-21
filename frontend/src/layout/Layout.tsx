@@ -4,7 +4,8 @@ import Footer from '../components/Footer';
 
 function Layout() {
   return (
-    <div className="min-h-screen bg-indigo-950 text-white">
+    // bg-bg / text-fg : couleurs du thème clair/sombre (variables de index.css)
+    <div className="flex min-h-screen flex-col bg-bg text-fg">
       <Header />
 
       <main className="flex-1">
