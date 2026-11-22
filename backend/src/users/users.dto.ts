@@ -61,7 +61,7 @@ export class PublicUserDto {
     userName:       string;
     bio:            string | null;
     createdAt:      Date;
-    avatarUrl:      string | null;
+    avatarUrl:      string; // jamais null : avatar par défaut
     totalScore:     number;
     gamesPlayed:    number;
 }
