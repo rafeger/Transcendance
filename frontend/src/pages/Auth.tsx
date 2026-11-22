@@ -24,25 +24,6 @@ function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
     
-  // const [username, setUsername] = useState('');
-  // const [password, setPassword] = useState('');
-  // const [email, setEmail] = useState('');
-     
-  // async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-  //     event.preventDefault();
-      
-  //     if (isRegister && username.trim() === '') {
-  //         alert('You must enter a username.');
-  //         return ;
-  //     }
-  //     if (email.trim() === '' || password === '') {
-  //         alert('You must fill in all the fields.')
-  //         return;
-  //     }
-  //     if (password.length < 8) {
-  //         alert('Your password must contain at least 8 characters.');
-  //         return ;
-  //     }
             
   const currentSchema = isRegister ? registerSchema : loginSchema;
 
@@ -128,7 +109,6 @@ function Auth() {
       </button>
       <button
         type="button"
-        /*onClick={() => setRegister(true)}*/
         onClick={() => toggleMode(true)}
         className={`rounded-md px-4 py-2 font-medium transition ${
           isRegister
@@ -156,8 +136,6 @@ function Auth() {
         <input { ... register('username')}
           id="username"
           type="text"
-          // value={username}
-          // onChange={(event) => setUsername(event.target.value)}
           placeholder="Your username"
           className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
         />
@@ -175,8 +153,6 @@ function Auth() {
         { ... register('email')}
         id="email"
         type="text"
-        // value={email}
-        // onChange={(event) => setEmail(event.target.value)}
         placeholder="Your email"
         className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
         />
@@ -193,8 +169,6 @@ function Auth() {
         { ... register('password')}
         id="password"
         type={showPassword ? 'text' : 'password'}
-        // value={password}
-        // onChange={(event) => setPassword(event.target.value)}
         placeholder="Your password"
         className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
         />
