@@ -11,6 +11,7 @@ export type RoomContextType = {
   getRoom: (code: string) => Room | undefined;
   toggleReady: (code: string) => void;
   currentPlayer: Player;
+  isConnected: boolean;
 };
 
 export const RoomContext = createContext<RoomContextType | undefined>(

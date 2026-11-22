@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactNode, useEffect } from 'react';
 import { RoomContext } from './RoomContext';
 import type { Room, Player } from '../types/room';
 
@@ -54,15 +54,39 @@ const initialRooms: Room[] = [
 ];
 
 export function RoomProvider({ children }: { children: ReactNode }) {
-  const [rooms, setRooms] = useState<Room[]>(initialRooms);
+  const [rooms, setRooms] = useState<Room[]>(() => {
+    const savedRooms = sessionStorage.getItem('rooms');
+    if (!savedRooms) return initialRooms;
 
-  const [currentPlayer] = useState<Player>(() => ({
-    id: crypto.randomUUID(),
-    username: 'You',
-    avatar: '/avatars/default.png',
-    isHost: false,
-    isReady: false,
-  }));
+    try {
+      return JSON.parse(savedRooms) as Room[];
+    }
+    catch {
+      return initialRooms;
+    }
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('rooms', JSON.stringify(rooms));
+  }, [rooms]);
+
+  const [currentPlayer] = useState<Player>(() => {
+
+    let playerId = sessionStorage.getItem('playerId');
+
+    if (!playerId || playerId.length !== 36) {
+      playerId = crypto.randomUUID();
+      sessionStorage.setItem('playerId', playerId);
+    }
+
+    return {
+      id: playerId,
+      username: 'You',
+      avatar: '/avatars/default.png',
+      isHost: false,
+      isReady: false,
+    };
+  });
 
   function createRoom(name: string, maxPlayers: number): Room {
     const newRoom: Room = {
@@ -81,6 +105,8 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     };
 
     setRooms((currentRooms) => [...currentRooms, newRoom]);
+
+    sessionStorage.setItem('activRoom', newRoom.code);
     return newRoom;
   }
 
@@ -89,11 +115,12 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     if (!room || room.status !== 'waiting') {
       return null;
     }
-
+    
     const alreadyJoined = room.players.some(
       (player) => player.id === currentPlayer.id,
     );
     if (alreadyJoined) {
+      sessionStorage.setItem('activRoom', room.code);
       return room;
     }
     if (room.players.length >= room.maxPlayers) {
@@ -109,13 +136,16 @@ export function RoomProvider({ children }: { children: ReactNode }) {
         currentRoom.id === room.id ? updatedRoom : currentRoom,
       ),
     );
+   
     return updatedRoom;
   }
 
   function leaveRoom(code: string) {
+    sessionStorage.removeItem('activRoom');
+
     const room = getRoom(code);
     if (!room) return;
-
+    
     const remainingPlayers = room.players.filter(
       (player) => player.id !== currentPlayer.id,
     );
@@ -126,8 +156,8 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     ) {
       setRooms((currentRooms) =>
         currentRooms.filter((currentRoom) => currentRoom.id !== room.id),
-      );
-      return;
+    );
+    return;
     }
     setRooms((currentRooms) =>
       currentRooms.map((currentRoom) =>
