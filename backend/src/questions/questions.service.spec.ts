@@ -1,16 +1,15 @@
 import {Test, TestingModule} from '@nestjs/testing';
-import {QuestionsService} from './questions.service.js';
 import {PrismaService} from '../prisma/prisma.service.js';
 import {QuestionsService, QuestionRow} from './questions.service.js'
 
-const rows : QuestionRow [] = {
-	{0, 'catTest', 341, 'question1 text', 'EASY', 'MULTIPLE', 1341, 'q1answer1 text', false},
-	{0, 'catTest', 341, 'question1 text', 'EASY', 'MULTIPLE', 2341, 'q1answer2 text', false},
-	{0, 'catTest', 341, 'question1 text', 'EASY', 'MULTIPLE', 3341, 'q1answer3 text', true},
-	{0, 'catTest', 341, 'question1 text', 'EASY', 'MULTIPLE', 4341, 'q1answer4 text', false},
-	{1, 'catTest', 241, 'question2 text', 'MEDIUM', 'BOOLEAN', 1241, 'q2answer1 text', false},
-	{1, 'catTest', 241, 'question2 text', 'MEDIUM', 'BOOLEAN', 2241, 'q2answer2 text', true},
-}
+const rows : QuestionRow [] = [
+	{position:0, categoryName:'catTest', qId:341, question:'question1 text', difficulty:'EASY', type:'MULTIPLE', aId:1341, answer:'q1answer1 text', isCorrect:false},
+	{position:0, categoryName:'catTest', qId:341, question:'question1 text', difficulty:'EASY', type:'MULTIPLE', aId:2341, answer:'q1answer2 text', isCorrect:false},
+	{position:0, categoryName:'catTest', qId:341, question:'question1 text', difficulty:'EASY', type:'MULTIPLE', aId:3341, answer:'q1answer3 text', isCorrect:true},
+	{position:0, categoryName:'catTest', qId:341, question:'question1 text', difficulty:'EASY', type:'MULTIPLE', aId:4341, answer:'q1answer4 text', isCorrect:false},
+	{position:1, categoryName:'catTest', qId:241, question:'question2 text', difficulty:'MEDIUM', type:'BOOLEAN', aId:1241, answer:'q2answer1 text', isCorrect:false},
+	{position:1, categoryName:'catTest', qId:241, question:'question2 text', difficulty:'MEDIUM', type:'BOOLEAN', aId:2241, answer:'q2answer2 text', isCorrect:true},
+]
 
 describe('QuestionsService', () => { //regroupe tous les tests du service
 	let service: QuestionsService; //variable partagee par tous les tests du groupe
@@ -22,7 +21,7 @@ describe('QuestionsService', () => { //regroupe tous les tests du service
 				{provide: PrismaService, useValue:{}},//quand on demande PrismaService donne cet objet a la place (le faux Prisma)
 			],
 		}).compile();//NestJS assemble le module et fait les injections
-		service = module.get<QuestionsService>(QuestionsService); recupere le service avec le faux Prisma
+		service = module.get<QuestionsService>(QuestionsService); //recupere le service avec le faux Prisma
 	});
 	
 	it('should be defined', () => {//un test aui verifie que le service a pu etre cree
