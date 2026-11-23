@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from '../contexts/ThemeContext';
-import { Input, Button, useToast, Card } from "../components/ui";
+import { Input, Button, useToast } from "../components/ui";
 import { profileSchema, type ProfileFormData } from "../schemas/profile";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AvatarUploader } from '../components/profile/AvatarUploader';
 import { useAuth } from '../contexts/useAuth';
+import MatchHistory from "../components/profile/History";
+import { matches } from "../data/matches";
+import StatCard from "../components/profile/StatCard";
 
 type Profile = {
     username:   string; 
@@ -219,19 +222,13 @@ function Profile() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4 mt-4">
-                    <Card as="article" padding="sm">
-                        <h3 className="text-xl text-muted">Games played</h3>
-                    </Card>
-
-                    <Card as="article" padding="sm">
-                        <h3 className="text-xl text-muted">Games won</h3>
-                    </Card>
-
-                    <Card as="article" padding="sm">
-                        <h3 className="text-xl text-muted">Win rate</h3>
-                    </Card>
+                    <StatCard title="Games played" value={matches.length}/>
+                    <StatCard title="Games won" value={2}/>
+                    <StatCard title="Win rate" value="72%"/>
                 </div>
             </section>
+
+            <MatchHistory matches={matches}/>
         </main>
     );
 }

@@ -1,0 +1,68 @@
+import type { MatchHistory } from "../types/history";
+
+export const matches: MatchHistory[] = [
+    {
+        id: 1,
+        date: "2026-11-21",
+        opponents: ["AAA"],
+        score: 650,
+        opponentScore: 780,
+        rank: 2,
+    },
+    {
+        id: 2,
+        date: "2026-11-19",
+        opponents: ["ABC123"],
+        score: 920,
+        opponentScore: 600,
+        rank: 1,
+    },
+    {
+        id: 3,
+        date: "2026-11-17",
+        opponents: ["BBB"],
+        score: 500,
+        opponentScore: 800,
+        rank: 2,
+    },
+    {
+        id: 4,
+        date: "2026-11-15",
+        opponents: ["CCC"],
+        score: 350,
+        opponentScore: 430,
+        rank: 2,
+    },
+    {
+        id: 5,
+        date: "2026-11-19",
+        opponents: ["ABC123"],
+        score: 920,
+        opponentScore: 600,
+        rank: 1,
+    },
+    {
+        id: 6,
+        date: "2026-11-17",
+        opponents: ["ABC123"],
+        score: 500,
+        opponentScore: 800,
+        rank: 2,
+    },
+    {
+        id: 7,
+        date: "2026-11-21",
+        opponents: ["ABC123"],
+        score: 650,
+        opponentScore: 780,
+        rank: 2,
+    },
+    {
+        id: 8,
+        date: "2026-11-19",
+        opponents: ["ABC123"],
+        score: 920,
+        opponentScore: 600,
+        rank: 1,
+    },
+];
