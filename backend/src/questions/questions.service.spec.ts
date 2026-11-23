@@ -29,7 +29,9 @@ describe('QuestionsService', () => { //regroupe tous les tests du service
 	});
 	it('regroupe les lignes en questions', async () => {
 		const result = await service.load(1);
-		expect(result.length).toBe(6);
+		expect(result.length).toBe(2);
+		expect(result[2].isCorrect).toBe(true);
+		expect(result[5].isCorrect).toBe(true);
 		console.table(result);
 	});
 });
