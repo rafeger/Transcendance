@@ -13,12 +13,12 @@ const rows : QuestionRow [] = [
 
 describe('QuestionsService', () => { //regroupe tous les tests du service
 	let service: QuestionsService; //variable partagee par tous les tests du groupe
-	
+	const fakeValues = { $queryRaw: async()=> rows};
 	beforeEach(async () => {//s'execute avant chaque it: chaque test repart d'un service neuf, sans etre incluence par le precedent
 		const module: TestingModule = await Test.createTestingModule({//fabrique un petit module NestJS de test qui ne contient que ce qui est liste 
 			providers: [
 				QuestionsService, 
-				{provide: PrismaService, useValue:{}},//quand on demande PrismaService donne cet objet a la place (le faux Prisma)
+				{provide: PrismaService, useValue:{fakeValues}},//quand on demande PrismaService donne cet objet a la place (le faux Prisma)
 			],
 		}).compile();//NestJS assemble le module et fait les injections
 		service = module.get<QuestionsService>(QuestionsService); //recupere le service avec le faux Prisma
