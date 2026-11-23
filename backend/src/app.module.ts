@@ -23,12 +23,8 @@ import { QuestionsModule } from './questions/questions.module.js';//temporaire l
     HealthModule,
     EventsModule,
     AuthModule,
-<<<<<<< Updated upstream
-    UsersModule
-=======
     UsersModule,
     QuestionsModule,
->>>>>>> Stashed changes
   ], // loads .env file and we cna use config mod in other places
   controllers: [AppController],
   providers: [AppService],
