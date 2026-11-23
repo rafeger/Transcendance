@@ -18,7 +18,7 @@ describe('QuestionsService', () => { //regroupe tous les tests du service
 		const module: TestingModule = await Test.createTestingModule({//fabrique un petit module NestJS de test qui ne contient que ce qui est liste 
 			providers: [
 				QuestionsService, 
-				{provide: PrismaService, useValue:{fakeValues}},//quand on demande PrismaService donne cet objet a la place (le faux Prisma)
+				{provide: PrismaService, useValue: fakeValues},//quand on demande PrismaService donne cet objet a la place (le faux Prisma)
 			],
 		}).compile();//NestJS assemble le module et fait les injections
 		service = module.get<QuestionsService>(QuestionsService); //recupere le service avec le faux Prisma
@@ -26,5 +26,10 @@ describe('QuestionsService', () => { //regroupe tous les tests du service
 	
 	it('should be defined', () => {//un test aui verifie que le service a pu etre cree
 		expect(service).toBeDefined();
+	});
+	it('regroupe les lignes en questions', async () => {
+		const result = await service.load(1);
+		expect(result.length).toBe(6);
+		console.table(result);
 	});
 });
