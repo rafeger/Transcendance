@@ -13,10 +13,10 @@ export type QuestionRow = {
   isCorrect: boolean;
 };
 export type GameQuestion = {
-  position: number;
-  categoryName: string;
+  index: number;
+  category: string;
   qId: number;
-  question: string;
+  text: string;
   difficulty: string;
   type: string;
   choices: Choice[];
@@ -66,12 +66,12 @@ export class QuestionsService {
       let gameQuestion = gameQuestions.find((i) => i.qId === questionRow.qId);
       if (!gameQuestion) {
         gameQuestion = {
-          position: questionRow.position,
-          categoryName: questionRow.categoryName,
+          index: questionRow.position,
+          category: questionRow.categoryName,
           qId: questionRow.qId,
-          question: questionRow.question,
-          difficulty: questionRow.difficulty,
-          type: questionRow.type,
+          text: questionRow.question,
+          difficulty: questionRow.difficulty.toLowerCase(),
+          type: questionRow.type.toLowerCase(),
           choices: [],
           correctChoiceId: null,
         };
