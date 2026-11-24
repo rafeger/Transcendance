@@ -47,7 +47,9 @@ function Ranking() {
     const currentPlayers = rankedPlayers.slice(startIndex, startIndex + playersPerPage);
 
     return (
-        <main className={`min-h-screen px-4 py-12 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
+        <main className={`min-h-screen px-4 py-12 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
             <div className="mx-auto max-w-5xl">
                 <h1 className="mb-8 text-3xl font-bold">LeaderBoard</h1>
                 <Card padding="md" className="mb-8">

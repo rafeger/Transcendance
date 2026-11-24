@@ -8,6 +8,7 @@ import {
   registerSchema
 } from '../schemas/auth.ts';
 import { useAuth } from '../contexts/useAuth';
+import { useTheme } from '../contexts/ThemeContext.tsx';
 
 type AuthFormData = {
   email:    string;
@@ -16,6 +17,7 @@ type AuthFormData = {
 };
 
 function Auth() {
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { checkAuth } = useAuth();
@@ -105,7 +107,9 @@ function Auth() {
   };
           
   return (
-  <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
+  <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
     <div className="mx-auto max-w-md text-center">
       <h1 className="mb-6 text-3xl font-bold">
         {isRegister ? 'Create an account' : 'Welcome!'}

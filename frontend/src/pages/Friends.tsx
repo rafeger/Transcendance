@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../lib/api';
+import { useTheme } from '../contexts/ThemeContext';
 
 type Friend = {
   id: number;
@@ -8,6 +9,7 @@ type Friend = {
 };
 
 function Friends() {
+  const { isDark } = useTheme();
   const {
     data: friends,
     isPending,
@@ -19,7 +21,9 @@ function Friends() {
 
   if (isPending) {
     return (
-      <main className="px-4 py-16">
+      <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
         <div className="mx-auto max-w_3xl">
           <p className="text-slate-400">Loading friends...</p>
         </div>
@@ -29,7 +33,9 @@ function Friends() {
 
   if (isError) {
     return (
-      <main className="px-4 py-16">
+      <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
         <div className="mx-auto max-w_3xl">
           <p className="text-slate-400">Impossible to load friends.</p>
         </div>
@@ -38,7 +44,9 @@ function Friends() {
   }
 
   return (
-    <main className="px-4 py-16">
+    <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
       <div className="mx-auto max-w_3xl">
         <h1 className="text-3xl font-bold">My Friends</h1>
       </div>

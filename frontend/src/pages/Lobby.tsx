@@ -43,7 +43,9 @@ function Lobby() {
     }
 
     return (
-        <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
+        <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
             <div className="mx-auto max-w-3xl">
             <h1 className="text-center text-4xl font-bold">Lobby Quiz Arena</h1>
                 <p className="text-center mt-4 text-slate-400">Join your friends be ready to play!</p>

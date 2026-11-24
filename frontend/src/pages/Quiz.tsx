@@ -38,7 +38,9 @@ function Quiz() {
 
     if (isFinished) {
         return (
-            <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
+            <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
                 <div className="mx-auto max-w-2xl rounded-2xl bg-indigo-900
                 p-8 text-center">
                     <h1 className="text-4xl font-bold">Quiz finished!</h1>
@@ -54,7 +56,9 @@ function Quiz() {
     }
 
     return (
-        <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
+        <main className={`min-h-screen px-4 py-16 ${isDark ?
+        "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+        "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
             <div className="mx-auto max-w-3xl">
                 <h1 className="text-center text-bold text-4xl">Quiz Arena</h1>
                 <p className="mt-4 text-center text-slate-400">
