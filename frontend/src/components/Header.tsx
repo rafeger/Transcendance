@@ -108,6 +108,17 @@ function Header() {
             Friends
           </NavLink>
 
+          <NavLink
+            to="/ranking"
+            className={({ isActive }) =>
+              `text-xl font-semibold transition hover:text-white ${
+                isActive ? 'text-white' : 'text-slate-400'
+              }`
+            }
+          >
+            Ranking
+          </NavLink>
+
           <Link
             to="/auth"
             className="rounded-xl bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-400"

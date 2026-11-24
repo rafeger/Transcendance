@@ -41,6 +41,10 @@ function Profile() {
     const [isEdit, setEdit] = useState(false);
     const [addFriend, setAddFriend] = useState(false);
     const [friendUsername, setFriendUsername] = useState("");
+    
+    const gamesPlayed = matches.length;
+    const gamesWon = matches.filter((match) => match.score > match.opponentScore).length;
+    const winRate = gamesPlayed > 0 ? Math.round((gamesWon / gamesPlayed) * 100) : 0;
 
     // Charge profil depuis backend
     useEffect(() => {
@@ -222,9 +226,9 @@ function Profile() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4 mt-4">
-                    <StatCard title="Games played" value={matches.length}/>
-                    <StatCard title="Games won" value={2}/>
-                    <StatCard title="Win rate" value="72%"/>
+                    <StatCard title="Games played" value={gamesPlayed} />
+                    <StatCard title="Games won" value={gamesWon} />
+                    <StatCard title="Win rate" value={`${winRate}%`} />
                 </div>
             </section>
 
