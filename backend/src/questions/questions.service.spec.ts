@@ -100,7 +100,15 @@ describe('QuestionsService', () => {
   });
   it('les choix ne contiennent que id et text', async () => {
     const result = await service.load(1);
-	expect(result[0].choices).toEqual([{id : 'a', text: 'q1answer1 text'}, {id : 'b', text: 'q1answer2 text'}, {id : 'c', text: 'q1answer3 text'}, {id : 'd', text: 'q1answer4 text'}]);
-    expect(result[1].choices).toEqual([{id : 'a', text: 'q2answer1 text'}, {id : 'b', text: 'q2answer2 text'}]);
+    expect(result[0].choices).toEqual([
+      { id: 'a', text: 'q1answer1 text' },
+      { id: 'b', text: 'q1answer2 text' },
+      { id: 'c', text: 'q1answer3 text' },
+      { id: 'd', text: 'q1answer4 text' },
+    ]);
+    expect(result[1].choices).toEqual([
+      { id: 'a', text: 'q2answer1 text' },
+      { id: 'b', text: 'q2answer2 text' },
+    ]);
   });
 });
