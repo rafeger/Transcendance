@@ -6,10 +6,10 @@ import { Socket } from 'socket.io';
 @Injectable()
 export class SocketRegistryService {
   private readonly logger = new Logger(SocketRegistryService.name);
-  private readonly users = new Map<string, Set<Socket>>();
+  private readonly users = new Map<number, Set<Socket>>();
 
   // create set if doesn't exist yet
-  add(userId: string, client: Socket): void {
+  add(userId: number, client: Socket): void {
     let sockets = this.users.get(userId);
     if (!sockets) {
       sockets = new Set<Socket>();
@@ -21,7 +21,7 @@ export class SocketRegistryService {
   }
 
   //delete socket
-  remove(userId: string, client: Socket): void {
+  remove(userId: number, client: Socket): void {
     const sockets = this.users.get(userId);
     if (!sockets) return;
     sockets.delete(client);
@@ -31,11 +31,11 @@ export class SocketRegistryService {
     }
   }
 
-  getSockets(userId: string): Socket[] {
+  getSockets(userId: number): Socket[] {
     return [...(this.users.get(userId) ?? [])];
   }
 
-  count(userId: string): number {
+  count(userId: number): number {
     return this.users.get(userId)?.size ?? 0;
   }
 }

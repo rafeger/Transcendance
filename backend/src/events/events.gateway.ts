@@ -14,10 +14,8 @@ import { ValidationPipe, UsePipes, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SocketRegistryService } from './socket-registry.services.js';
 import { ChatMessageDto } from './chat-message.dto.js';
-
-export interface AuthPayload {
-  sub: string;
-}
+import type { JwtPayload } from '../auth/jwt-auth.guard.js';
+import { RoomsService } from './rooms.service.js'
 
 @WebSocketGateway({
   cors: {
@@ -42,6 +40,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly jwtService: JwtService,
     private readonly registry: SocketRegistryService,
+    private readonly rooms: RoomsService,
   ) {}
 
   async handleConnection(client: Socket): Promise<void> {
@@ -52,9 +51,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return;
     }
 
-    let payload: AuthPayload;
+    let payload: JwtPayload;
     try {
-      payload = await this.jwtService.verifyAsync<AuthPayload>(token);
+      payload = await this.jwtService.verifyAsync<JwtPayload>(token);
     } catch {
       this.logger.warn(
         `Connection refused (invalid/expired JWT) : ${client.id}`,
@@ -91,7 +90,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: Socket): void {
-    const userId: string | undefined = client.data?.userId;
+    const userId: number | undefined = client.data?.userId;
     if (userId) {
       this.registry.remove(userId, client);
       this.logger.log(`Disconnected : user =${userId} socket=${client.id} 

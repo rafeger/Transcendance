@@ -3,6 +3,7 @@ import { EventsGateway } from './events.gateway.js';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SocketRegistryService } from './socket-registry.services.js';
+import { RoomsService } from './rooms.service.js';
 
 @Module({
   //imports: [
@@ -14,6 +15,6 @@ import { SocketRegistryService } from './socket-registry.services.js';
   //    }),
   //  }),
   //],
-  providers: [EventsGateway, SocketRegistryService],
+  providers: [EventsGateway, SocketRegistryService, RoomsService],
 })
 export class EventsModule {}
