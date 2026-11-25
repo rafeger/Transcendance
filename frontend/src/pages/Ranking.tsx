@@ -52,7 +52,7 @@ function Ranking() {
     "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
             <div className="mx-auto max-w-5xl">
                 <h1 className="mb-8 text-3xl font-bold">LeaderBoard</h1>
-                <Card padding="md" className="mb-8">
+                <Card padding="md" className="mb-8 bg-surface">
                     <h2 className="mb-3 text-xl font-semibold">Your ranking</h2>
 
                     {currentPlayer ? (
@@ -75,7 +75,7 @@ function Ranking() {
                     )}
                 </Card>
 
-                <Card padding="md">
+                <Card padding="md" className='bg-surface'>
                     <h2 className="mb-6 text-xl font-semibold">Global ranking</h2>
                     <div className="space-y-3">
                         {currentPlayers.map((player) => (

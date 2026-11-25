@@ -29,7 +29,7 @@ export function Card({
     <Tag
       {...props}
       className={
-        `rounded-card border border-border bg-surface text-fg shadow-sm ` +
+        `rounded-card border border-border text-fg shadow-sm ` +
         `${paddings[padding]} ` +
         `${interactive ? 'transition-colors hover:border-primary/60' : ''} ` +
         className

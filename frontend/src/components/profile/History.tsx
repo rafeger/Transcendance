@@ -22,7 +22,7 @@ function History({ matches }: Props) {
             ) : (
             <>
                 <div className="space-y-4">{currentMatches.map((match) => 
-                    (<Card key={match.id} padding="md">
+                    (<Card key={match.id} padding="md" className="bg-surface">
                         <div className="flex justify-between">
                             <div>
                                 <p>{new Date(match.date).toLocaleDateString("fr-FR")}</p>

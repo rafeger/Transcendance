@@ -1,16 +1,22 @@
 import { Link } from 'react-router-dom';
 import { FaGithub, FaDiscord, FaInstagram } from 'react-icons/fa';
+import { useTheme } from '../contexts/ThemeContext';
 
 function Footer() {
+  const { isDark } = useTheme();
+
   return (
-    <footer className="border-t border-white/10 bg-slate-950 text-slate-400">
+    <footer className={`border-t ${isDark ?
+    "bg-linear-to-r from-purple-700 to-pink-600" :
+    "bg-linear-to-r from-teal-300 to-sky-300"}`}>
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between 
       gap-4 px-6 py-8 sm:flex-row md:px-12">
         <Link
           to="/"
           className="text-lg font-bold text-white transition hover:text-blue-400"
         >
-          Quiz <span className="text-blue-400">Arena</span>
+          <span className="text-pink-400">Quiz</span>
+          <span className="text-blue-500">Arena</span>
         </Link>
 
         <p className="text-center text-sm">
