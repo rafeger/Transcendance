@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/useAuth';
 import MatchHistory from "../components/profile/History";
 import { matches } from "../data/matches";
 import StatCard from "../components/profile/StatCard";
+import ScoreChart from "../components/profile/ScoreChart";
 
 type Profile = {
     username:   string; 
@@ -234,6 +235,7 @@ function Profile() {
                 </div>
             </section>
 
+            <ScoreChart histories={matches}/>
             <MatchHistory matches={matches}/>
         </main>
     );
