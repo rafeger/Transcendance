@@ -10,6 +10,8 @@ import MatchHistory from "../components/profile/History";
 import { matches } from "../data/matches";
 import StatCard from "../components/profile/StatCard";
 import ScoreChart from "../components/profile/ScoreChart";
+import CategoryChart from "../components/profile/CategoryChart";
+import { CategoryStats } from "../data/categoryStats";
 
 type Profile = {
     username:   string; 
@@ -236,6 +238,7 @@ function Profile() {
             </section>
 
             <ScoreChart histories={matches}/>
+            <CategoryChart categories={CategoryStats} />
             <MatchHistory matches={matches}/>
         </main>
     );

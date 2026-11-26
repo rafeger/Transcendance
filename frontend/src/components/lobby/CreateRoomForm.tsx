@@ -1,5 +1,5 @@
 import { useState, type SubmitEvent } from "react";
-import { Input } from "../ui";
+import { Input, Button } from "../ui";
 
 type CreateRoomProps = {
     onCreate: (
@@ -27,7 +27,7 @@ function CreateRoomForm({ onCreate }: CreateRoomProps) {
     }
 
     return (
-        <section className="">
+        <section>
             <h2 className="text-2xl font-bold">Create a Room</h2>
             <p className="mt-2 text-sm text-muted">
                 Create a room and invite your friends to play
@@ -62,6 +62,12 @@ function CreateRoomForm({ onCreate }: CreateRoomProps) {
                         </option>
                     ))}
                     </select>
+                </div>
+
+                <div className="justify-end">
+                    <Button type="submit" variant="primary" size="md">
+                        Create a room
+                    </Button>
                 </div>
             </form>
         </section>

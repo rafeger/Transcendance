@@ -53,7 +53,7 @@ function Lobby() {
 
             <section className="mt-10 mx-auto max-w-3xl">
                 <Card padding="lg" className={`${isDark
-                                ? "bg-pink-500"
+                                ? "bg-purple-600"
                                 : "bg-pink-200"}`}>
                     <CreateRoomForm onCreate={handleCreateRoom} />
                 </Card>
@@ -61,7 +61,7 @@ function Lobby() {
 
             <section className="mx-auto mt-6 max-w-xl">
                 <Card as="article" padding="lg" className={`text-center ${isDark
-                                ? "bg-pink-500"
+                                ? "bg-purple-600"
                                 : "bg-pink-200"}`}>
                     <h2 className="text-2xl font-bold">Join a Room</h2>
                     <p className="mt-2 text-sm text-muted">
