@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE "Game" ALTER COLUMN "categoryId" DROP NOT NULL,
+ALTER COLUMN "difficulty" DROP NOT NULL,
+ALTER COLUMN "difficulty" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "GamePlayer" ADD COLUMN     "correctCount" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "forfeit" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "rank" INTEGER;

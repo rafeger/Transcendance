@@ -75,11 +75,11 @@ model User {
 model Game {
   id         Int        @id @default(autoincrement())
   title      String
-  categoryId Int // real category : which cateory 
-  category   Category   @relation(fields: [categoryId], references: [id]) // quiz.category.type
+  categoryId Int? // real category : which cateory ; null = Mix (toutes catégories)
+  category   Category?  @relation(fields: [categoryId], references: [id], onDelete: Restrict) // quiz.category.type ; Restrict = comportement d'avant (FK inchangée)
   mode       Mode
   status     MatchStatus   @default(WAITING)
-  difficulty  Difficulty  @default(EASY)
+  difficulty  Difficulty? // null = Mix (toutes difficultés)
   questions  GameQuestion[]
   players    GamePlayer[]
   startedAt   DateTime?
@@ -134,9 +134,12 @@ model Answer {
 
 model GamePlayer {
   id         Int       @id @default(autoincrement())
-  score      Int       @default(0)
-  joinedAt   DateTime  @default(now())
-  finishedAt DateTime?
+  score        Int       @default(0)
+  correctCount Int       @default(0) // bonnes réponses dans la partie
+  forfeit      Boolean   @default(false) // déconnecté > 15 s ou room:leave en cours de partie
+  rank         Int? // 1 = vainqueur ; null tant que la partie n'est pas finie
+  joinedAt     DateTime  @default(now())
+  finishedAt   DateTime?
   userId     Int
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   gameId     Int
