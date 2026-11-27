@@ -4,8 +4,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SocketRegistryService } from './socket-registry.services.js';
 import { RoomsService } from './rooms.service.js';
+import { UsersModule } from '../users/users.module.js';
 
 @Module({
+  // need user module -> user service to get user name + avatar
+  imports: [UsersModule],
   //imports: [
   //  JwtModule.registerAsync({
   //    imports: [ConfigModule],
