@@ -72,7 +72,7 @@ points = round( base × (0.5 + 0.5 × temps_restant / temps_total) )
 - `temps_restant` est calculé **par le serveur, à la réception** de la réponse (jamais à partir d'une heure envoyée par le client), puis borné entre 0 et `temps_total`.
 - La difficulté utilisée est celle de la question (en Mix, une même partie mélange les barèmes).
 
-**Départage** du classement : score décroissant, puis nombre de bonnes réponses décroissant, puis temps cumulé des bonnes réponses croissant. Les joueurs forfait sont classés derniers.
+**Départage** du classement : score décroissant, puis nombre de bonnes réponses décroissant, puis temps cumulé des bonnes réponses croissant. Les joueurs forfait sont classés derniers. En cas d'égalité parfaite, les joueurs ont le même rang et le rang suivant est sauté (1, 1, 3) ; une égalité à la première place donne un match nul (`winnerId: null`).
 
 ### 1.4 Déconnexion et abandon
 
