@@ -12,6 +12,7 @@ import StatCard from "../components/profile/StatCard";
 import ScoreChart from "../components/profile/ScoreChart";
 import CategoryChart from "../components/profile/CategoryChart";
 import { CategoryStats } from "../data/categoryStats";
+import ProgressBar from "../components/profile/ProgressBar";
 
 type Profile = {
     username:   string; 
@@ -19,6 +20,10 @@ type Profile = {
 };
 
 function Profile() {
+    const level = 5;
+    const currentXP = 400;
+    const requiredXP = 500;
+    
     const { user, updateUser } = useAuth();
     const [profile, setProfile] = useState<Profile>({
         //firstName: "",
@@ -155,6 +160,9 @@ function Profile() {
         <main className={`min-h-screen px-4 py-16 ${isDark ?
     "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
     "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
+
+            <ProgressBar level={level} currentXP={currentXP} requiredXP={requiredXP}/>
+
             {user && (
                 <div className="mb-8 space-y-3">
                     <h2 className="text-xl font-bold">{profile.username || user.userName}</h2>
