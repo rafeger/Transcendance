@@ -30,21 +30,28 @@ const DevUi = import.meta.env.DEV
 function App() {
   // check connection state + log debug
   useEffect(() => {
-    socket.on('connect', () => console.log('connected WS, id=', socket.id));
-    socket.on('disconnect', (reason) =>
-      console.log('disconnected WS :', reason),
-    );
-    socket.on('connect_error', (err) =>
-      console.log('refused WS :', err.message),
-    );
-    socket.on('exception', (err) =>
-      console.log('⚠️ Erreur ValidationPipe:', err),
-    );
+    // Handlers nommés : off() doit recevoir la MÊME fonction que on().
+    // Sans handler, off('connect') retirerait aussi les écouteurs posés
+    // ailleurs (ex. la resynchronisation du jeu après une reconnexion).
+    const onConnect = () => console.log('connected WS, id=', socket.id);
+    const onDisconnect = (reason: string) =>
+      console.log('disconnected WS :', reason);
+    // err.message === 'UNAUTHORIZED' : JWT absent, invalide ou expiré.
+    const onConnectError = (err: Error) =>
+      console.log('refused WS :', err.message);
+    const onException = (err: unknown) =>
+      console.log('⚠️ Erreur ValidationPipe:', err);
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('connect_error', onConnectError);
+    socket.on('exception', onException);
 
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('connect_error');
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('connect_error', onConnectError);
+      socket.off('exception', onException);
     };
   }, []);
 
