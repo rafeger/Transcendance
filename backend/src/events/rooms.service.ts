@@ -1,8 +1,26 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { randomInt } from 'node:crypto';
+import {
+  DEFAULT_SETTINGS,
+  MIN_PLAYERS,
+  type CreateRoomPayload,
+  type ErrorCode,
+  type PlayerProfile,
+  type RoomSettings,
+  type RoomState,
+  type RoomSummary,
+} from '../game/protocol.js';
 
-export const MIN_PLAYERS = 2;
-export const MAX_PLAYERS = 8;
+// Types et constantes déplacés dans game/protocol.ts (contrat partagé avec
+// le front) ; ré-exportés ici pour ne rien casser chez ceux qui les importent.
+export { MAX_PLAYERS, MIN_PLAYERS } from '../game/protocol.js';
+export type {
+  PlayerProfile,
+  RoomPlayer,
+  RoomState,
+  RoomSummary,
+} from '../game/protocol.js';
+
 const CODE_LENGTH = 6;
 // for ui reasons,  left 0 and O and I and 1 out to make sure that
 // everyone cna read -- revoir avec equi[e]
@@ -14,11 +32,15 @@ const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 // roomOfUser - smth for user id and code of room they are 
 
 
-export type RoomErrorCode =
+export type RoomErrorCode = Extract<
+  ErrorCode,
   | 'ROOM_NOT_FOUND'
   | 'ROOM_FULL'
   | 'ALREADY_IN_ROOM'
-  | 'INVALID_STATE';
+  | 'INVALID_STATE'
+  | 'NOT_HOST'
+  | 'NOT_ENOUGH_PLAYERS'
+>;
 
 export class RoomError extends Error {
   constructor(readonly code: RoomErrorCode) {
@@ -26,40 +48,7 @@ export class RoomError extends Error {
   }
 }
 
-export interface PlayerProfile {
-  userId: number;
-  displayName: string;
-  avatarUrl: string | null;
-}
-
-export interface RoomPlayer extends PlayerProfile {
-  ready: boolean;
-}
-
-export interface RoomState {
-  code: string;
-  name: string;
-  isPublic: boolean;
-  state: 'LOBBY' | 'PLAYING';
-  hostId: number;
-  maxPlayers: number;
-  players: RoomPlayer[];
-  // order of join, first host
-}
-
-export interface RoomSummary {
-  code: string;
-  name: string;
-  hostName: string;
-  playerCount: number;
-  maxPlayers: number;
-}
-
-export interface CreateRoomInput {
-  name: string;
-  maxPlayers: number;
-  isPublic: boolean;
-}
+export type CreateRoomInput = CreateRoomPayload;
 
 @Injectable()
 export class RoomsService {
@@ -81,6 +70,7 @@ export class RoomsService {
       state: 'LOBBY',
       hostId: profile.userId,
       maxPlayers: input.maxPlayers,
+      settings: { ...DEFAULT_SETTINGS },
       players: [{ ...profile, ready: false }],
     };
     this.rooms.set(room.code, room);
@@ -147,6 +137,58 @@ export class RoomsService {
     return this.copy(room);
   }
 
+  // room:settings - host only, in the lobby. Everyone (host included) is set
+  // back to "not ready": they must agree to the new settings.
+  updateSettings(userId: number, settings: RoomSettings): RoomState {
+    const room = this.findRoomOf(userId);
+    if (!room || room.state !== 'LOBBY') throw new RoomError('INVALID_STATE');
+    if (room.hostId !== userId) throw new RoomError('NOT_HOST');
+
+    room.settings = { ...settings };
+    for (const player of room.players) player.ready = false;
+    this.logger.log(
+      `Room ${room.code}: settings ${JSON.stringify(room.settings)}`,
+    );
+    return this.copy(room);
+  }
+
+  // room:start - host only, at least MIN_PLAYERS, everyone ready.
+  // The room is locked at once (PLAYING): nobody can join or change
+  // their ready state while the game is being prepared.
+  start(userId: number): RoomState {
+    const room = this.findRoomOf(userId);
+    if (!room || room.state !== 'LOBBY') throw new RoomError('INVALID_STATE');
+    if (room.hostId !== userId) throw new RoomError('NOT_HOST');
+    if (
+      room.players.length < MIN_PLAYERS ||
+      room.players.some((p) => !p.ready)
+    ) {
+      throw new RoomError('NOT_ENOUGH_PLAYERS');
+    }
+
+    room.state = 'PLAYING';
+    this.logger.log(`Room ${room.code} started`);
+    return this.copy(room);
+  }
+
+  // end of a game (FINISHED) - the players stay in the room
+  finish(code: string): RoomState | null {
+    const room = this.rooms.get(code);
+    if (!room || room.state !== 'PLAYING') return null;
+    room.state = 'FINISHED';
+    return this.copy(room);
+  }
+
+  // back to the LOBBY, everyone "not ready": failed start (not enough
+  // questions...) or rematch. null if the room no longer exists.
+  reopen(code: string): RoomState | null {
+    const room = this.rooms.get(code);
+    if (!room) return null;
+    room.state = 'LOBBY';
+    for (const player of room.players) player.ready = false;
+    return this.copy(room);
+  }
+
   getRoomOf(userId: number): RoomState | null {
     const room = this.findRoomOf(userId);
     return room ? this.copy(room) : null;
@@ -183,6 +225,10 @@ export class RoomsService {
 
   // Callers get a copy, so nothing outside this service can mutate a room.
   private copy(room: RoomState): RoomState {
-    return { ...room, players: room.players.map((p) => ({ ...p })) };
+    return {
+      ...room,
+      settings: { ...room.settings },
+      players: room.players.map((p) => ({ ...p })),
+    };
   }
 }

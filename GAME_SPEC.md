@@ -140,6 +140,8 @@ Le nombre de questions disponibles est vérifié **dès que l'hôte change les r
 
 Chaque message est un événement socket.io : son **nom** remplace le `type` de la v1 (format `domaine:action`), et son contenu est un objet JSON.
 
+Les types TypeScript de tous les événements, payloads, codes d'erreur et constantes sont dans `backend/src/game/protocol.ts` (`ClientToServerEvents`, `ServerToClientEvents`). Toute modification du protocole se fait là **et** dans cette spec.
+
 **Client → serveur, avec accusé de réception.** Le client passe un callback (ou utilise `emitWithAck`). Le serveur y répond toujours par :
 
 ```ts
@@ -155,7 +157,7 @@ if (!res.ok) showError(res.code); // ex. 'ROOM_FULL'
 
 **Serveur → client** : `socket.on('room:state', (room) => …)`. Les messages du jeu (`game:*`, `question:*`, `player:*`) portent en plus `ts`, l'heure serveur en epoch ms (voir §2.6).
 
-**Payload invalide** (champ manquant, en trop, mauvais type) : aujourd'hui, le serveur émet un événement `exception` avec le détail de la validation, et **n'appelle pas** le callback (le client attend jusqu'à son timeout). Prévu au commit 6 : réponse dans l'accusé, `{ ok: false, code: 'BAD_MESSAGE' }`.
+**Payload invalide** (champ manquant, en trop, mauvais type) : l'accusé de réception vaut `{ ok: false, code: 'BAD_MESSAGE', details: [...] }`, où `details` liste les problèmes (utile pour déboguer le front). Si le client n'a pas passé de callback, le serveur émet à la place l'événement `exception` (comportement de Nest).
 
 **Limites** :
 
@@ -180,22 +182,22 @@ if (!res.ok) showError(res.code); // ex. 'ROOM_FULL'
 
 ### 2.4 Messages client → serveur
 
-| Événement       | Payload                                   | Condition                                | Effet / réponse                                                                                                                  | Statut                               |
-| --------------- | ----------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| `session:sync`  | —                                         | connecté                                 | `{ ok, rooms: RoomSummary[], currentRoom: RoomState \| null }` (+ `currentGame` au commit 13). À envoyer à chaque (re)connexion. | fait                                 |
-| `room:create`   | `{ name, maxPlayers, isPublic }`          | dans aucun salon                         | Crée le salon, l'émetteur devient hôte. `{ ok, room }`                                                                           | fait                                 |
-| `room:join`     | `{ roomCode }`                            | dans aucun salon (ou déjà dans celui-ci) | Rejoint un salon en `LOBBY`. Code insensible à la casse et aux espaces. `{ ok, room }`                                           | fait                                 |
-| `room:leave`    | —                                         | —                                        | Quitte le salon (rien si on n'est dans aucun salon ; forfait si partie en cours, commit 13). `{ ok }`                            | fait                                 |
-| `room:ready`    | `{ ready: boolean }`                      | `LOBBY`                                  | Change son statut « prêt ». `{ ok }`                                                                                             | fait                                 |
-| `room:settings` | `{ questionCount, category, difficulty }` | `LOBBY`, hôte                            | Modifie les réglages, remet tout le monde « non prêt ». Vérifie les questions disponibles. `{ ok }`                              | commit 6                             |
-| `room:start`    | —                                         | `LOBBY`, hôte, ≥ 2 joueurs, tous prêts   | Lance la partie. `{ ok }`                                                                                                        | commit 6 (lancement réel : commit 9) |
-| `answer:submit` | `{ questionIndex, choiceId }`             | phase `QUESTION`                         | Enregistre la réponse (une seule fois), sans dire si elle est juste. `{ ok }`                                                    | commit 9                             |
-| `room:rematch`  | —                                         | `FINISHED`, hôte                         | Retour au `LOBBY`, mêmes joueurs, tous « non prêt ». `{ ok }`                                                                    | commit 13                            |
-| `room:kick`     | `{ userId }`                              | `LOBBY`, hôte                            | Retire un joueur (bouton « Remove » du lobby).                                                                                   | facultatif                           |
+| Événement       | Payload                                   | Condition                                | Effet / réponse                                                                                                                  | Statut                      |
+| --------------- | ----------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `session:sync`  | —                                         | connecté                                 | `{ ok, rooms: RoomSummary[], currentRoom: RoomState \| null }` (+ `currentGame` au commit 13). À envoyer à chaque (re)connexion. | fait                        |
+| `room:create`   | `{ name, maxPlayers, isPublic }`          | dans aucun salon                         | Crée le salon, l'émetteur devient hôte. `{ ok, room }`                                                                           | fait                        |
+| `room:join`     | `{ roomCode }`                            | dans aucun salon (ou déjà dans celui-ci) | Rejoint un salon en `LOBBY`. Code insensible à la casse et aux espaces. `{ ok, room }`                                           | fait                        |
+| `room:leave`    | —                                         | —                                        | Quitte le salon (rien si on n'est dans aucun salon ; forfait si partie en cours, commit 13). `{ ok }`                            | fait                        |
+| `room:ready`    | `{ ready: boolean }`                      | `LOBBY`                                  | Change son statut « prêt ». `{ ok }`                                                                                             | fait                        |
+| `room:settings` | `{ questionCount, category, difficulty }` | `LOBBY`, hôte                            | Modifie les réglages, remet tout le monde « non prêt ». Vérifie les questions disponibles. `{ ok }`                              | fait (questions : commit 8) |
+| `room:start`    | —                                         | `LOBBY`, hôte, ≥ 2 joueurs, tous prêts   | Verrouille le salon (`PLAYING`) puis lance la partie. `{ ok }`                                                                   | commit 9 (règles : fait)    |
+| `answer:submit` | `{ questionIndex, choiceId }`             | phase `QUESTION`                         | Enregistre la réponse (une seule fois), sans dire si elle est juste. `{ ok }`                                                    | commit 9                    |
+| `room:rematch`  | —                                         | `FINISHED`, hôte                         | Retour au `LOBBY`, mêmes joueurs, tous « non prêt ». `{ ok }`                                                                    | commit 13                   |
+| `room:kick`     | `{ userId }`                              | `LOBBY`, hôte                            | Retire un joueur (bouton « Remove » du lobby).                                                                                   | facultatif                  |
 
 Validation des payloads :
 
-- `name` : 1 à 30 caractères (espaces de début et de fin retirés) ; `maxPlayers` : entier de 2 à 6 (8 aujourd'hui, ramené à 6 au commit 6) ; `isPublic` : booléen ;
+- `name` : 1 à 30 caractères (espaces de début et de fin retirés) ; `maxPlayers` : entier de 2 à 6 ; `isPublic` : booléen ;
 - `roomCode` : chaîne de 1 à 10 caractères ;
 - `questionCount` ∈ {5, 10, 15} ; `category` : `opentdbId` existant ou `null` ; `difficulty` ∈ {`easy`, `medium`, `hard`} ou `null`.
 
@@ -240,7 +242,7 @@ Dans `question:new`, `category` est le **nom** de la catégorie (pour l'affichag
 }
 ```
 
-- `settings` : _commit 6_ ; `connected` : _commit 13_ ; `state: "FINISHED"` : _commit 9_.
+- `connected` : _commit 13_ ; `state: "FINISHED"` : utilisé à partir du commit 9.
 - Les joueurs sont dans l'ordre d'arrivée (le premier est l'hôte d'origine).
 - Le code fait 6 caractères, tirés d'un alphabet sans `0`, `O`, `1`, `I` ni `L` (lisible à voix haute).
 
@@ -279,14 +281,16 @@ Renvoyés dans l'accusé de réception (`{ ok: false, code }`) ; la connexion re
 | `ROOM_FULL`             | Salon plein                                                                                        | fait     |
 | `ALREADY_IN_ROOM`       | Le joueur est déjà dans un autre salon                                                             | fait     |
 | `INVALID_STATE`         | Action impossible dans l'état actuel (ou hors d'un salon)                                          | fait     |
-| `BAD_MESSAGE`           | Payload mal formé (aujourd'hui : événement `exception`, voir §2.2)                                 | commit 6 |
-| `NOT_HOST`              | Action réservée à l'hôte                                                                           | commit 6 |
-| `NOT_ENOUGH_PLAYERS`    | Lancement avec moins de 2 joueurs ou des joueurs non prêts                                         | commit 6 |
+| `BAD_MESSAGE`           | Payload mal formé ; l'accusé contient aussi `details` (voir §2.2)                                  | fait     |
+| `NOT_HOST`              | Action réservée à l'hôte                                                                           | fait     |
+| `NOT_ENOUGH_PLAYERS`    | Lancement avec moins de 2 joueurs ou des joueurs non prêts                                         | commit 9 |
 | `QUESTIONS_UNAVAILABLE` | Pas assez de questions pour ces réglages ; l'accusé contient aussi `available` (nombre disponible) | commit 8 |
 | `ALREADY_ANSWERED`      | Deuxième réponse à la même question                                                                | commit 9 |
 | `WRONG_QUESTION`        | `questionIndex` différent de la question en cours                                                  | commit 9 |
 | `TOO_LATE`              | Réponse après `deadline` + 300 ms                                                                  | commit 9 |
 | `INVALID_CHOICE`        | `choiceId` qui n'existe pas pour cette question                                                    | commit 9 |
+| `UNAUTHORIZED`          | Socket sans identité (ne devrait pas arriver : le handshake l'aurait refusé)                       | fait     |
+| `INTERNAL_ERROR`        | Erreur inattendue côté serveur (détail dans les logs du backend, jamais envoyé au client)          | fait     |
 | `RATE_LIMITED`          | Trop de messages (> 20 / s)                                                                        | #31      |
 
 **Connexion refusée ou coupée** (remplace les codes de fermeture de la v1) :

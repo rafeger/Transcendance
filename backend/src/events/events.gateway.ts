@@ -10,7 +10,7 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import type { Server, Socket } from 'socket.io';
-import { ValidationPipe, UsePipes, Logger } from '@nestjs/common';
+import { ValidationPipe, UsePipes, UseFilters, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { SocketRegistryService } from './socket-registry.services.js';
 import { ChatMessageDto } from './chat-message.dto.js';
@@ -21,24 +21,27 @@ import {
   socketAuthMiddleware,
   userIdOf,
 } from './socket-auth.js';
+import { RoomsService, RoomError } from './rooms.service.js';
 import {
-  RoomsService,
-  RoomError,
-  type PlayerProfile,
-  type RoomErrorCode,
-  type RoomState,
-} from './rooms.service.js';
-import { CreateRoomDto, JoinRoomDto, ReadyDto } from './rooms.dto.js';
+  CreateRoomDto,
+  JoinRoomDto,
+  ReadyDto,
+  RoomSettingsDto,
+} from './rooms.dto.js';
+import { WsAckExceptionFilter } from './ws-ack-exception.filter.js';
 import { UsersService } from '../users/users.service.js';
-
-type Ack<T extends object = object> =
-  ({ ok: true } & T) | { ok: false; code: RoomErrorCode };
+import {
+  LOBBY_GRACE_MS,
+  type Ack,
+  type PlayerProfile,
+  type RoomState,
+} from '../game/protocol.js';
 
 // socket.io room name that groups every socket of a room's players
 const roomChannel = (code: string) => `room:${code}`;
 const LOBBY_CHANNEL = 'lobby';
 // closed tab grace period - if we are triying to reconnect
-const LEAVE_GRACE_MS = 5_000;
+const LEAVE_GRACE_MS = LOBBY_GRACE_MS;
 type Timer = ReturnType<typeof setTimeout>;
 
 @WebSocketGateway({
@@ -57,6 +60,8 @@ type Timer = ReturnType<typeof setTimeout>;
     exceptionFactory: (errors) => new WsException(errors),
   }),
 )
+// errors (invalid payload, RoomError...) come back in the ack: { ok: false, code }
+@UseFilters(new WsAckExceptionFilter())
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -216,6 +221,25 @@ export class EventsGateway
     const userId = userIdOf(client);
     return this.answer(() => {
       const room = this.rooms.setReady(userId, dto.ready);
+      this.emitRoomState(room);
+      return {};
+    });
+  }
+
+  // host only, in the LOBBY; everyone goes back to "not ready"
+  // (the check of the available questions comes with the questions service)
+  @SubscribeMessage('room:settings')
+  handleSettings(
+    @MessageBody() dto: RoomSettingsDto,
+    @ConnectedSocket() client: Socket,
+  ): Ack {
+    const userId = userIdOf(client);
+    return this.answer(() => {
+      const room = this.rooms.updateSettings(userId, {
+        questionCount: dto.questionCount,
+        category: dto.category,
+        difficulty: dto.difficulty,
+      });
       this.emitRoomState(room);
       return {};
     });
