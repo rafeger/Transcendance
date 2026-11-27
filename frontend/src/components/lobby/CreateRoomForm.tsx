@@ -1,5 +1,5 @@
 import { useState, type SubmitEvent } from "react";
-import { Input } from "../ui";
+import { Input, Button, Select } from "../ui";
 
 type CreateRoomProps = {
     onCreate: (
@@ -27,19 +27,15 @@ function CreateRoomForm({ onCreate }: CreateRoomProps) {
     }
 
     return (
-        <section className="">
+        <section>
             <h2 className="text-2xl font-bold">Create a Room</h2>
-            <p className="mt-2 text-sm text-muted">
+            <p className="mt-2 text-sm">
                 Create a room and invite your friends to play
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4 mt-6">
                 <div>
-                    <label htmlFor="roomName" className="mb-2 block text-sm font-medium">
-                        Room name
-                    </label>
-
-                    <Input label="" id="roomName" type="text" value={name}
+                    <Input label="Room name" id="roomName" type="text" value={name}
                     placeholder="Enter a room name"
                     onChange={(e) => setName(e.target.value)} />
 
@@ -49,19 +45,22 @@ function CreateRoomForm({ onCreate }: CreateRoomProps) {
                 </div>
 
                 <div>
-                    <label htmlFor="maxPlayers" className="mb-2 block text-sm font medium">
-                        Maximum players
-                    </label>
+                    <Select label='Maximum players'
+                    value={maxPlayers}
+                    onChange={(event) => setMaxPlayers(Number(event.target.value))}>
+                        <option value={2}>2 players</option>
+                        <option value={3}>3 players</option>
+                        <option value={4}>4 players</option>
+                        <option value={5}>5 players</option>
+                        <option value={6}>6 players</option>
+                    </Select>
+                    
+                </div>
 
-                    <select id="maxPlayers" value={maxPlayers}
-                    onChange={(e) => setMaxPlayers(Number(e.target.value))}
-                    className="w-full rounded-lg border border-border bg-surface
-                    px-3 py-2 text-fg">{[2, 3, 4, 5, 6].map((number) => (
-                        <option key={number} value={number}>
-                            {number} players
-                        </option>
-                    ))}
-                    </select>
+                <div className="justify-end">
+                    <Button type="submit" variant="primary" size="md">
+                        Create a room
+                    </Button>
                 </div>
             </form>
         </section>

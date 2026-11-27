@@ -16,6 +16,7 @@ import Privacy from './pages/Privacy';
 import CGU from './pages/CGU';
 import Error404 from './pages/Error404';
 import Room from './pages/Room';
+import Ranking from './pages/Ranking';
 
 // interface ChatMessage {
 // from:     string;
@@ -78,6 +79,7 @@ function App() {
           <Route path="/lobby" element={<ProtectedRoute><Lobby /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+          <Route path="/ranking" element={<ProtectedRoute><Ranking /></ProtectedRoute>} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<CGU />} />
           {DevUi && (

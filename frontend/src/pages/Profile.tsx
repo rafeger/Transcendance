@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from '../contexts/ThemeContext';
-import { Input, Button, useToast, Card } from "../components/ui";
+import { Input, Button, useToast } from "../components/ui";
 import { profileSchema, type ProfileFormData } from "../schemas/profile";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AvatarUploader } from '../components/profile/AvatarUploader';
 import { useAuth } from '../contexts/useAuth';
+import MatchHistory from "../components/profile/History";
+import { matches } from "../data/matches";
+import StatCard from "../components/profile/StatCard";
+import ScoreChart from "../components/profile/ScoreChart";
+import CategoryChart from "../components/profile/CategoryChart";
+import { CategoryStats } from "../data/categoryStats";
+import ProgressBar from "../components/profile/ProgressBar";
 
 type Profile = {
     username:   string; 
@@ -13,6 +20,10 @@ type Profile = {
 };
 
 function Profile() {
+    const level = 5;
+    const currentXP = 400;
+    const requiredXP = 500;
+    
     const { user, updateUser } = useAuth();
     const [profile, setProfile] = useState<Profile>({
         //firstName: "",
@@ -38,6 +49,10 @@ function Profile() {
     const [isEdit, setEdit] = useState(false);
     const [addFriend, setAddFriend] = useState(false);
     const [friendUsername, setFriendUsername] = useState("");
+    
+    const gamesPlayed = matches.length;
+    const gamesWon = matches.filter((match) => match.score > match.opponentScore).length;
+    const winRate = gamesPlayed > 0 ? Math.round((gamesWon / gamesPlayed) * 100) : 0;
 
     // Charge profil depuis backend
     useEffect(() => {
@@ -142,7 +157,12 @@ function Profile() {
     }
 
     return (
-        <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
+        <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
+
+            <ProgressBar level={level} currentXP={currentXP} requiredXP={requiredXP}/>
+
             {user && (
                 <div className="mb-8 space-y-3">
                     <h2 className="text-xl font-bold">{profile.username || user.userName}</h2>
@@ -219,19 +239,15 @@ function Profile() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-4 mt-4">
-                    <Card as="article" padding="sm">
-                        <h3 className="text-xl text-muted">Games played</h3>
-                    </Card>
-
-                    <Card as="article" padding="sm">
-                        <h3 className="text-xl text-muted">Games won</h3>
-                    </Card>
-
-                    <Card as="article" padding="sm">
-                        <h3 className="text-xl text-muted">Win rate</h3>
-                    </Card>
+                    <StatCard title="Games played" value={gamesPlayed} />
+                    <StatCard title="Games won" value={gamesWon} />
+                    <StatCard title="Win rate" value={`${winRate}%`} />
                 </div>
             </section>
+
+            <ScoreChart histories={matches}/>
+            <CategoryChart categories={CategoryStats} />
+            <MatchHistory matches={matches}/>
         </main>
     );
 }

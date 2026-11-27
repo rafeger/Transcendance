@@ -8,6 +8,8 @@ import {
   registerSchema
 } from '../schemas/auth.ts';
 import { useAuth } from '../contexts/useAuth';
+import { useTheme } from '../contexts/ThemeContext.tsx';
+import { Input, Button } from '../components/ui';
 
 type AuthFormData = {
   email:    string;
@@ -16,6 +18,7 @@ type AuthFormData = {
 };
 
 function Auth() {
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { checkAuth } = useAuth();
@@ -105,7 +108,9 @@ function Auth() {
   };
           
   return (
-  <main className="min-h-screen bg-slate-950 text-white px-4 py-16">
+  <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
     <div className="mx-auto max-w-md text-center">
       <h1 className="mb-6 text-3xl font-bold">
         {isRegister ? 'Create an account' : 'Welcome!'}
@@ -113,31 +118,32 @@ function Auth() {
     </div>
 
     {/* Onglets  SIgn IN/ Regiter*/}
-    <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-indigo-950 p-1 w-150 mx-auto">
-      <button
-        type="button"
+    <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-indigo-950
+    p-1 w-150 mx-auto max-w-md">
+      <Button
+        type="button" variant='ghost'
          /*onClick={() => setRegister(false)}*/
         onClick={() => toggleMode(false)}
         className={`rounded-md px-4 py-2 font-medium transition ${
           !isRegister
-            ? 'bg-blue-600 text-white'
-            : 'text-slate-400 hover:text-white'
+            ? 'bg-purple-400 text-white hover:bg-purple-400'
+            : 'text-white hover:text-white'
         }`}
       >
         Sign in
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
+        type="button" variant='ghost'
         /*onClick={() => setRegister(true)}*/
         onClick={() => toggleMode(true)}
         className={`rounded-md px-4 py-2 font-medium transition ${
           isRegister
-            ? 'bg-blue-600 text-white'
-            : 'text-slate-400 hover:text-white'
+            ? 'bg-purple-400 text-white hover:bg-purple-400'
+            : 'text-white hover:text-white'
         }`}
       >
         Register
-      </button>
+      </Button>
     </div>
 
     {/* Affichage erreur serveur */}
@@ -149,17 +155,13 @@ function Auth() {
 
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5 text-center">
     {isRegister && (
-      <div>
-        <label htmlFor="username" className="mb-2 block text-sm font-medium">
-          Username
-        </label>
-        <input { ... register('username')}
-          id="username"
+      <div className='mx-auto w-50'>
+        <Input { ... register('username')}
+          label='Username'
           type="text"
           // value={username}
           // onChange={(event) => setUsername(event.target.value)}
           placeholder="Your username"
-          className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
         />
         {errors.username && (
         <p className="mt-1 text-xs text-red-400">{errors.username.message}</p>
@@ -167,59 +169,52 @@ function Auth() {
       </div>
     )}
 
-      <div>
-        <label htmlFor="email" className="mb-2 block text-sm font-medium">
-          Email
-        </label>
-        <input 
+      <div className='mx-auto w-50'>
+        <Input 
         { ... register('email')}
+        label='Email'
         id="email"
         type="text"
         // value={email}
         // onChange={(event) => setEmail(event.target.value)}
         placeholder="Your email"
-        className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
         />
         {errors.email && (
           <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
       )}
       </div>
 
-      <div>
-        <label htmlFor="password" className="mb-2 block text-sm font-medium">
-          Password
-        </label>
-        <input 
+      <div className='mx-auto w-120 flex pl-35'>
+        <Input 
         { ... register('password')}
+        label='Password'
         id="password"
         type={showPassword ? 'text' : 'password'}
         // value={password}
         // onChange={(event) => setPassword(event.target.value)}
-        placeholder="Your password"
-        className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
+        placeholder="Your password" 
         />
-        <button
-          type="button"
+        <Button
+          type="button" variant='ghost'
           onClick={() => setShowPassword((visible) => !visible)}
-          className=""
+          className='mt-7 text-xl pl-3'
         >
           {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
-        </button>
+        </Button>
           {errors.password && (
             <p className="mt-1 text-xs text-red-400">{errors.password.message}</p>
         )}
       </div>
 
-      <button
-         type="submit"
+      <Button
+         type="submit" variant='primary'
          disabled={isSubmitting}
-         className="mt-10 inline-flex items-center gap-3 rounded-xl bg-blue-500 px-7 py-4 
-               font-bold text-white transition hover:-translate-y-1 hover:bg-blue-400"
+         className='mt-4'
       >
         {isSubmitting
         ? 'Loading...'
         : isRegister ? 'Create an account' : 'Login'}
-      </button>
+      </Button>
     </form>
   </main>
   );

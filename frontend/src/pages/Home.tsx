@@ -11,9 +11,11 @@ function Home() {
   const { isDark } = useTheme();
 
   return (
-    <main className={`min-h-screen px-4 py-16 ${isDark ? "bg-slate-800" : "bg-slate-50"}`}>
+    <main className={`min-h-screen px-4 py-16 ${isDark ?
+    "bg-gradient-to-r from-violet-700 via-indigo-700 to-cyan-700" :
+    "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
       <section className="flex flex-col items-end px-8">
-        <SiQuizlet size={48} />
+        <SiQuizlet size={48} color='blue' />
       </section>
 
       <section className="flex flex-col items-center px-6 py-24 text-center md:py-32">
@@ -41,7 +43,9 @@ function Home() {
 
       <section className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4
       pb-4 sm:grid-cols-3 pt-4">
-        <Card as="article" padding="md">
+        <Card as="article" padding="md" className={`${isDark
+                                ? "bg-indigo-800"
+                                : "bg-indigo-300"}`}>
           <div className="text-xl">
             <GiBrain size={40} className="text-pink-400" />
             <h2 className="mt-4 text-4xl font-bold text-blue-500">Knowledges</h2>
@@ -49,15 +53,19 @@ function Home() {
           </div>
         </Card>
 
-        <Card as="article" padding="md">
+        <Card as="article" padding="md" className={`${isDark
+                                ? "bg-fuchsia-700"
+                                : "bg-fuchsia-200"}`}>
           <div className="text-xl">
             <BiSolidTrophy size={40} className="text-yellow-300" />
-            <h2 className="mt-4 text-4xl font-bold text-blue-500">Scores</h2>
+            <h2 className={`mt-4 text-4xl font-bold text-blue-500`}>Scores</h2>
             <p className="py-4">Get some results and watch your progress!</p>
           </div>
         </Card>
 
-        <Card as="article" padding="md">
+        <Card as="article" padding="md" className={`${isDark
+                                ? "bg-pink-500"
+                                : "bg-teal-300"}`}>
           <div className="text-xl">
             <AiFillThunderbolt size={40} className="text-yellow-300" />
             <h2 className="mt-4 text-4xl font-bold text-blue-500">Challenges</h2>
