@@ -5,6 +5,7 @@ import type { JwtService } from '@nestjs/jwt';
 import { WsException } from '@nestjs/websockets';
 import type { Socket } from 'socket.io';
 import type { JwtPayload } from '../auth/jwt-auth.guard.js';
+import type { PlayerProfile } from './rooms.service.js';
 
 /** Message d'erreur reçu par le front dans `connect_error` (err.message). */
 export const WS_UNAUTHORIZED = 'UNAUTHORIZED';
@@ -73,4 +74,13 @@ export function userIdOf(socket: Socket): number {
     throw new WsException(WS_UNAUTHORIZED);
   }
   return userId;
+}
+
+/** Profil (nom, avatar) chargé par le middleware de EventsGateway. */
+export function profileOf(socket: Socket): PlayerProfile {
+  const profile = socket.data?.profile as PlayerProfile | undefined;
+  if (!profile || profile.userId !== userIdOf(socket)) {
+    throw new WsException(WS_UNAUTHORIZED);
+  }
+  return profile;
 }

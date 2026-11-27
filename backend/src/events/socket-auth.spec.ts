@@ -1,6 +1,7 @@
 import type { JwtService } from '@nestjs/jwt';
 import type { Socket } from 'socket.io';
 import {
+  profileOf,
   readCookie,
   socketAuthMiddleware,
   userIdOf,
@@ -84,5 +85,22 @@ describe('socketAuthMiddleware', () => {
 describe('userIdOf', () => {
   it('lève si le socket n’est pas authentifié', () => {
     expect(() => userIdOf(fakeSocket())).toThrow();
+  });
+});
+
+describe('profileOf', () => {
+  it('renvoie le profil posé pour ce userId', () => {
+    const socket = fakeSocket();
+    socket.data.userId = 3;
+    socket.data.profile = { userId: 3, displayName: 'ana', avatarUrl: null };
+    expect(profileOf(socket).displayName).toBe('ana');
+  });
+
+  it('lève si le profil manque ou appartient à un autre userId', () => {
+    const socket = fakeSocket();
+    socket.data.userId = 3;
+    expect(() => profileOf(socket)).toThrow();
+    socket.data.profile = { userId: 4, displayName: 'x', avatarUrl: null };
+    expect(() => profileOf(socket)).toThrow();
   });
 });
