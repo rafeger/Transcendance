@@ -155,7 +155,7 @@ function Auth() {
 
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5 text-center">
     {isRegister && (
-      <div className='mx-auto w-54'>
+      <div className='mx-auto w-50'>
         <Input { ... register('username')}
           label='Username'
           type="text"
@@ -169,7 +169,7 @@ function Auth() {
       </div>
     )}
 
-      <div className='mx-auto w-54'>
+      <div className='mx-auto w-50'>
         <Input 
         { ... register('email')}
         label='Email'
@@ -184,7 +184,7 @@ function Auth() {
       )}
       </div>
 
-      <div className='mx-auto w-130 flex pl-37'>
+      <div className='mx-auto w-120 flex pl-35'>
         <Input 
         { ... register('password')}
         label='Password'

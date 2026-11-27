@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+body {
+  font-family: serif;
+}
+
 /* dark: s'active avec la classe .dark posée par ThemeContext */
 @custom-variant dark (&:where(.dark, .dark *));
 
