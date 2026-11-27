@@ -120,30 +120,30 @@ function Auth() {
     {/* Onglets  SIgn IN/ Regiter*/}
     <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-indigo-950
     p-1 w-150 mx-auto max-w-md">
-      <button
-        type="button"
+      <Button
+        type="button" variant='ghost'
          /*onClick={() => setRegister(false)}*/
         onClick={() => toggleMode(false)}
         className={`rounded-md px-4 py-2 font-medium transition ${
           !isRegister
-            ? 'bg-blue-600 text-white'
-            : 'text-slate-400 hover:text-white'
+            ? 'bg-purple-400 text-white hover:bg-purple-400'
+            : 'text-white hover:text-white'
         }`}
       >
         Sign in
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
+        type="button" variant='ghost'
         /*onClick={() => setRegister(true)}*/
         onClick={() => toggleMode(true)}
         className={`rounded-md px-4 py-2 font-medium transition ${
           isRegister
-            ? 'bg-blue-600 text-white'
-            : 'text-slate-400 hover:text-white'
+            ? 'bg-purple-400 text-white hover:bg-purple-400'
+            : 'text-white hover:text-white'
         }`}
       >
         Register
-      </button>
+      </Button>
     </div>
 
     {/* Affichage erreur serveur */}
