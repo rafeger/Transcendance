@@ -2,26 +2,28 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 
 // link Socket to user, specially useful to identify same user opening multiple windows
+// userId = `sub` du JWT, un nombre (id de la table User).
 
 @Injectable()
 export class SocketRegistryService {
   private readonly logger = new Logger(SocketRegistryService.name);
-  private readonly users = new Map<string, Set<Socket>>();
+  private readonly users = new Map<number, Set<Socket>>();
 
   // create set if doesn't exist yet
-  add(userId: string, client: Socket): void {
+  add(userId: number, client: Socket): void {
     let sockets = this.users.get(userId);
     if (!sockets) {
       sockets = new Set<Socket>();
       this.users.set(userId, sockets);
     }
     sockets.add(client);
-    this.logger.debug(`Registry: +1 socket for user=${userId}
-             (total:${this.count(userId)})`);
+    this.logger.debug(
+      `Registry: +1 socket for user=${userId} (total:${this.count(userId)})`,
+    );
   }
 
   //delete socket
-  remove(userId: string, client: Socket): void {
+  remove(userId: number, client: Socket): void {
     const sockets = this.users.get(userId);
     if (!sockets) return;
     sockets.delete(client);
@@ -31,11 +33,15 @@ export class SocketRegistryService {
     }
   }
 
-  getSockets(userId: string): Socket[] {
+  getSockets(userId: number): Socket[] {
     return [...(this.users.get(userId) ?? [])];
   }
 
-  count(userId: string): number {
+  count(userId: number): number {
     return this.users.get(userId)?.size ?? 0;
+  }
+
+  isConnected(userId: number): boolean {
+    return this.count(userId) > 0;
   }
 }
