@@ -9,6 +9,7 @@ import {
 } from '../schemas/auth.ts';
 import { useAuth } from '../contexts/useAuth';
 import { useTheme } from '../contexts/ThemeContext.tsx';
+import { Input, Button } from '../components/ui';
 
 type AuthFormData = {
   email:    string;
@@ -117,7 +118,8 @@ function Auth() {
     </div>
 
     {/* Onglets  SIgn IN/ Regiter*/}
-    <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-indigo-950 p-1 w-150 mx-auto">
+    <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-indigo-950
+    p-1 w-150 mx-auto max-w-md">
       <button
         type="button"
          /*onClick={() => setRegister(false)}*/
@@ -153,17 +155,13 @@ function Auth() {
 
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5 text-center">
     {isRegister && (
-      <div>
-        <label htmlFor="username" className="mb-2 block text-sm font-medium">
-          Username
-        </label>
-        <input { ... register('username')}
-          id="username"
+      <div className='mx-auto w-54'>
+        <Input { ... register('username')}
+          label='Username'
           type="text"
           // value={username}
           // onChange={(event) => setUsername(event.target.value)}
           placeholder="Your username"
-          className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
         />
         {errors.username && (
         <p className="mt-1 text-xs text-red-400">{errors.username.message}</p>
@@ -171,59 +169,52 @@ function Auth() {
       </div>
     )}
 
-      <div>
-        <label htmlFor="email" className="mb-2 block text-sm font-medium">
-          Email
-        </label>
-        <input 
+      <div className='mx-auto w-54'>
+        <Input 
         { ... register('email')}
+        label='Email'
         id="email"
         type="text"
         // value={email}
         // onChange={(event) => setEmail(event.target.value)}
         placeholder="Your email"
-        className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
         />
         {errors.email && (
           <p className="mt-1 text-xs text-red-400">{errors.email.message}</p>
       )}
       </div>
 
-      <div>
-        <label htmlFor="password" className="mb-2 block text-sm font-medium">
-          Password
-        </label>
-        <input 
+      <div className='mx-auto w-130 flex pl-37'>
+        <Input 
         { ... register('password')}
+        label='Password'
         id="password"
         type={showPassword ? 'text' : 'password'}
         // value={password}
         // onChange={(event) => setPassword(event.target.value)}
-        placeholder="Your password"
-        className="rounded-lg border border-white/20 bg-indigo-950 py-1 outline-none"
+        placeholder="Your password" 
         />
-        <button
-          type="button"
+        <Button
+          type="button" variant='ghost'
           onClick={() => setShowPassword((visible) => !visible)}
-          className=""
+          className='mt-7 text-xl pl-3'
         >
           {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
-        </button>
+        </Button>
           {errors.password && (
             <p className="mt-1 text-xs text-red-400">{errors.password.message}</p>
         )}
       </div>
 
-      <button
-         type="submit"
+      <Button
+         type="submit" variant='primary'
          disabled={isSubmitting}
-         className="mt-10 inline-flex items-center gap-3 rounded-xl bg-blue-500 px-7 py-4 
-               font-bold text-white transition hover:-translate-y-1 hover:bg-blue-400"
+         className='mt-4'
       >
         {isSubmitting
         ? 'Loading...'
         : isRegister ? 'Create an account' : 'Login'}
-      </button>
+      </Button>
     </form>
   </main>
   );

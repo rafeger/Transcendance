@@ -27,7 +27,7 @@ export default function PublicRoomCard({ room, onJoin }: Props) {
             <button onClick={() =>onJoin(room.code)}
             disabled={!canJoin}
             className="mt-4 w-full rounded-lg border border-white/20 bg-blue-600 py-2
-            hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-40">
+            hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-40 text-white">
                 {isFull ? "Room Full" : room.status === "playing" ? "Game started"
                 : "Join Room"}
             </button>

@@ -48,7 +48,7 @@ function Lobby() {
     "bg-gradient-to-r bg-blue-200 via-cyan-200 to-emerald-200"}`}>
             <div className="mx-auto max-w-3xl">
             <h1 className="text-center text-4xl font-bold">Lobby Quiz Arena</h1>
-                <p className="text-center mt-4 text-slate-400">Join your friends be ready to play!</p>
+                <p className="text-center mt-4">Join your friends be ready to play!</p>
             </div>
 
             <section className="mt-10 mx-auto max-w-3xl">
@@ -64,17 +64,17 @@ function Lobby() {
                                 ? "bg-purple-600"
                                 : "bg-pink-200"}`}>
                     <h2 className="text-2xl font-bold">Join a Room</h2>
-                    <p className="mt-2 text-sm text-muted">
+                    <p className="mt-2 text-sm">
                         Enter the quiz code to join your friends
                     </p>
 
                     <form onSubmit={handleJoinLobby}
                     className="mt-6 flex flex-col gap-4 sm:flex-row">
-                        <div className="flex-1">
+                        <div className="flex">
                             <Input label="" type="text" placeholder="Enter the quiz code"
                             value={codeQuiz} onChange={(e) => setCodeQuiz(e.target.value)} />
                         </div>
-                        <Button type="submit">Join a room</Button>
+                        <Button type="submit" className='mt-1.5'>Join a room</Button>
                     </form>
                 </Card>
             </section>
@@ -82,7 +82,7 @@ function Lobby() {
             <section className="mx-auto mt-12 max-w-5xl">
                 <div className="mb-6 flex items-center justify-between">
                     <h2 className="text-2xl font-bold">Public Rooms</h2>
-                    <span className="text-sm text-muted">
+                    <span className="text-sm">
                         {rooms.length} rooms available
                     </span>
                 </div>
