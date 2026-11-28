@@ -18,33 +18,35 @@ function PlayerCard({ player, isCurrentPlayer, isHost, onRemove, }: PlayerCardPr
                 }`}
             >
             <div className="flex items-center gap-3">
-                <div className="relative" >
                 <img 
                     src={player.avatar} 
                     alt={`${player.username}'s avatar`}
                     className="h-12 w-12 rounded-full object-cover" 
-                    />
-                    <span className={`absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-indigo-950 ${
-                                    isPlayerOnline ? "bg-green-500" : "bg-red-500"
-                        }`}
-                    />
-                </div>
+                />
                 <div>
                     <div className="flex items-center gap-2">
                         <p className="font-semibold">
                             {player.username}
                             {isCurrentPlayer && " (You)"}
                         </p>
+
+                        <span 
+                            title={isPlayerOnline ? "Online" : "Disconnected"}
+                            className={`h-2.5 w-2.5 rounded-full ${
+                                isPlayerOnline ? "bg-green-500" : "bg-red-500"
+                                }`}
+                        />
+
                         {!isPlayerOnline && (
                             <span className="rounded-full bg-red-500/20 px-2.5 py-0.5 text-xs font-medium text-red-400">
                                 Disconnected
                             </span>
                         )}
+                    </div>
 
                     {player.isHost && (
                         <span className="text-sm text-yellow-400">Host</span>
                     )}
-                    </div>
                 </div>
             </div>
 
