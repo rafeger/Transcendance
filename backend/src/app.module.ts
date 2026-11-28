@@ -10,6 +10,7 @@ import { HealthModule } from './health/health.module.js';
 import { EventsModule } from './events/events.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
+import { QuestionsModule } from './questions/questions.module.js';//temporaire le temps de créer le moteur de partie
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { UsersModule } from './users/users.module.js';
     HealthModule,
     EventsModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    QuestionsModule,
   ], // loads .env file and we cna use config mod in other places
   controllers: [AppController],
   providers: [AppService],
