@@ -27,6 +27,11 @@ export type Choice = {
   text: string;
 };
 
+export type CategoryRow = {
+  categoryName: string;
+  questionCount: number;
+  difficulty: string;
+};
 @Injectable()
 export class QuestionsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -91,5 +96,37 @@ export class QuestionsService {
   async pickQuestion(gameId: number, count: number) {
     await this.drawQuestion(gameId, count);
     return await this.load(gameId);
+  }
+
+  async loadCategories() {
+    return  this.prisma.$queryRaw<CategoryRow[]>`
+      SELECT "Category"."name" AS "categoryName", CAST(COUNT("Question"."id") as INTEGER) AS "questionCount", "Question"."difficulty" AS "difficulty"
+      FROM "Category"
+      INNER JOIN "Question" ON "Category"."id" = "Question"."categoryId"
+      GROUP BY "Category"."id", "Question"."difficulty"
+      ORDER BY "Category"."id", "Question"."difficulty"
+    `;
+    
+  }
+  async getCategories() {
+    const categoryRows = await this.loadCategories();
+    const map = new Map<string, CategoryRow[]>();
+    for (const row of categoryRows) {
+      if (!map.has(row.categoryName)) {
+        map.set(row.categoryName, []);
+      }
+      map.get(row.categoryName)?.push(row);
+    }
+    const result= Array.from(map.entries()).map(([categoryName, rows]) => {
+      const difficulties = rows.map((row) => ({
+        difficulty: row.difficulty,
+        questionCount: row.questionCount,
+      }));
+      return {
+        categoryName,
+        difficulties,
+      };
+    });
+    return result;
   }
 }
