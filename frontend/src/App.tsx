@@ -1,8 +1,7 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
 // import { useForm } from 'react-hook-form';
-// import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { socket } from './lib/socket';
 import { ProtectedRoute } from './components/guard/ProtectedRoute';
 import Home from './pages/Home';
@@ -28,12 +27,21 @@ const DevUi = import.meta.env.DEV
   : null;
 
 function App() {
+
+  const [isReconnecting, setIsReconnecting] = useState(false);
   // check connection state + log debug
   useEffect(() => {
-    socket.on('connect', () => console.log('connected WS, id=', socket.id));
-    socket.on('disconnect', (reason) =>
-      console.log('disconnected WS :', reason),
-    );
+    const onConnect = () => {
+      console.log('connected WS, id=', socket.id);
+      setIsReconnecting(false); // Cache le bandeau dès que ça revient
+    };
+    const onDisconnect = (reason: string) => {
+      console.log('disconnected WS :', reason);
+      // Si la coupure n'est pas volontaire (ex: perte réseau ou redémarrage serveur)
+      if (reason !== 'io client disconnect') {
+        setIsReconnecting(true); //Affiche bandeau "Reconnexion..."
+      }
+    };
     socket.on('connect_error', (err) =>
       console.log('refused WS :', err.message),
     );
@@ -41,9 +49,12 @@ function App() {
       console.log('⚠️ Erreur ValidationPipe:', err),
     );
 
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+
     return () => {
-      socket.off('connect');
-      socket.off('disconnect');
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
       socket.off('connect_error');
     };
   }, []);
@@ -69,6 +80,11 @@ function App() {
 
   return (
     <BrowserRouter>
+      {isReconnecting && (
+        <div className='bg-amber-500 text-white text-center py-2 font-semibold fixed top-0 w-full z-50'>
+          Reconnection...
+        </div>
+      )}
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />

@@ -42,6 +42,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly jwtService: JwtService,
     private readonly registry: SocketRegistryService,
+    private readonly gameService: GameService,
   ) {}
 
   async handleConnection(client: Socket): Promise<void> {
@@ -71,6 +72,19 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log(`Connected : user=${userId} socket=${client.id} 
                 (${this.registry.count(userId)} socket(s))`);
 
+    //renvoie état complet uniquement au joueur qui se reconnecte
+    client.emit('room_list', this.gameService.getAllRooms());
+
+    // Vérifie si le joueur fait déjà partie d'une room
+    const activeRoom = this.gameService.findRoomByUser(userId);
+    if (activeRoom) {
+      client.join(activeRoom.code);
+      this.gameService.setPlayerConnected(activeRoom.code, userId,true);
+
+      // Préviens les autres joueurs de la room que le joueur est revenu
+      client.to(activeRoom.code).emit('room_updated', activeRoom);
+    }
+
     this.server.emit('room', client.id + ' joined');
   }
 
@@ -91,13 +105,21 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   handleDisconnect(client: Socket): void {
-    const userId: string | undefined = client.data?.userId;
+    const userId: string = client.data?.userId;
     if (userId) {
       this.registry.remove(userId, client);
       this.logger.log(`Disconnected : user =${userId} socket=${client.id} 
                 (${this.registry.count(userId)} socket(s) left))`);
     } else {
       this.logger.log(`Socket not Authentified closed : ${client.id}`);
+    }
+
+    if (this.registry.count(userId) === 0){
+      const activeRoom = this.gameService.findRoomByUser(userId);
+      if (activeRoom) {
+        this.gameService.setPlayerConnected(activeRoom.room, userId, false);
+        this.server.to(activeRoom.code).emit('game_state', activeRoom);
+      }
     }
     this.server.emit('room', client.id + ' left');
   }

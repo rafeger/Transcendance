@@ -14,4 +14,6 @@ export type Player = {
     avatar: string;
     isReady: boolean;
     isHost: boolean;
+    score?: number;
+    connected: boolean;
 };

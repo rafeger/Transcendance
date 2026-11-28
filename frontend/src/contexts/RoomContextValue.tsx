@@ -1,6 +1,9 @@
 import { useState, type ReactNode, useEffect } from 'react';
 import { RoomContext } from './RoomContext';
 import type { Room, Player } from '../types/room';
+import { socket } from '../lib/socket';
+
+
 
 const initialRooms: Room[] = [
   {
@@ -15,6 +18,7 @@ const initialRooms: Room[] = [
         avatar: '/avatars/player1.png',
         isHost: true,
         isReady: true,
+        connected: true,
       },
       {
         id: 'p2',
@@ -22,6 +26,7 @@ const initialRooms: Room[] = [
         avatar: '/avatars/player2.png',
         isHost: false,
         isReady: false,
+        connected: false,
       },
     ],
     maxPlayers: 4,
@@ -39,6 +44,7 @@ const initialRooms: Room[] = [
         avatar: '/avatars/player1.png',
         isHost: true,
         isReady: true,
+        connected: true,
       },
       {
         id: 'p2',
@@ -46,6 +52,7 @@ const initialRooms: Room[] = [
         avatar: '/avatars/player2.png',
         isHost: false,
         isReady: true,
+        connected: true,
       },
     ],
     maxPlayers: 3,
@@ -54,6 +61,8 @@ const initialRooms: Room[] = [
 ];
 
 export function RoomProvider({ children }: { children: ReactNode }) {
+  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
+
   const [rooms, setRooms] = useState<Room[]>(() => {
     const savedRooms = sessionStorage.getItem('rooms');
     if (!savedRooms) return initialRooms;
@@ -70,6 +79,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     sessionStorage.setItem('rooms', JSON.stringify(rooms));
   }, [rooms]);
 
+
   const [currentPlayer] = useState<Player>(() => {
 
     let playerId = sessionStorage.getItem('playerId');
@@ -85,8 +95,51 @@ export function RoomProvider({ children }: { children: ReactNode }) {
       avatar: '/avatars/default.png',
       isHost: false,
       isReady: false,
+      connected: true,
     };
   });
+
+  // listen to socket.io: connection + resynchronisation to room
+  useEffect(() => {
+    const onConnect = () => {
+      setIsConnected(true);
+
+      const activeRoomCode = sessionStorage.getItem('activRoom');
+      if (activeRoomCode) {
+        socket.emit('sync_room', { code: activeRoomCode});
+      }
+    };
+
+    const onDisconnect = () => {
+      setIsConnected(false); // déclenche bandeau "Reconnection..."
+    };
+
+    const onRoomList = (serverRooms: Room[]) => {
+      setRooms(serverRooms);
+    };
+
+    const onRoomUpdated = (updatedRoom: Room) => {
+      setRooms((prev) => {
+        const exists = prev.some((r) => r.code === updatedRoom.code);
+        return exists
+        ? prev.map((r) => (r.code === updatedRoom.code ? updatedRoom : r))
+        : [...prev, updatedRoom];
+      });
+    };
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('rooms_list', onRoomList);
+    socket.on('room_updated', onRoomUpdated);
+
+    return () => {
+    socket.off('connect', onConnect);
+    socket.off('disconnect', onDisconnect);
+    socket.off('rooms_list', onRoomList);
+    socket.off('room_updated', onRoomUpdated);
+    };
+
+  }, []);
 
   function createRoom(name: string, maxPlayers: number): Room {
     const newRoom: Room = {
@@ -98,6 +151,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
         {
           ...currentPlayer,
           isHost: true,
+          connected: true, 
         },
       ],
       maxPlayers,
@@ -107,6 +161,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     setRooms((currentRooms) => [...currentRooms, newRoom]);
 
     sessionStorage.setItem('activRoom', newRoom.code);
+    socket.emit('create_room', newRoom);
     return newRoom;
   }
 
@@ -121,6 +176,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     );
     if (alreadyJoined) {
       sessionStorage.setItem('activRoom', room.code);
+      socket.emit('join_room', { code: room.code, player: currentPlayer });
       return room;
     }
     if (room.players.length >= room.maxPlayers) {
@@ -129,19 +185,22 @@ export function RoomProvider({ children }: { children: ReactNode }) {
 
     const updatedRoom: Room = {
       ...room,
-      players: [...room.players, currentPlayer],
+      players: [...room.players, { ...currentPlayer, connected: true }],
     };
     setRooms((currentRooms) =>
       currentRooms.map((currentRoom) =>
         currentRoom.id === room.id ? updatedRoom : currentRoom,
       ),
     );
+    sessionStorage.setItem('activRoom', room.code);
+    socket.emit('join_room', { code: room.code, player: currentPlayer });
    
     return updatedRoom;
   }
 
   function leaveRoom(code: string) {
     sessionStorage.removeItem('activRoom');
+    socket.emit('leave_room', { code });
 
     const room = getRoom(code);
     if (!room) return;
@@ -156,8 +215,8 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     ) {
       setRooms((currentRooms) =>
         currentRooms.filter((currentRoom) => currentRoom.id !== room.id),
-    );
-    return;
+      );
+      return;
     }
     setRooms((currentRooms) =>
       currentRooms.map((currentRoom) =>
@@ -188,6 +247,8 @@ export function RoomProvider({ children }: { children: ReactNode }) {
           : currentRoom,
       ),
     );
+    socket.emit('remove_player', { code, playerId });
+
     return true;
   }
 
@@ -212,6 +273,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
           : currentRoom,
       ),
     );
+    socket.emit('start_room', { code });
     return true;
   }
 
@@ -234,6 +296,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
         };
       }),
     );
+    socket.emit('toggle_ready', { code });
   }
 
   return (
@@ -248,9 +311,80 @@ export function RoomProvider({ children }: { children: ReactNode }) {
         getRoom,
         currentPlayer,
         toggleReady,
+        isConnected,
       }}
     >
       {children}
     </RoomContext.Provider>
   );
 }
+
+// now send events to Websocketsocket.io
+
+// function createRoom(name: string, maxPlayers: number): Room {
+//    const newRoom: Room = {
+//      id: crypto.randomUUID(),
+//      code: crypto.randomUUID().slice(0, 6).toUpperCase(),
+//      name,
+//      host: currentPlayer.username,
+//      players: [{ ...currentPlayer, isHost: true, connected: true }],
+//      maxPlayers,
+//      status: 'waiting',
+//    };
+//
+//    sessionStorage.setItem('activRoom', newRoom.code);
+//    socket.emit('create_room', newRoom);
+//    setRooms((prev) => [...prev, newRoom]);
+//    return newRoom;
+//  }
+//
+//  function joinRoom(code: string): Room | null {
+//    const formattedCode = code.toUpperCase();
+//    sessionStorage.setItem('activRoom', formattedCode);
+//    socket.emit('join_room', { code: formattedCode });
+//    return getRoom(formattedCode) ?? null;
+//  }
+//
+//  function leaveRoom(code: string) {
+//    sessionStorage.removeItem('activRoom');
+//    socket.emit('leave_room', { code });
+//    setRooms((prev) => prev.filter((r) => r.code !== code));
+//  }
+//
+//  function removePlayer(code: string, playerId: string): boolean {
+//    socket.emit('remove_player', { code, playerId });
+//    return true;
+//  }
+//
+//  function startRoom(code: string): boolean {
+//    socket.emit('start_room', { code });
+//    return true;
+//  }
+//
+//  function getRoom(code: string) {
+//    return rooms.find((room) => room.code === code.toUpperCase());
+//  }
+//
+//  function toggleReady(code: string) {
+//    socket.emit('toggle_ready', { code });
+//  }
+//
+//  return (
+//    <RoomContext.Provider
+//      value={{
+//        rooms,
+//        createRoom,
+//        joinRoom,
+//        leaveRoom,
+//        removePlayer,
+//        startRoom,
+//        getRoom,
+//        currentPlayer,
+//        toggleReady,
+//        isConnected, // <-- Exposé comme défini dans ton RoomContext.ts !
+//      }}
+//    >
+//      {children}
+//    </RoomContext.Provider>
+//  );
+//}
